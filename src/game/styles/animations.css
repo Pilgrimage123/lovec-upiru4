@@ -1,0 +1,532 @@
+@keyframes idleHero {
+  0%,
+  100% {
+    transform: translateY(0) scaleX(1) scaleY(1) rotate(0deg);
+  }
+  48% {
+    transform: translateY(-2px) scaleX(0.97) scaleY(1.05) rotate(-0.6deg);
+  }
+  75% {
+    transform: translateY(-1px) scaleX(0.985) scaleY(1.025) rotate(0.5deg);
+  }
+}
+
+@keyframes idleHuman {
+  0%,
+  100% {
+    transform: translateY(0) scaleX(1) scaleY(1) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-2px) scaleX(0.97) scaleY(1.05) rotate(-0.5deg);
+  }
+}
+
+@keyframes idleUndead {
+  0%,
+  100% {
+    transform: translateY(0) scaleX(1) scaleY(1) rotate(1.2deg);
+  }
+  42% {
+    transform: translateY(0) scaleX(1.02) scaleY(0.97) rotate(-1.8deg);
+  }
+  74% {
+    transform: translateY(-2px) scaleX(0.97) scaleY(1.05) rotate(0.4deg);
+  }
+}
+
+@keyframes idleSmall {
+  0%,
+  100% {
+    transform: translateY(0) scaleX(1) scaleY(1) rotate(0deg);
+  }
+  40% {
+    transform: translateY(-3px) scaleX(0.96) scaleY(1.06) rotate(-1.6deg);
+  }
+  72% {
+    transform: translateY(-1px) scaleX(1.02) scaleY(0.98) rotate(1.2deg);
+  }
+}
+
+@keyframes idleBeast {
+  0%,
+  100% {
+    transform: translateY(0) scaleX(1) scaleY(1);
+  }
+  45% {
+    transform: translateY(-1px) scaleX(0.96) scaleY(1.055);
+  }
+  75% {
+    transform: translateY(0) scaleX(1.03) scaleY(0.975);
+  }
+}
+
+@keyframes idleCritter {
+  0%,
+  100% {
+    transform: translateY(0) scaleX(1) scaleY(1) rotate(0deg);
+  }
+  35% {
+    transform: translateY(-2px) scaleX(0.96) scaleY(1.055) rotate(-2.5deg);
+  }
+  68% {
+    transform: translateY(0) scaleX(1.025) scaleY(0.98) rotate(2deg);
+  }
+}
+
+@keyframes idleBoss {
+  0%,
+  100% {
+    transform: translateY(0) scaleX(1) scaleY(1);
+  }
+  50% {
+    transform: translateY(-3px) scaleX(0.97) scaleY(1.05);
+  }
+}
+
+@keyframes flyBob {
+  0%,
+  100% {
+    transform: translateY(-4px) scaleX(1) scaleY(1);
+  }
+  50% {
+    transform: translateY(-15px) scaleX(0.96) scaleY(1.05);
+  }
+}
+
+@keyframes shadowIdlePulse {
+  0%,
+  100% {
+    transform: translateX(-50%) scale(1, 1);
+    opacity: 0.68;
+  }
+  50% {
+    transform: translateX(-50%) scale(0.93, 0.95);
+    opacity: 0.56;
+  }
+}
+
+@keyframes shadowFlyBob {
+  0%,
+  100% {
+    transform: translateX(-50%) scale(0.84, 0.84);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateX(-50%) scale(0.62, 0.62);
+    opacity: 0.28;
+  }
+}
+
+@keyframes walkStep {
+  0% {
+    transform: translateX(0) translateY(0) rotate(0deg) scale(1, 1);
+  }
+  20% {
+    transform: translateX(3px) translateY(-8px) rotate(5deg) scale(0.92, 1.08);
+  }
+  48% {
+    transform: translateX(8px) translateY(-22px) rotate(9deg) scale(0.95, 1.06);
+  }
+  80% {
+    transform: translateX(4px) translateY(0) rotate(-3deg) scale(1.16, 0.86);
+  }
+  100% {
+    transform: translateX(0) translateY(0) rotate(0deg) scale(1, 1);
+  }
+}
+
+@keyframes boundStep {
+  0% {
+    transform: translateY(0) scale(1, 1);
+  }
+  42% {
+    transform: translateY(-24px) rotate(7deg) scale(0.93, 1.08);
+  }
+  80% {
+    transform: translateY(0) rotate(-2deg) scale(1.18, 0.85);
+  }
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+}
+
+@keyframes walkStepBack {
+  0% {
+    transform: translateX(0) translateY(0) rotate(0deg) scale(1, 1);
+  }
+  22% {
+    transform: translateX(-4px) translateY(-7px) rotate(-5deg) scale(0.93, 1.07);
+  }
+  48% {
+    transform: translateX(-8px) translateY(-18px) rotate(-8deg) scale(0.96, 1.05);
+  }
+  80% {
+    transform: translateX(-3px) translateY(0) rotate(2deg) scale(1.14, 0.88);
+  }
+  100% {
+    transform: translateX(0) translateY(0) rotate(0deg) scale(1, 1);
+  }
+}
+
+@keyframes lungeStrike {
+  0% {
+    transform: translateX(0) rotate(0deg) scale(1, 1);
+  }
+  24% {
+    transform: translateX(-14px) rotate(-7deg) scale(0.92, 1.08);
+  }
+  52% {
+    transform: translateX(34px) translateY(-5px) rotate(9deg) scale(1.14, 0.9);
+  }
+  70% {
+    /* 60ms Hit-Stop hold at apex */
+    transform: translateX(34px) translateY(-5px) rotate(9deg) scale(1.16, 0.89);
+  }
+  90% {
+    transform: translateX(-3px) rotate(-2deg) scale(0.97, 1.03);
+  }
+  100% {
+    transform: translateX(0) rotate(0deg) scale(1, 1);
+  }
+}
+
+@keyframes shootSnap {
+  0% {
+    transform: translateX(0) rotate(0deg) scale(1, 1);
+  }
+  28% {
+    transform: translateX(-12px) rotate(-6deg) scale(0.93, 1.07);
+  }
+  55% {
+    transform: translateX(14px) rotate(5deg) scale(1.1, 0.92);
+  }
+  72% {
+    transform: translateX(14px) rotate(5deg) scale(1.1, 0.92);
+  }
+  100% {
+    transform: translateX(0) rotate(0deg) scale(1, 1);
+  }
+}
+
+@keyframes leapArc {
+  0% {
+    transform: translateY(0) scale(1, 1);
+  }
+  20% {
+    transform: translateY(-10px) rotate(6deg) scale(0.9, 1.1);
+  }
+  50% {
+    transform: translateY(-38px) rotate(11deg) scale(0.95, 1.08);
+  }
+  82% {
+    transform: translateY(0) rotate(-3deg) scale(1.2, 0.84);
+  }
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+}
+
+@keyframes hurtFlinch {
+  0% {
+    transform: translateX(0) scale(1, 1);
+    filter: brightness(0) invert(1) drop-shadow(0 0 12px rgba(255, 255, 255, 0.95));
+  }
+  18% {
+    transform: translateX(-9px) scale(1.25, 0.8) rotate(-5deg);
+    filter: brightness(0) invert(1) drop-shadow(0 0 12px rgba(255, 255, 255, 0.95));
+  }
+  36% {
+    transform: translateX(8px) scale(1.18, 0.84) rotate(4deg);
+    filter: brightness(1.85) sepia(1) hue-rotate(-50deg) saturate(7) drop-shadow(0 0 10px rgba(220, 38, 38, 0.9));
+  }
+  58% {
+    transform: translateX(-5px) scale(0.93, 1.08) rotate(-2deg);
+    filter: brightness(1.15);
+  }
+  80% {
+    transform: translateX(3px) scale(1.03, 0.98) rotate(1deg);
+    filter: none;
+  }
+  100% {
+    transform: translateX(0) scale(1, 1) rotate(0deg);
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.55));
+  }
+}
+
+@keyframes deathFall {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(1, 1);
+    opacity: 1;
+    filter: brightness(0) invert(1);
+  }
+  15% {
+    transform: translateX(-9px) translateY(-4px) rotate(-8deg) scale(1.18, 0.84);
+    opacity: 1;
+    filter: brightness(1.8) sepia(1) hue-rotate(-50deg) saturate(8);
+  }
+  30% {
+    transform: translateX(8px) translateY(-6px) rotate(6deg) scale(1.08, 0.92);
+    opacity: 1;
+    filter: brightness(1.5) sepia(1) hue-rotate(-50deg) saturate(7);
+  }
+  68% {
+    transform: translateY(14px) rotate(-82deg) scale(1.12, 0.68);
+    opacity: 0.72;
+    filter: brightness(0.9) sepia(1) hue-rotate(-50deg) saturate(5);
+  }
+  100% {
+    transform: translateY(22px) rotate(-88deg) scale(0.95, 0.52);
+    opacity: 0;
+    filter: brightness(0.5) sepia(1) hue-rotate(-50deg) saturate(4);
+  }
+}
+
+@keyframes heroDeath {
+  0% {
+    transform: translateY(-4px) scale(1, 1);
+    opacity: 1;
+    filter: brightness(0) invert(1);
+  }
+  25% {
+    transform: translateX(-8px) translateY(2px) scale(1.18, 0.84);
+    opacity: 1;
+    filter: brightness(1.7) sepia(1) hue-rotate(-50deg) saturate(6);
+  }
+  100% {
+    transform: translateY(10px) scale(1.04, 0.94);
+    opacity: 1;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.55));
+  }
+}
+
+@keyframes floatUpFade {
+  0% {
+    transform: translateX(-50%) translateY(6px) scale(0.65);
+    opacity: 0;
+  }
+  16% {
+    transform: translateX(calc(-50% + 4px)) translateY(-12px) scale(1.18);
+    opacity: 1;
+  }
+  42% {
+    transform: translateX(calc(-50% + 9px)) translateY(-28px) scale(1.02);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(calc(-50% + 14px)) translateY(-56px) scale(0.9);
+    opacity: 0;
+  }
+}
+
+/* Silhouette Hit-Flash Classes (strictly non-transparent PNG pixels, never bounding box) */
+.entity-sprite-img.silhouette-flash-white {
+  filter: brightness(0) invert(1) drop-shadow(0 0 12px rgba(255, 255, 255, 0.95)) !important;
+}
+
+.entity-sprite-img.silhouette-flash-red {
+  filter: brightness(1.85) sepia(1) hue-rotate(-50deg) saturate(7) drop-shadow(0 0 12px rgba(220, 38, 38, 0.92)) !important;
+}
+
+.sprite-flip-wrapper .entity-sprite-img {
+  animation: idleHuman 2.35s ease-in-out infinite;
+  animation-delay: var(--idle-delay, 0s);
+  transform-origin: 50% 100%;
+  image-rendering: crisp-edges;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.sprite-flip-wrapper .entity-sprite-img.gait-prop {
+  animation: none !important;
+}
+
+.sprite-flip-wrapper .entity-sprite-img.gait-hero {
+  animation-name: idleHero;
+  animation-duration: 2.35s;
+}
+
+.sprite-flip-wrapper .entity-sprite-img.gait-undead {
+  animation-name: idleUndead;
+  animation-duration: 2.85s;
+}
+
+.sprite-flip-wrapper .entity-sprite-img.gait-small {
+  animation-name: idleSmall;
+  animation-duration: 1.55s;
+}
+
+.sprite-flip-wrapper .entity-sprite-img.gait-beast {
+  animation-name: idleBeast;
+  animation-duration: 1.25s;
+}
+
+.sprite-flip-wrapper .entity-sprite-img.gait-critter {
+  animation-name: idleCritter;
+  animation-duration: 0.95s;
+}
+
+.sprite-flip-wrapper .entity-sprite-img.gait-boss {
+  animation-name: idleBoss;
+  animation-duration: 2.9s;
+}
+
+.sprite-flip-wrapper .entity-sprite-img.gait-flyer,
+.sprite-flip-wrapper .entity-sprite-img.sprite-flying {
+  animation-name: flyBob;
+  animation-duration: 1.35s;
+}
+
+.sprite-flip-wrapper .entity-sprite-img.anim-walk {
+  animation: walkStep 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sprite-flip-wrapper .entity-sprite-img.anim-walk-back {
+  animation: walkStepBack 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sprite-flip-wrapper .gait-beast.anim-walk,
+.sprite-flip-wrapper .gait-critter.anim-walk,
+.sprite-flip-wrapper .gait-flyer.anim-walk,
+.sprite-flip-wrapper .sprite-flying.anim-walk,
+.sprite-flip-wrapper .gait-beast.anim-walk-back,
+.sprite-flip-wrapper .gait-critter.anim-walk-back,
+.sprite-flip-wrapper .gait-flyer.anim-walk-back,
+.sprite-flip-wrapper .sprite-flying.anim-walk-back {
+  animation: boundStep 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sprite-flip-wrapper .entity-sprite-img.anim-lunge {
+  animation: lungeStrike 380ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sprite-flip-wrapper .entity-sprite-img.anim-shoot {
+  animation: shootSnap 340ms ease-out;
+}
+
+.sprite-flip-wrapper .entity-sprite-img.anim-leap {
+  animation: leapArc 380ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sprite-flip-wrapper .entity-sprite-img.anim-hurt {
+  animation: hurtFlinch 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sprite-flip-wrapper .entity-sprite-img.anim-death {
+  animation: deathFall 640ms ease-in forwards;
+}
+
+.sprite-flip-wrapper .entity-sprite-img.hero-sprite.anim-death {
+  animation: heroDeath 640ms ease-in forwards;
+}
+
+.entity-animating-move,
+.entity-animating-attack {
+  z-index: 25 !important;
+  will-change: transform;
+}
+
+.floating-combat-text {
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 0.94rem;
+  padding: 2px 9px;
+  border-radius: 7px;
+  border: 2px solid var(--ink-dark);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.65), 2px 2px 0 #000;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: floatUpFade 920ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.floating-combat-text-fixed {
+  position: fixed;
+  z-index: 45;
+  top: auto;
+  left: auto;
+}
+
+.blood-fx-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 18;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.float-dmg {
+  background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+  color: #ffffff;
+  text-shadow: 0 1px 2px #000;
+}
+
+.float-heal {
+  background: linear-gradient(180deg, #84cc16 0%, #4d7c0f 100%);
+  color: #ffffff;
+  text-shadow: 0 1px 2px #000;
+}
+
+.float-warn {
+  background: linear-gradient(180deg, #fbbf24 0%, #d97706 100%);
+  color: #1e130c;
+}
+
+.float-info {
+  background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+  color: #0f172a;
+}
+
+.float-friendly {
+  background: linear-gradient(180deg, #a855f7 0%, #6b21a8 100%);
+  color: #fef08a;
+  font-size: 1rem;
+}
+
+.flying-projectile {
+  position: fixed;
+  z-index: 40;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.85rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(254, 240, 138, 0.95) 0%, rgba(220, 38, 38, 0.5) 60%, transparent 100%);
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.7));
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+
+.entity-sliding {
+  transition: transform var(--slide-duration, 260ms) cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform;
+  z-index: 15;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entity-sprite-img,
+  .sprite-flip-wrapper .entity-sprite-img,
+  .entity-sprite-img.anim-walk,
+  .entity-sprite-img.anim-walk-back,
+  .entity-sprite-img.anim-lunge,
+  .entity-sprite-img.anim-shoot,
+  .entity-sprite-img.anim-leap,
+  .entity-sprite-img.anim-hurt,
+  .entity-sprite-img.anim-death,
+  .floating-combat-text,
+  .flying-projectile,
+  .entity-sliding {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

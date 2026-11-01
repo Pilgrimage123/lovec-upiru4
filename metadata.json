@@ -1,0 +1,6 @@
+{
+  "name": "lovec upírů",
+  "description": "1D tahová taktická roguelite. Venca Česnekáč v boji proti hradním upírům a nočním stvůrám.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

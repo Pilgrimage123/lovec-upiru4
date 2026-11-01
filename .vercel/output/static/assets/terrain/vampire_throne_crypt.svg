@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 800" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="vtc-wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#080306"/>
+      <stop offset="45%" stop-color="#19060f"/>
+      <stop offset="85%" stop-color="#110309"/>
+      <stop offset="100%" stop-color="#050103"/>
+    </linearGradient>
+    <radialGradient id="vtc-rose-window" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffedd5" stop-opacity="1"/>
+      <stop offset="25%" stop-color="#ef4444" stop-opacity="0.85"/>
+      <stop offset="55%" stop-color="#7f1d1d" stop-opacity="0.45"/>
+      <stop offset="85%" stop-color="#450a0a" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#080306" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="vtc-carpet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7f1d1d"/>
+      <stop offset="100%" stop-color="#3b0707"/>
+    </linearGradient>
+    <linearGradient id="vtc-fog" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#19060f" stop-opacity="0"/>
+      <stop offset="60%" stop-color="#450a0a" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#050103" stop-opacity="0.95"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Crypt / Cathedral Wall -->
+  <rect width="1920" height="800" fill="url(#vtc-wall)"/>
+
+  <!-- High Gothic Ribbed Ceiling Arching -->
+  <path d="M0 60 Q960 -30 1920 60" stroke="#2a0a16" stroke-width="20" fill="none"/>
+  <path d="M400 620 L400 120 Q960 40 1520 120 L1520 620" stroke="#1d0610" stroke-width="32" fill="none"/>
+
+  <!-- Grand Blood-Moon Stained Glass Rose Window in Center -->
+  <circle cx="960" cy="220" r="190" fill="url(#vtc-rose-window)"/>
+  <!-- Outer Window Stone Tracery Frame -->
+  <circle cx="960" cy="220" r="140" fill="none" stroke="#100307" stroke-width="14"/>
+  <circle cx="960" cy="220" r="80" fill="none" stroke="#100307" stroke-width="8"/>
+  <circle cx="960" cy="220" r="28" fill="#fca5a5" stroke="#100307" stroke-width="6"/>
+
+  <!-- Radial Tracery Spokes & Gothic Petals -->
+  <g stroke="#100307" stroke-width="6" fill="none">
+    <line x1="960" y1="80" x2="960" y2="360"/>
+    <line x1="820" y1="220" x2="1100" y2="220"/>
+    <line x1="861" y1="121" x2="1059" y2="319"/>
+    <line x1="861" y1="319" x2="1059" y2="121"/>
+    <!-- Petal Arches -->
+    <circle cx="960" cy="140" r="24" fill="#dc2626" opacity="0.6"/>
+    <circle cx="960" cy="300" r="24" fill="#dc2626" opacity="0.6"/>
+    <circle cx="880" cy="220" r="24" fill="#dc2626" opacity="0.6"/>
+    <circle cx="1040" cy="220" r="24" fill="#dc2626" opacity="0.6"/>
+    <circle cx="903" cy="163" r="20" fill="#7e22ce" opacity="0.5"/>
+    <circle cx="1017" cy="163" r="20" fill="#7e22ce" opacity="0.5"/>
+    <circle cx="903" cy="277" r="20" fill="#7e22ce" opacity="0.5"/>
+    <circle cx="1017" cy="277" r="20" fill="#7e22ce" opacity="0.5"/>
+  </g>
+
+  <!-- Dracula's Elevated Bat-Winged Throne on Dais in Center -->
+  <g>
+    <!-- Stone Dais / Platform -->
+    <polygon points="760,540 1160,540 1200,600 720,600" fill="#14060c" stroke="#0a0206" stroke-width="4"/>
+    <polygon points="800,480 1120,480 1140,540 780,540" fill="#1b0910" stroke="#0a0206" stroke-width="4"/>
+    <!-- Crimson Runner Carpet Down Dais -->
+    <polygon points="890,480 1030,480 1050,650 870,650" fill="url(#vtc-carpet)" stroke="#991b1b" stroke-width="2"/>
+
+    <!-- High-backed Gothic Bat-Winged Throne -->
+    <!-- Bat Wing Finials at top -->
+    <path d="M880 340 Q840 250 880 200 Q920 230 920 280 L920 480 L1000 480 L1000 280 Q1000 230 1040 200 Q1080 250 1040 340 Z" fill="#0d0207" stroke="#3b0713" stroke-width="5"/>
+    <!-- Red Velvet Cushion back -->
+    <path d="M920 300 Q960 260 1000 300 L1000 440 L920 440 Z" fill="#881337" stroke="#4c0519" stroke-width="2"/>
+    <!-- Throne Seat Base & Armrests -->
+    <rect x="890" y="440" width="140" height="40" rx="4" fill="#14050d" stroke="#3b0713" stroke-width="4"/>
+    <!-- Carved Gargoyle / Lion Armrests -->
+    <circle cx="890" cy="430" r="12" fill="#3b0713"/>
+    <circle cx="1030" cy="430" r="12" fill="#3b0713"/>
+  </g>
+
+  <!-- Tall Gothic Cathedral Pillars with Carved Gargoyles on Flanks -->
+  <g fill="#170610" stroke="#090105" stroke-width="4">
+    <!-- Left Pillar -->
+    <rect x="180" y="60" width="100" height="560"/>
+    <polygon points="150,60 310,60 280,110 180,110"/>
+    <polygon points="180,570 280,570 310,620 150,620"/>
+    <!-- Gargoyle silhouette on left pillar -->
+    <path d="M280 180 Q340 160 350 200 Q320 220 280 210 Z" fill="#0c0207"/>
+
+    <!-- Right Pillar -->
+    <rect x="1640" y="60" width="100" height="560"/>
+    <polygon points="1610,60 1770,60 1740,110 1640,110"/>
+    <polygon points="1640,570 1740,570 1770,620 1610,620"/>
+    <!-- Gargoyle silhouette on right pillar -->
+    <path d="M1640 180 Q1580 160 1570 200 Q1600 220 1640 210 Z" fill="#0c0207"/>
+  </g>
+
+  <!-- Tall Church Candles on Stands -->
+  <g fill="#fef2f2">
+    <rect x="680" y="440" width="10" height="60"/>
+    <path d="M685 440 Q682 425 685 415 Q688 425 685 440 Z" fill="#ef4444"/>
+    <rect x="1230" y="440" width="10" height="60"/>
+    <path d="M1235 440 Q1232 425 1235 415 Q1238 425 1235 440 Z" fill="#ef4444"/>
+  </g>
+
+  <!-- Blood Mist Fog over Crypt Floor -->
+  <rect y="480" width="1920" height="320" fill="url(#vtc-fog)"/>
+</svg>

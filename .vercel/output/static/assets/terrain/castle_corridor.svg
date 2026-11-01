@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 800" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="cc-wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#18110b"/>
+      <stop offset="50%" stop-color="#2c1e15"/>
+      <stop offset="100%" stop-color="#140d09"/>
+    </linearGradient>
+    <radialGradient id="cc-torch-left" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fffbeb" stop-opacity="1"/>
+      <stop offset="25%" stop-color="#f59e0b" stop-opacity="0.85"/>
+      <stop offset="60%" stop-color="#b45309" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#18110b" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="cc-torch-right" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fffbeb" stop-opacity="1"/>
+      <stop offset="25%" stop-color="#f59e0b" stop-opacity="0.85"/>
+      <stop offset="60%" stop-color="#b45309" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#18110b" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="cc-fog" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#140d09" stop-opacity="0"/>
+      <stop offset="65%" stop-color="#140d09" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#0a0604" stop-opacity="0.95"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Base Stone Wall -->
+  <rect width="1920" height="800" fill="url(#cc-wall)"/>
+
+  <!-- Repeating Stone Brick Mortar Lines -->
+  <g stroke="#120c08" stroke-width="2.5" opacity="0.6">
+    <!-- Horizontal lines -->
+    <line x1="0" y1="120" x2="1920" y2="120"/>
+    <line x1="0" y1="190" x2="1920" y2="190"/>
+    <line x1="0" y1="260" x2="1920" y2="260"/>
+    <line x1="0" y1="330" x2="1920" y2="330"/>
+    <line x1="0" y1="400" x2="1920" y2="400"/>
+    <line x1="0" y1="470" x2="1920" y2="470"/>
+    <line x1="0" y1="540" x2="1920" y2="540"/>
+    <line x1="0" y1="610" x2="1920" y2="610"/>
+
+    <!-- Vertical staggered bricks -->
+    <line x1="180" y1="120" x2="180" y2="190"/>
+    <line x1="420" y1="120" x2="420" y2="190"/>
+    <line x1="680" y1="120" x2="680" y2="190"/>
+    <line x1="940" y1="120" x2="940" y2="190"/>
+    <line x1="1200" y1="120" x2="1200" y2="190"/>
+    <line x1="1480" y1="120" x2="1480" y2="190"/>
+    <line x1="1740" y1="120" x2="1740" y2="190"/>
+
+    <line x1="60" y1="190" x2="60" y2="260"/>
+    <line x1="300" y1="190" x2="300" y2="260"/>
+    <line x1="560" y1="190" x2="560" y2="260"/>
+    <line x1="820" y1="190" x2="820" y2="260"/>
+    <line x1="1080" y1="190" x2="1080" y2="260"/>
+    <line x1="1340" y1="190" x2="1340" y2="260"/>
+    <line x1="1600" y1="190" x2="1600" y2="260"/>
+    <line x1="1860" y1="190" x2="1860" y2="260"/>
+
+    <line x1="180" y1="260" x2="180" y2="330"/>
+    <line x1="420" y1="260" x2="420" y2="330"/>
+    <line x1="680" y1="260" x2="680" y2="330"/>
+    <line x1="940" y1="260" x2="940" y2="330"/>
+    <line x1="1200" y1="260" x2="1200" y2="330"/>
+    <line x1="1480" y1="260" x2="1480" y2="330"/>
+    <line x1="1740" y1="260" x2="1740" y2="330"/>
+
+    <line x1="60" y1="330" x2="60" y2="400"/>
+    <line x1="300" y1="330" x2="300" y2="400"/>
+    <line x1="560" y1="330" x2="560" y2="400"/>
+    <line x1="820" y1="330" x2="820" y2="400"/>
+    <line x1="1080" y1="330" x2="1080" y2="400"/>
+    <line x1="1340" y1="330" x2="1340" y2="400"/>
+    <line x1="1600" y1="330" x2="1600" y2="400"/>
+  </g>
+
+  <!-- Center Gothic Archway into Dark Passage -->
+  <g>
+    <!-- Recessed outer arch -->
+    <path d="M780 620 L780 340 Q960 180 1140 340 L1140 620 Z" fill="#0f0906" stroke="#25160e" stroke-width="8"/>
+    <!-- Deep dark inner corridor -->
+    <path d="M820 620 L820 360 Q960 220 1100 360 L1100 620 Z" fill="#070403"/>
+    <!-- Distant glowing torch at the end of tunnel -->
+    <circle cx="960" cy="420" r="14" fill="#f59e0b" opacity="0.6"/>
+    <circle cx="960" cy="420" r="5" fill="#fef08a"/>
+  </g>
+
+  <!-- Large Structural Columns / Vault Pilasters -->
+  <g fill="#1f140d" stroke="#0e0805" stroke-width="4">
+    <!-- Left Column -->
+    <rect x="220" y="80" width="80" height="540"/>
+    <polygon points="200,80 320,80 300,120 220,120"/>
+    <polygon points="220,580 300,580 320,620 200,620"/>
+    <!-- Right Column -->
+    <rect x="1620" y="80" width="80" height="540"/>
+    <polygon points="1600,80 1720,80 1700,120 1620,120"/>
+    <polygon points="1620,580 1700,580 1720,620 1600,620"/>
+  </g>
+
+  <!-- Vault Ribs overhead -->
+  <path d="M260 80 Q960 20 1660 80" fill="none" stroke="#2d1c12" stroke-width="16"/>
+  <path d="M260 80 Q960 20 1660 80" fill="none" stroke="#0e0805" stroke-width="4"/>
+
+  <!-- Left Wall Torch with Fiery Warm Glow -->
+  <circle cx="260" cy="300" r="180" fill="url(#cc-torch-left)"/>
+  <g>
+    <!-- Iron Sconce Mount -->
+    <path d="M260 320 L260 360 L245 390 L245 420" stroke="#0a0604" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <rect x="250" y="310" width="20" height="14" rx="2" fill="#0a0604"/>
+    <!-- Fire Flame -->
+    <path d="M255 310 Q250 280 260 260 Q270 280 265 310 Z" fill="#ef4444"/>
+    <path d="M257 310 Q254 290 260 270 Q266 290 263 310 Z" fill="#f59e0b"/>
+    <circle cx="260" cy="305" r="5" fill="#fef08a"/>
+  </g>
+
+  <!-- Right Wall Torch with Fiery Warm Glow -->
+  <circle cx="1660" cy="300" r="180" fill="url(#cc-torch-right)"/>
+  <g>
+    <!-- Iron Sconce Mount -->
+    <path d="M1660 320 L1660 360 L1675 390 L1675 420" stroke="#0a0604" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <rect x="1650" y="310" width="20" height="14" rx="2" fill="#0a0604"/>
+    <!-- Fire Flame -->
+    <path d="M1655 310 Q1650 280 1660 260 Q1670 280 1665 310 Z" fill="#ef4444"/>
+    <path d="M1657 310 Q1654 290 1660 270 Q1666 290 1663 310 Z" fill="#f59e0b"/>
+    <circle cx="1660" cy="305" r="5" fill="#fef08a"/>
+  </g>
+
+  <!-- Hanging Iron Chandelier in center -->
+  <g>
+    <line x1="960" y1="0" x2="960" y2="140" stroke="#0c0705" stroke-width="4"/>
+    <ellipse cx="960" cy="140" rx="90" ry="24" fill="none" stroke="#0c0705" stroke-width="6"/>
+    <!-- 3 small candle flames -->
+    <circle cx="890" cy="130" r="18" fill="url(#cc-torch-left)"/>
+    <path d="M888 132 Q886 122 890 114 Q894 122 892 132 Z" fill="#f59e0b"/>
+    <circle cx="960" cy="120" r="22" fill="url(#cc-torch-left)"/>
+    <path d="M958 122 Q956 112 960 102 Q964 112 962 122 Z" fill="#f59e0b"/>
+    <circle cx="1030" cy="130" r="18" fill="url(#cc-torch-left)"/>
+    <path d="M1028 132 Q1026 122 1030 114 Q1034 122 1032 132 Z" fill="#f59e0b"/>
+  </g>
+
+  <!-- Fog transition to bottom slabs -->
+  <rect y="480" width="1920" height="320" fill="url(#cc-fog)"/>
+</svg>

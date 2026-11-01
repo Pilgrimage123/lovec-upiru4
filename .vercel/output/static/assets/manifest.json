@@ -1,0 +1,890 @@
+{
+  "hero.idle": {
+    "src": "assets/characters/venca_idle.png",
+    "w": 1108,
+    "h": 1044,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Venca Česnekáč",
+    "preload": true,
+    "present": true
+  },
+  "hero.attack": {
+    "src": "assets/characters/venca_attack.png",
+    "w": 1108,
+    "h": 1044,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Venca (útok)",
+    "preload": true,
+    "present": true
+  },
+  "hero.hurt": {
+    "src": "assets/characters/venca_hurt.png",
+    "w": 1108,
+    "h": 1044,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Venca (zásah)",
+    "preload": true,
+    "present": true
+  },
+  "hero.dead": {
+    "src": "assets/characters/venca_dead.png",
+    "w": 1108,
+    "h": 1044,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Venca (padlý)",
+    "preload": true,
+    "present": true
+  },
+  "enemy.praktikant": {
+    "src": "assets/enemies/praktikant.png",
+    "w": 512,
+    "h": 512,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Praktikant Ignác",
+    "preload": true,
+    "present": false
+  },
+  "enemy.urednik": {
+    "src": "assets/enemies/urednik.png",
+    "w": 512,
+    "h": 512,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Kryptový písař Hubert",
+    "preload": true,
+    "present": false
+  },
+  "enemy.drab": {
+    "src": "assets/enemies/drab.png",
+    "w": 512,
+    "h": 512,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Drábová Božena",
+    "preload": true,
+    "present": true
+  },
+  "enemy.srpak": {
+    "src": "assets/enemies/srpak.png",
+    "w": 512,
+    "h": 472,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Srpový dráb Vendelín",
+    "preload": true,
+    "present": true
+  },
+  "enemy.kyjovec": {
+    "src": "assets/enemies/kyjovec.png",
+    "w": 431,
+    "h": 512,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Kyjový pacholek Břéťa",
+    "preload": true,
+    "present": true
+  },
+  "enemy.morak": {
+    "src": "assets/enemies/morak.png",
+    "w": 502,
+    "h": 512,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Morový sedlák Bohouš",
+    "preload": true,
+    "present": true
+  },
+  "enemy.vlkodav": {
+    "src": "assets/enemies/vlkodav.png",
+    "w": 512,
+    "h": 365,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Panský vlkodav Čeněk",
+    "preload": true,
+    "present": true
+  },
+  "enemy.halapartnik": {
+    "src": "assets/enemies/halapartnik.png",
+    "w": 409,
+    "h": 512,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Dvorní halapartník Šebestián",
+    "preload": true,
+    "present": true
+  },
+  "enemy.buldok": {
+    "src": "assets/enemies/buldok.png",
+    "w": 512,
+    "h": 429,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Dvorový buldok Punťa",
+    "preload": true,
+    "present": true
+  },
+  "enemy.kluk_kamen": {
+    "src": "assets/enemies/kluk_kamen.png",
+    "w": 340,
+    "h": 356,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Vesnický kluk Lojzíček",
+    "preload": true,
+    "present": true
+  },
+  "enemy.divocak": {
+    "src": "assets/enemies/divocak.png",
+    "w": 528,
+    "h": 343,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Řádící divočák Čuník",
+    "preload": true,
+    "present": true
+  },
+  "enemy.upirske_prase": {
+    "src": "assets/enemies/upirske_prase.png",
+    "w": 537,
+    "h": 333,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Upíří pašík Hroznata",
+    "preload": true,
+    "present": true
+  },
+  "enemy.sliz": {
+    "src": "assets/enemies/sliz.png",
+    "w": 595,
+    "h": 592,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Plísňový slizák Breberka",
+    "preload": true,
+    "present": true
+  },
+  "enemy.carodejnice": {
+    "src": "assets/enemies/carodejnice.png",
+    "w": 496,
+    "h": 453,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Ježibaba Bětuše",
+    "preload": true,
+    "present": true
+  },
+  "enemy.drevo": {
+    "src": "assets/enemies/drevo.png",
+    "w": 398,
+    "h": 538,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Dřevorubec Jáchym",
+    "preload": true,
+    "present": true
+  },
+  "enemy.sedlak_stit": {
+    "src": "assets/enemies/sedlak_stit.png",
+    "w": 400,
+    "h": 586,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Sedlák Vavřinec",
+    "preload": true,
+    "present": true
+  },
+  "enemy.hrabenka_amalie": {
+    "src": "assets/enemies/hrabenka_amalie.png",
+    "w": 384,
+    "h": 537,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Rokoková hraběnka Amálie",
+    "preload": true,
+    "present": true
+  },
+  "enemy.upirka_cilka": {
+    "src": "assets/enemies/upirka_cilka.png",
+    "w": 270,
+    "h": 469,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Upírka v cylindru Cilka",
+    "preload": true,
+    "present": true
+  },
+  "enemy.vrhac_nozu": {
+    "src": "assets/enemies/vrhac_nozu.png",
+    "w": 335,
+    "h": 456,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Vrhač nožů Tonda",
+    "preload": true,
+    "present": true
+  },
+  "enemy.prase_mutant": {
+    "src": "assets/enemies/prase_mutant.png",
+    "w": 719,
+    "h": 460,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Morové prase Řehoř",
+    "preload": true,
+    "present": true
+  },
+  "enemy.bazinny_sliz": {
+    "src": "assets/enemies/bazinny_sliz.png",
+    "w": 422,
+    "h": 640,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Bažinná slizka Žbluňka",
+    "preload": true,
+    "present": true
+  },
+  "enemy.upiri_trpaslik": {
+    "src": "assets/enemies/upiri_trpaslik.png",
+    "w": 379,
+    "h": 560,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Upíří trpaslík Šmudla",
+    "preload": true,
+    "present": true
+  },
+  "enemy.rytir_prizrak": {
+    "src": "assets/enemies/rytir_prizrak.png",
+    "w": 426,
+    "h": 640,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Přízračný rytíř Heřman",
+    "preload": true,
+    "present": true
+  },
+  "enemy.zombie_hynek": {
+    "src": "assets/enemies/zombie_hynek.png",
+    "w": 911,
+    "h": 1691,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Oživlý nebožtík Hynek",
+    "preload": true,
+    "present": true
+  },
+  "enemy.kostlivec_fabian": {
+    "src": "assets/enemies/kostlivec_fabian.png",
+    "w": 1106,
+    "h": 1688,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Hřbitovní kostlivec Fabián",
+    "preload": true,
+    "present": true
+  },
+  "enemy.krysa_piskota": {
+    "src": "assets/enemies/krysa_piskota.png",
+    "w": 1104,
+    "h": 1662,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Sklepní krysa Piškota",
+    "preload": true,
+    "present": true
+  },
+  "enemy.morovy_felcar": {
+    "src": "assets/enemies/morovy_felcar.png",
+    "w": 1055,
+    "h": 1691,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Morový felčar Kilián",
+    "preload": true,
+    "present": true
+  },
+  "enemy.vratny_stit": {
+    "src": "assets/enemies/vratny_stit.png",
+    "w": 512,
+    "h": 512,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Vrátný Lojza",
+    "preload": true,
+    "present": false
+  },
+  "enemy.netopyr": {
+    "src": "assets/enemies/netopyr.png",
+    "w": 512,
+    "h": 425,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Netopýr Pepík",
+    "preload": true,
+    "present": true
+  },
+  "enemy.ucetni_buffer": {
+    "src": "assets/enemies/ucetni_buffer.png",
+    "w": 512,
+    "h": 512,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Klíčnice Květuše",
+    "preload": true,
+    "present": true
+  },
+  "boss.arcikniaze_sosak": {
+    "src": "assets/bosses/arcikniaze_sosak.png",
+    "w": 336,
+    "h": 512,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Arcikníže von Sosák",
+    "preload": true,
+    "present": true
+  },
+  "boss.hrabenka_dagmar": {
+    "src": "assets/bosses/hrabenka_dagmar.png",
+    "w": 366,
+    "h": 512,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Hraběnka Dagmar",
+    "preload": true,
+    "present": true
+  },
+  "boss.drakula_generalni_reditel": {
+    "src": "assets/bosses/drakula_generalni_reditel.png",
+    "w": 510,
+    "h": 512,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Ředitel Drákula",
+    "preload": true,
+    "present": true
+  },
+  "tile.oak_stake": {
+    "src": "assets/tiles/oak_stake.png",
+    "w": 256,
+    "h": 256,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Dubový kolík",
+    "preload": false,
+    "present": false
+  },
+  "tile.garlic_belch": {
+    "src": "assets/tiles/garlic_belch.png",
+    "w": 256,
+    "h": 256,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Česnekový pšouk",
+    "preload": false,
+    "present": false
+  },
+  "tile.holy_syringe": {
+    "src": "assets/tiles/holy_syringe.png",
+    "w": 256,
+    "h": 256,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Stříkačka",
+    "preload": false,
+    "present": false
+  },
+  "tile.belly_vault": {
+    "src": "assets/tiles/belly_vault.png",
+    "w": 256,
+    "h": 256,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Přemet přes pupík",
+    "preload": false,
+    "present": false
+  },
+  "tile.rosary_slap": {
+    "src": "assets/tiles/rosary_slap.png",
+    "w": 256,
+    "h": 256,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Facka růžencem",
+    "preload": false,
+    "present": false
+  },
+  "tile.funeral_hook": {
+    "src": "assets/tiles/funeral_hook.png",
+    "w": 256,
+    "h": 256,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Pohřební hák",
+    "preload": false,
+    "present": false
+  },
+  "tile.manhole_shield": {
+    "src": "assets/tiles/manhole_shield.png",
+    "w": 256,
+    "h": 256,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Štít z poklopu",
+    "preload": false,
+    "present": false
+  },
+  "tile.sacristy_bell": {
+    "src": "assets/tiles/sacristy_bell.png",
+    "w": 256,
+    "h": 256,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Kostelní zvonec",
+    "preload": false,
+    "present": false
+  },
+  "tile.wood_axe": {
+    "src": "assets/tiles/wood_axe.png",
+    "w": 256,
+    "h": 256,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Sekera na polena",
+    "preload": false,
+    "present": false
+  },
+  "tile.plank_stomp": {
+    "src": "assets/tiles/plank_stomp.png",
+    "w": 256,
+    "h": 256,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Dupnutí na prkno",
+    "preload": false,
+    "present": false
+  },
+  "tile.funeral_shroud": {
+    "src": "assets/tiles/funeral_shroud.png",
+    "w": 256,
+    "h": 256,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Pohřební plachta",
+    "preload": false,
+    "present": false
+  },
+  "tile.silver_crucifix_beam": {
+    "src": "assets/tiles/silver_crucifix_beam.png",
+    "w": 256,
+    "h": 256,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Blesk krucifixu",
+    "preload": false,
+    "present": false
+  },
+  "intent.step": {
+    "src": "assets/intents/krok.png",
+    "w": 128,
+    "h": 128,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Krok",
+    "preload": false,
+    "present": false
+  },
+  "intent.strike": {
+    "src": "assets/intents/uder.png",
+    "w": 128,
+    "h": 128,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Úder",
+    "preload": false,
+    "present": false
+  },
+  "intent.shoot": {
+    "src": "assets/intents/strela.png",
+    "w": 128,
+    "h": 128,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Střela",
+    "preload": false,
+    "present": false
+  },
+  "intent.windup": {
+    "src": "assets/intents/naprah.png",
+    "w": 128,
+    "h": 128,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Nápřah",
+    "preload": false,
+    "present": false
+  },
+  "intent.shield": {
+    "src": "assets/intents/stit.png",
+    "w": 128,
+    "h": 128,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Štít",
+    "preload": false,
+    "present": false
+  },
+  "intent.heal": {
+    "src": "assets/intents/leceni.png",
+    "w": 128,
+    "h": 128,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Léčení",
+    "preload": false,
+    "present": false
+  },
+  "intent.summon": {
+    "src": "assets/intents/privolani.png",
+    "w": 128,
+    "h": 128,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Přivolání",
+    "preload": false,
+    "present": false
+  },
+  "intent.turn": {
+    "src": "assets/intents/otoceni.png",
+    "w": 128,
+    "h": 128,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Otočení",
+    "preload": false,
+    "present": false
+  },
+  "terrain.stone": {
+    "src": "assets/terrain/dlazdice_kamen.png",
+    "w": 256,
+    "h": 256,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Kámen",
+    "preload": false,
+    "present": false
+  },
+  "terrain.barrel": {
+    "src": "assets/terrain/sud_zeli.png",
+    "w": 512,
+    "h": 479,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Sud se zelím",
+    "preload": true,
+    "present": true
+  },
+  "terrain.plank_intact": {
+    "src": "assets/terrain/prkno_cele.png",
+    "w": 256,
+    "h": 128,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Prkno",
+    "preload": false,
+    "present": false
+  },
+  "terrain.plank_cracked": {
+    "src": "assets/terrain/prkno_praskle.png",
+    "w": 256,
+    "h": 128,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Prasklé prkno",
+    "preload": false,
+    "present": false
+  },
+  "terrain.pit": {
+    "src": "assets/terrain/propast.png",
+    "w": 256,
+    "h": 128,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Propast",
+    "preload": false,
+    "present": false
+  },
+  "terrain.spikes": {
+    "src": "assets/terrain/kuly.png",
+    "w": 256,
+    "h": 128,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Kůly",
+    "preload": false,
+    "present": false
+  },
+  "terrain.garlic_cloud": {
+    "src": "assets/terrain/cesnekovy_oblak.png",
+    "w": 256,
+    "h": 256,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Česnekový oblak",
+    "preload": false,
+    "present": false
+  },
+  "terrain.gate": {
+    "src": "assets/terrain/brana.png",
+    "w": 256,
+    "h": 384,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Brána",
+    "preload": false,
+    "present": false
+  },
+  "map.battle": {
+    "src": "assets/map/bitva.png",
+    "w": 128,
+    "h": 128,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Bitva",
+    "preload": false,
+    "present": false
+  },
+  "map.elite": {
+    "src": "assets/map/elita.png",
+    "w": 128,
+    "h": 128,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Elita",
+    "preload": false,
+    "present": false
+  },
+  "map.pub": {
+    "src": "assets/map/hospoda.png",
+    "w": 128,
+    "h": 128,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Hospoda",
+    "preload": false,
+    "present": false
+  },
+  "map.workshop": {
+    "src": "assets/map/dilna.png",
+    "w": 128,
+    "h": 128,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Dílna",
+    "preload": false,
+    "present": false
+  },
+  "map.event": {
+    "src": "assets/map/udalost.png",
+    "w": 128,
+    "h": 128,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Událost",
+    "preload": false,
+    "present": false
+  },
+  "map.treasure": {
+    "src": "assets/map/poklad.png",
+    "w": 128,
+    "h": 128,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Poklad",
+    "preload": false,
+    "present": false
+  },
+  "map.boss": {
+    "src": "assets/map/boss.png",
+    "w": 128,
+    "h": 128,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Boss",
+    "preload": false,
+    "present": false
+  },
+  "scene.naves_yard": {
+    "src": "assets/terrain/naves-yard.jpg",
+    "w": 1920,
+    "h": 1072,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Dvůr předhradí",
+    "preload": false,
+    "present": true
+  },
+  "scene.naves_dvur": {
+    "src": "assets/terrain/naves-dvur.jpg",
+    "w": 1500,
+    "h": 642,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "label": "Hradní náves",
+    "preload": false,
+    "present": true
+  }
+}

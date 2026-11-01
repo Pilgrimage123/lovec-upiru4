@@ -1,0 +1,1239 @@
+// @ts-nocheck
+export const ENEMY_TILES = {
+  step_toward: {
+    id: 'step_toward',
+    name: 'Šouravý krok',
+    icon: 'intent.step',
+    type: 'krok',
+    delay: 1,
+    cooldown: 1,
+    pattern: [],
+    description: 'Otočí se k Vencovi a popojde o 1 pole směrem k němu (je-li volno).'
+  },
+  turn_toward: {
+    id: 'turn_toward',
+    name: 'Bystré otočení',
+    icon: 'intent.turn',
+    type: 'otočení',
+    delay: 1,
+    cooldown: 1,
+    pattern: [],
+    description: 'Otočí se čelem k Vencovi.'
+  },
+  intern_bite: {
+    id: 'intern_bite',
+    name: 'Nešikovné kousnutí',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 2,
+    cooldown: 2,
+    pattern: [{ offset: 1, dmg: 2, effects: [] }],
+    description: 'Kousne do pole přímo před sebou za 2 DMG.'
+  },
+  tax_stamp_shot: {
+    id: 'tax_stamp_shot',
+    name: 'Krvavý svitek',
+    icon: 'intent.shoot',
+    type: 'střela',
+    delay: 3,
+    cooldown: 3,
+    projectileRange: 3,
+    pattern: [
+      { offset: 1, dmg: 2, projectile: true, effects: [] },
+      { offset: 2, dmg: 2, projectile: true, effects: [] },
+      { offset: 3, dmg: 2, projectile: true, effects: [] }
+    ],
+    description: 'Vystřelí kletbu temného svitku až o 3 pole vpřed (2 DMG prvnímu cíli v dráze).'
+  },
+  retreat_step: {
+    id: 'retreat_step',
+    name: 'Opatrný ústup',
+    icon: 'intent.step',
+    type: 'krok',
+    retreatIfClose: true,
+    delay: 1,
+    cooldown: 1,
+    pattern: [],
+    description: 'Drží si odstup od Venci nebo popojde do palebné pozice.'
+  },
+  windup_roar: {
+    id: 'windup_roar',
+    name: 'Těžký nápřah',
+    icon: 'intent.windup',
+    type: 'nápřah',
+    delay: 1,
+    cooldown: 2,
+    selfEffect: { type: 'empower', amount: 1 },
+    pattern: [],
+    description: 'Napne svaly (+2 DMG k příštímu úderu ve frontě).'
+  },
+  drab_lunge: {
+    id: 'drab_lunge',
+    name: 'Drábův výpad',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 3,
+    cooldown: 3,
+    lungeForward: 1,
+    pattern: [{ offset: 1, dmg: 4, effects: [{ type: 'push', distance: 1 }] }],
+    description: 'Popaskočí o 1 pole vpřed (je-li volno) a sekne před sebe za 4 DMG + odhození o 1 pole.'
+  },
+  cleaver_chop: {
+    id: 'cleaver_chop',
+    name: 'Sekáčkem do kotlety',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 2,
+    cooldown: 2,
+    pattern: [{ offset: 1, dmg: 4, effects: [{ type: 'bleed', amount: 2 }] }],
+    description: 'Sekne řeznickým sekáčkem 1 pole vpřed za 4 DMG + Krvácení.'
+  },
+  porter_bash: {
+    id: 'porter_bash',
+    name: 'Šťouchanec závorou',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 2,
+    cooldown: 2,
+    pattern: [{ offset: 1, dmg: 2, effects: [{ type: 'push', distance: 2 }] }],
+    description: 'Udeří štítem 1 pole vpřed za 2 DMG a odhodí cíl o 2 pole.'
+  },
+  porter_guard: {
+    id: 'porter_guard',
+    name: 'Zavřená vrátnice',
+    icon: 'intent.shield',
+    type: 'štít',
+    delay: 2,
+    cooldown: 2,
+    selfEffect: { type: 'shield', amount: 2 },
+    pattern: [],
+    description: 'Zapře se za štít (+2 Štít).'
+  },
+  bat_swoop: {
+    id: 'bat_swoop',
+    name: 'Prudký nálet',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 1,
+    cooldown: 1,
+    pattern: [
+      { offset: 1, dmg: 2, effects: [] },
+      { offset: 2, dmg: 2, effects: [] }
+    ],
+    description: 'Rychlý přelet nad 2 poli vpřed za 2 DMG.'
+  },
+  accountant_buff: {
+    id: 'accountant_buff',
+    name: 'Temné povzbuzení krve',
+    icon: 'intent.heal',
+    type: 'léčení',
+    delay: 2,
+    cooldown: 3,
+    supportAllies: true,
+    healAmount: 4,
+    empowerAmount: 1,
+    pattern: [],
+    description: 'Vyléčí nejbližšího spojence o 4 HP a přidá mu Zesílení (+2 DMG).'
+  },
+  accountant_curse: {
+    id: 'accountant_curse',
+    name: 'Prokletí prastarého svitku',
+    icon: 'intent.shoot',
+    type: 'střela',
+    delay: 3,
+    cooldown: 3,
+    projectileRange: 4,
+    pattern: [
+      { offset: 1, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+      { offset: 2, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+      { offset: 3, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+      { offset: 4, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] }
+    ],
+    description: 'Vrhne temný pergamen na dosah 4 polí za 2 DMG + Zmatení.'
+  },
+  boss_sosak_drain: {
+    id: 'boss_sosak_drain',
+    name: 'Aristokratické sosání',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 2,
+    cooldown: 2,
+    lifesteal: 1,
+    pattern: [
+      { offset: 1, dmg: 4, effects: [] },
+      { offset: 2, dmg: 4, effects: [] }
+    ],
+    description: 'Švihne kordem na 2 pole vpřed za 4 DMG a vyléčí si 1 HP.'
+  },
+  boss_sosak_summon: {
+    id: 'boss_sosak_summon',
+    name: 'Písknutí na kurýra',
+    icon: 'intent.summon',
+    type: 'přivolání',
+    delay: 3,
+    cooldown: 3,
+    summonEnemyId: 'netopyr',
+    pattern: [],
+    description: 'Přivolá Netopýra-kurýra na nejbližší volnou bránu.'
+  },
+  boss_dagmar_hex: {
+    id: 'boss_dagmar_hex',
+    name: 'Krvavá krajková kletba',
+    icon: 'intent.shoot',
+    type: 'střela',
+    delay: 2,
+    cooldown: 2,
+    pattern: [
+      { offset: 1, dmg: 4, effects: [{ type: 'bleed', amount: 2 }] },
+      { offset: 2, dmg: 4, effects: [{ type: 'bleed', amount: 2 }] },
+      { offset: 3, dmg: 4, effects: [{ type: 'bleed', amount: 2 }] }
+    ],
+    description: 'Temná vlna na 3 pole vpřed za 4 DMG + Krvácení.'
+  },
+  boss_dagmar_thorns: {
+    id: 'boss_dagmar_thorns',
+    name: 'Růže z hrobky',
+    icon: 'intent.summon',
+    type: 'přivolání',
+    delay: 3,
+    cooldown: 3,
+    spawnSpikesAtHero: true,
+    pattern: [
+      { offset: 1, dmg: 2, effects: [{ type: 'push', distance: 2 }] },
+      { offset: -1, dmg: 2, effects: [{ type: 'push', distance: 2 }] }
+    ],
+    description: 'Odhodí sousedy na obou stranách za 2 DMG (Push 2) a nechá vyrazit kůly pod Vencou.'
+  },
+  boss_dracula_strike: {
+    id: 'boss_dracula_strike',
+    name: 'Temný ortel noci',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 2,
+    cooldown: 2,
+    pattern: [
+      { offset: 1, dmg: 6, effects: [{ type: 'push', distance: 1 }] },
+      { offset: 2, dmg: 6, effects: [{ type: 'push', distance: 1 }] }
+    ],
+    description: 'Drtivý úder na 2 pole vpřed za 6 DMG + Push 1.'
+  },
+  boss_dracula_curse: {
+    id: 'boss_dracula_curse',
+    name: 'Kletba prastarého rodu',
+    icon: 'intent.shoot',
+    type: 'střela',
+    delay: 3,
+    cooldown: 3,
+    projectileRange: 5,
+    pattern: [
+      { offset: 1, dmg: 4, projectile: true, effects: [{ type: 'stun', amount: 1 }] },
+      { offset: 2, dmg: 4, projectile: true, effects: [{ type: 'stun', amount: 1 }] },
+      { offset: 3, dmg: 4, projectile: true, effects: [{ type: 'stun', amount: 1 }] },
+      { offset: 4, dmg: 4, projectile: true, effects: [{ type: 'stun', amount: 1 }] },
+      { offset: 5, dmg: 4, projectile: true, effects: [{ type: 'stun', amount: 1 }] }
+    ],
+    description: 'Střela přes 5 polí za 4 DMG prvnímu cíli v dráze a omráčí ho.'
+  },
+  sickle_cut: {
+    id: 'sickle_cut',
+    name: 'Dvojitý srp',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 2,
+    cooldown: 2,
+    pattern: [{ offset: 1, dmg: 4, effects: [{ type: 'bleed', amount: 1 }] }],
+    description: 'Sekne rezavým srpem 1 pole vpřed za 4 DMG a drobné krvácení.'
+  },
+  club_smash: {
+    id: 'club_smash',
+    name: 'Kyj do huby',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 3,
+    cooldown: 3,
+    pattern: [{ offset: 1, dmg: 6, effects: [{ type: 'push', distance: 1 }] }],
+    description: 'Po nápřahu třískne kyjem 1 pole vpřed za 6 DMG a odhodí cíl o 1 pole.'
+  },
+  plague_spit: {
+    id: 'plague_spit',
+    name: 'Morový plivanec',
+    icon: 'intent.shoot',
+    type: 'střela',
+    delay: 2,
+    cooldown: 2,
+    projectileRange: 3,
+    pattern: [
+      { offset: 1, dmg: 2, projectile: true, effects: [{ type: 'bleed', amount: 1 }] },
+      { offset: 2, dmg: 2, projectile: true, effects: [{ type: 'bleed', amount: 1 }] },
+      { offset: 3, dmg: 2, projectile: true, effects: [{ type: 'bleed', amount: 1 }] }
+    ],
+    description: 'Plivne zelenou slinu až 3 pole daleko za 2 DMG a krvácení.'
+  },
+  hound_pounce: {
+    id: 'hound_pounce',
+    name: 'Skok na krk',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 2,
+    cooldown: 2,
+    lungeForward: 2,
+    pattern: [{ offset: 1, dmg: 4, effects: [{ type: 'bleed', amount: 1 }] }],
+    description: 'Skočí až o 2 pole vpřed (je-li volno) a kousne za 4 DMG + krvácení.'
+  },
+  halberd_thrust: {
+    id: 'halberd_thrust',
+    name: 'Halapartna',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 3,
+    cooldown: 3,
+    pattern: [
+      { offset: 1, dmg: 4, effects: [] },
+      { offset: 2, dmg: 4, effects: [{ type: 'push', distance: 1 }] }
+    ],
+    description: 'Bodne halapartnou na 1. a 2. pole vpřed za 4 DMG. Vzdálenější cíl odhodí o 1 pole.'
+  },
+  bulldog_bite: {
+    id: 'bulldog_bite',
+    name: 'Zakousnutí',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 2,
+    cooldown: 2,
+    pattern: [{ offset: 1, dmg: 4, effects: [{ type: 'bleed', amount: 1 }] }],
+    description: 'Zakousne se 1 pole vpřed za 4 DMG a nepustí se tak snadno (krvácení).'
+  },
+  stone_chuck: {
+    id: 'stone_chuck',
+    name: 'Kamenem do kebule',
+    icon: 'intent.shoot',
+    type: 'střela',
+    delay: 2,
+    cooldown: 2,
+    projectileRange: 3,
+    pattern: [
+      { offset: 1, dmg: 2, projectile: true, effects: [] },
+      { offset: 2, dmg: 2, projectile: true, effects: [] },
+      { offset: 3, dmg: 2, projectile: true, effects: [] }
+    ],
+    description: 'Hodí kámen až 3 pole daleko za 2 DMG.'
+  },
+  boar_charge: {
+    id: 'boar_charge',
+    name: 'Kančí nájezd',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 2,
+    cooldown: 2,
+    lungeForward: 2,
+    pattern: [{ offset: 1, dmg: 4, effects: [{ type: 'push', distance: 1 }] }],
+    description: 'Rozběhne se až o 2 pole a vrazí do cíle za 4 DMG + odhození.'
+  },
+  vampig_bite: {
+    id: 'vampig_bite',
+    name: 'Upíří rypák',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 2,
+    cooldown: 2,
+    lifesteal: 1,
+    pattern: [{ offset: 1, dmg: 4, effects: [{ type: 'bleed', amount: 1 }] }],
+    description: 'Kousne 1 pole vpřed za 4 DMG, způsobí krvácení a vysaje si 1 HP.'
+  },
+  slime_slap: {
+    id: 'slime_slap',
+    name: 'Plísňová plesk',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 2,
+    cooldown: 2,
+    pattern: [{ offset: 1, dmg: 4, effects: [{ type: 'bleed', amount: 1 }] }],
+    description: 'Pleskne slizem 1 pole vpřed za 4 DMG a krvácení.'
+  },
+  slime_spit: {
+    id: 'slime_spit',
+    name: 'Výstřik plísně',
+    icon: 'intent.shoot',
+    type: 'střela',
+    delay: 2,
+    cooldown: 2,
+    projectileRange: 3,
+    pattern: [
+      { offset: 1, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+      { offset: 2, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+      { offset: 3, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] }
+    ],
+    description: 'Plivne spory až 3 pole daleko za 2 DMG a zmatení.'
+  },
+  witch_claw: {
+    id: 'witch_claw',
+    name: 'Pařát ježibaby',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 2,
+    cooldown: 2,
+    pattern: [
+      { offset: 1, dmg: 4, effects: [] },
+      { offset: 2, dmg: 2, effects: [{ type: 'bleed', amount: 1 }] }
+    ],
+    description: 'Sekne pařátem na 1. pole za 4 DMG a na 2. pole za 2 DMG + krvácení.'
+  },
+  witch_hex: {
+    id: 'witch_hex',
+    name: 'Sliněná kletba',
+    icon: 'intent.shoot',
+    type: 'střela',
+    delay: 3,
+    cooldown: 3,
+    projectileRange: 4,
+    pattern: [
+      { offset: 1, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+      { offset: 2, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+      { offset: 3, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+      { offset: 4, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] }
+    ],
+    description: 'Pošle kletbu až na 4 pole za 2 DMG a zmatení.'
+  },
+  axe_chop: {
+    id: 'axe_chop',
+    name: 'Rezavá sekyra',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 3,
+    cooldown: 3,
+    pattern: [{ offset: 1, dmg: 6, effects: [{ type: 'bleed', amount: 2 }] }],
+    description: 'Po nápřahu sekne rezavou sekerou za 6 DMG a silné krvácení.'
+  },
+  plank_bash: {
+    id: 'plank_bash',
+    name: 'Fošnou do zubů',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 2,
+    cooldown: 2,
+    pattern: [{ offset: 1, dmg: 2, effects: [{ type: 'push', distance: 2 }] }],
+    description: 'Vrazí dřevěným štítem za 2 DMG a odhodí cíl o 2 pole.'
+  },
+  plank_guard: {
+    id: 'plank_guard',
+    name: 'Zapřená fošna',
+    icon: 'intent.shield',
+    type: 'štít',
+    delay: 2,
+    cooldown: 2,
+    selfEffect: { type: 'shield', amount: 2 },
+    pattern: [],
+    description: 'Schová se za fošnu a získá +2 Štít.'
+  },
+  rococo_claw: {
+    id: 'rococo_claw',
+    name: 'Krajkový drap',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 2,
+    cooldown: 2,
+    lifesteal: 1,
+    pattern: [{ offset: 1, dmg: 4, effects: [{ type: 'bleed', amount: 1 }] }],
+    description: 'Drapne krajkou 1 pole vpřed za 4 DMG, krvácení a vysaje si 1 HP.'
+  },
+  rococo_laugh: {
+    id: 'rococo_laugh',
+    name: 'Salónní smích',
+    icon: 'intent.shoot',
+    type: 'střela',
+    delay: 3,
+    cooldown: 3,
+    projectileRange: 3,
+    pattern: [
+      { offset: 1, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+      { offset: 2, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+      { offset: 3, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] }
+    ],
+    description: 'Vysmívá se až na 3 pole za 2 DMG a zmatení.'
+  },
+  cylinder_bite: {
+    id: 'cylinder_bite',
+    name: 'Kousnutí z cylindru',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 2,
+    cooldown: 2,
+    lifesteal: 1,
+    pattern: [{ offset: 1, dmg: 4, effects: [] }],
+    description: 'Kousne 1 pole vpřed za 4 DMG a vysaje si 1 HP.'
+  },
+  knife_fling: {
+    id: 'knife_fling',
+    name: 'Nůž do zad',
+    icon: 'intent.shoot',
+    type: 'střela',
+    delay: 2,
+    cooldown: 2,
+    projectileRange: 3,
+    pattern: [
+      { offset: 1, dmg: 2, projectile: true, effects: [{ type: 'bleed', amount: 1 }] },
+      { offset: 2, dmg: 2, projectile: true, effects: [{ type: 'bleed', amount: 1 }] },
+      { offset: 3, dmg: 2, projectile: true, effects: [{ type: 'bleed', amount: 1 }] }
+    ],
+    description: 'Hodí nůž až 3 pole daleko za 2 DMG a krvácení.'
+  },
+  pustule_gore: {
+    id: 'pustule_gore',
+    name: 'Vředový náraz',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 2,
+    cooldown: 2,
+    lungeForward: 1,
+    pattern: [{ offset: 1, dmg: 4, effects: [{ type: 'bleed', amount: 1 }] }],
+    description: 'Přivalí se o pole blíž a roztrhne vřed za 4 DMG a krvácení.'
+  },
+  hnis_spit: {
+    id: 'hnis_spit',
+    name: 'Chrchel hnisu',
+    icon: 'intent.shoot',
+    type: 'střela',
+    delay: 2,
+    cooldown: 2,
+    projectileRange: 3,
+    pattern: [
+      { offset: 1, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+      { offset: 2, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+      { offset: 3, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] }
+    ],
+    description: 'Plivne hnis až na 3 pole za 2 DMG a zmatení.'
+  },
+  leaf_hug: {
+    id: 'leaf_hug',
+    name: 'Listové obejmutí',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 2,
+    cooldown: 2,
+    pattern: [{ offset: 1, dmg: 2, effects: [{ type: 'confusion', amount: 1 }] }],
+    description: 'Obalí cíl listím na 1 poli za 2 DMG a zmatení.'
+  },
+  bog_shell: {
+    id: 'bog_shell',
+    name: 'Ztuhlá břečka',
+    icon: 'intent.shield',
+    type: 'štít',
+    delay: 2,
+    cooldown: 2,
+    selfEffect: { type: 'shield', amount: 2 },
+    pattern: [],
+    description: 'Stáhne se do slizu a získá +2 Štít.'
+  },
+  gnome_rake: {
+    id: 'gnome_rake',
+    name: 'Drápy zpod čepice',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 2,
+    cooldown: 2,
+    lifesteal: 1,
+    pattern: [{ offset: 1, dmg: 4, effects: [{ type: 'bleed', amount: 1 }] }],
+    description: 'Rozdrásá 1 pole vpřed za 4 DMG, krvácení a vysaje si 1 HP.'
+  },
+  night_bite: {
+    id: 'night_bite',
+    name: 'Kousnutí ze spaní',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 2,
+    cooldown: 2,
+    lifesteal: 1,
+    pattern: [{ offset: 1, dmg: 2, effects: [] }],
+    description: 'Kousne potichu za 2 DMG a vysaje si 1 HP.'
+  },
+  flail_arc: {
+    id: 'flail_arc',
+    name: 'Řemdih na řetězu',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 3,
+    cooldown: 3,
+    pattern: [
+      { offset: 1, dmg: 4, effects: [{ type: 'push', distance: 1 }] },
+      { offset: 2, dmg: 2, effects: [] }
+    ],
+    description: 'Švihne řemdihem na 1. pole za 4 DMG a odhození, na 2. pole za 2 DMG.'
+  },
+  ghost_breath: {
+    id: 'ghost_breath',
+    name: 'Dech přízraku',
+    icon: 'intent.shoot',
+    type: 'střela',
+    delay: 2,
+    cooldown: 2,
+    projectileRange: 3,
+    pattern: [
+      { offset: 1, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+      { offset: 2, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+      { offset: 3, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] }
+    ],
+    description: 'Z přilby vydechne zelený přízrak až na 3 pole za 2 DMG a zmatení.'
+  },
+  grave_clutch: {
+    id: 'grave_clutch',
+    name: 'Hrobové sevření',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 2,
+    cooldown: 2,
+    pattern: [{ offset: 1, dmg: 4, effects: [{ type: 'bleed', amount: 1 }] }],
+    description: 'Sevře pole před sebou za 4 DMG a krvácení.'
+  },
+  dead_shove: {
+    id: 'dead_shove',
+    name: 'Mrtvá váha',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 2,
+    cooldown: 2,
+    pattern: [{ offset: 1, dmg: 2, effects: [{ type: 'push', distance: 1 }] }],
+    description: 'Narazí do pole před sebou za 2 DMG a odhození.'
+  },
+  bone_chuck: {
+    id: 'bone_chuck',
+    name: 'Žebro do čela',
+    icon: 'intent.shoot',
+    type: 'střela',
+    delay: 2,
+    cooldown: 3,
+    projectileRange: 3,
+    pattern: [
+      { offset: 1, dmg: 4, projectile: true, effects: [] },
+      { offset: 2, dmg: 4, projectile: true, effects: [] },
+      { offset: 3, dmg: 4, projectile: true, effects: [] }
+    ],
+    description: 'Hodí žebro až 3 pole daleko za 4 DMG.'
+  },
+  shovel_smack: {
+    id: 'shovel_smack',
+    name: 'Lopatou po hřbetu',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 2,
+    cooldown: 2,
+    pattern: [{ offset: 1, dmg: 4, effects: [] }],
+    description: 'Praští lopatou 1 pole vpřed za 4 DMG.'
+  },
+  rat_gnaw: {
+    id: 'rat_gnaw',
+    name: 'Sklepní hryz',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 1,
+    cooldown: 1,
+    lungeForward: 1,
+    pattern: [{ offset: 1, dmg: 2, effects: [{ type: 'bleed', amount: 1 }] }],
+    description: 'Přiskočí o pole a hryzne za 2 DMG a krvácení.'
+  },
+  miasma_waft: {
+    id: 'miasma_waft',
+    name: 'Zobákový mor',
+    icon: 'intent.shoot',
+    type: 'střela',
+    delay: 2,
+    cooldown: 2,
+    projectileRange: 3,
+    pattern: [
+      { offset: 1, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+      { offset: 2, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+      { offset: 3, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] }
+    ],
+    description: 'Vypustí ze zobáku zelený mor až na 3 pole za 2 DMG a zmatení.'
+  },
+  cane_poke: {
+    id: 'cane_poke',
+    name: 'Hůlkou do žeber',
+    icon: 'intent.strike',
+    type: 'úder',
+    delay: 2,
+    cooldown: 2,
+    pattern: [{ offset: 1, dmg: 2, effects: [{ type: 'bleed', amount: 1 }] }],
+    description: 'Šťouchne holí 1 pole vpřed za 2 DMG a krvácení.'
+  }
+};
+
+export const ENEMIES = {
+  praktikant: {
+    id: 'praktikant',
+    name: 'Upír-praktikant Ignác',
+    givenName: 'Ignác',
+    epithet: 'Praktikant',
+    bodyScale: 'human',
+    sprite: 'enemy.praktikant',
+    archetype: 'fodder',
+    comboCapacity: 1,
+    maxHp: 8,
+    flying: false,
+    frontShield: false,
+    actionPool: ['intern_bite'],
+    flavor: '„Mám teprve třetí noční směnu a už mě pálí žáha z česneku!“'
+  },
+  urednik: {
+    id: 'urednik',
+    name: 'Kryptový písař Hubert',
+    givenName: 'Hubert',
+    epithet: 'Kryptový písař',
+    bodyScale: 'human',
+    sprite: 'enemy.urednik',
+    archetype: 'ranged',
+    comboCapacity: 2,
+    maxHp: 10,
+    flying: false,
+    frontShield: false,
+    actionPool: ['tax_stamp_shot', 'retreat_step'],
+    flavor: '„Krev do poháru, duši do temnoty! Z této hrobky živý neodejdeš!“'
+  },
+  drab: {
+    id: 'drab',
+    name: 'Krvavá drábová Božena',
+    givenName: 'Božena',
+    epithet: 'Drábová',
+    bodyScale: 'human',
+    sprite: 'enemy.drab',
+    archetype: 'brute',
+    comboCapacity: 2,
+    maxHp: 14,
+    flying: false,
+    frontShield: false,
+    actionPool: ['windup_roar', 'drab_lunge'],
+    flavor: '„Karbanátky z lovců dělám zásadně na cibulce!“'
+  },
+  vratny_stit: {
+    id: 'vratny_stit',
+    name: 'Vrátný Lojza',
+    givenName: 'Lojza',
+    epithet: 'Vrátný',
+    bodyScale: 'human',
+    sprite: 'enemy.vratny_stit',
+    archetype: 'shielder',
+    comboCapacity: 2,
+    maxHp: 10,
+    flying: false,
+    frontShield: true,
+    actionPool: ['porter_bash', 'porter_guard'],
+    flavor: '„Přes vrátnici jenom s propustkou podepsanou hrabětem!“ (Blokuje přímé zásahy zepředu.)'
+  },
+  netopyr: {
+    id: 'netopyr',
+    name: 'Netopýr Pepík',
+    givenName: 'Pepík',
+    epithet: 'Kurýr',
+    bodyScale: 'flyer',
+    sprite: 'enemy.netopyr',
+    archetype: 'fodder',
+    comboCapacity: 1,
+    maxHp: 2,
+    flying: true,
+    frontShield: false,
+    actionPool: ['bat_swoop'],
+    flavor: '„Pííí! Noční hlídka ze zámecké věže!“ (Létá nad propastmi a prkny.)'
+  },
+  ucetni_buffer: {
+    id: 'ucetni_buffer',
+    name: 'Hradní klíčnice Květuše',
+    givenName: 'Květuše',
+    epithet: 'Klíčnice',
+    bodyScale: 'human',
+    sprite: 'enemy.ucetni_buffer',
+    archetype: 'support',
+    comboCapacity: 2,
+    maxHp: 8,
+    flying: false,
+    frontShield: false,
+    actionPool: ['accountant_curse', 'accountant_buff'],
+    flavor: '„Pán hradu žádá čerstvou krev do pohárů!“ (Léčí a posiluje spolubojovníky.)'
+  },
+  srpak: {
+    id: 'srpak',
+    name: 'Srpový dráb Vendelín',
+    givenName: 'Vendelín',
+    epithet: 'Srpový dráb',
+    bodyScale: 'human',
+    sprite: 'enemy.srpak',
+    archetype: 'brute',
+    comboCapacity: 2,
+    maxHp: 12,
+    flying: false,
+    frontShield: false,
+    actionPool: ['step_toward', 'sickle_cut'],
+    flavor: '„Srpy mám na zelí. A na krky, když zelí dojde.“'
+  },
+  kyjovec: {
+    id: 'kyjovec',
+    name: 'Kyjový pacholek Břéťa',
+    givenName: 'Břéťa',
+    epithet: 'Kyjovec',
+    bodyScale: 'human',
+    sprite: 'enemy.kyjovec',
+    archetype: 'brute',
+    comboCapacity: 2,
+    maxHp: 16,
+    flying: false,
+    frontShield: false,
+    actionPool: ['windup_roar', 'club_smash'],
+    flavor: '„Kyj je poctivější než vidle. Aspoň neřeže záděry.“'
+  },
+  morak: {
+    id: 'morak',
+    name: 'Morový sedlák Bohouš',
+    givenName: 'Bohouš',
+    epithet: 'Sedlák',
+    bodyScale: 'human',
+    sprite: 'enemy.morak',
+    archetype: 'ranged',
+    comboCapacity: 2,
+    maxHp: 10,
+    flying: false,
+    frontShield: false,
+    actionPool: ['plague_spit', 'step_toward'],
+    flavor: '„Nekašlu. To je jenom domácí slivovice s mechem.“'
+  },
+  vlkodav: {
+    id: 'vlkodav',
+    name: 'Panský vlkodav Čeněk',
+    givenName: 'Čeněk',
+    epithet: 'Vlkodav',
+    bodyScale: 'beast',
+    sprite: 'enemy.vlkodav',
+    archetype: 'brute',
+    comboCapacity: 2,
+    maxHp: 10,
+    flying: false,
+    frontShield: false,
+    actionPool: ['step_toward', 'hound_pounce'],
+    flavor: '„Hodný pejsek. Jenom žere lovce, a to až po večeři.“'
+  },
+  halapartnik: {
+    id: 'halapartnik',
+    name: 'Dvorní halapartník Šebestián',
+    givenName: 'Šebestián',
+    epithet: 'Halapartník',
+    bodyScale: 'human',
+    sprite: 'enemy.halapartnik',
+    archetype: 'brute',
+    comboCapacity: 2,
+    maxHp: 14,
+    flying: false,
+    frontShield: false,
+    actionPool: ['halberd_thrust', 'step_toward'],
+    flavor: '„Halapartna je na hosty, kteří nemají pozvánku na krev.“'
+  },
+  buldok: {
+    id: 'buldok',
+    name: 'Dvorový buldok Punťa',
+    givenName: 'Punťa',
+    epithet: 'Buldok',
+    bodyScale: 'beast',
+    sprite: 'enemy.buldok',
+    archetype: 'brute',
+    comboCapacity: 2,
+    maxHp: 14,
+    flying: false,
+    frontShield: false,
+    actionPool: ['step_toward', 'bulldog_bite'],
+    flavor: '„Obojek má proti upírům. Zuby má proti všem ostatním.“'
+  },
+  kluk_kamen: {
+    id: 'kluk_kamen',
+    name: 'Vesnický kluk Lojzíček',
+    givenName: 'Lojzíček',
+    epithet: 'Kameník',
+    bodyScale: 'small',
+    sprite: 'enemy.kluk_kamen',
+    archetype: 'fodder',
+    comboCapacity: 1,
+    maxHp: 6,
+    flying: false,
+    frontShield: false,
+    actionPool: ['stone_chuck'],
+    flavor: '„Kámen je zadarmo. A do čela se trefím i poslepu!“'
+  },
+  divocak: {
+    id: 'divocak',
+    name: 'Řádící divočák Čuník',
+    givenName: 'Čuník',
+    epithet: 'Divočák',
+    bodyScale: 'beast',
+    sprite: 'enemy.divocak',
+    archetype: 'brute',
+    comboCapacity: 2,
+    maxHp: 12,
+    flying: false,
+    frontShield: false,
+    actionPool: ['step_toward', 'boar_charge'],
+    flavor: '„Chro chro! Zelí došlo, tak žere lovce.“'
+  },
+  upirske_prase: {
+    id: 'upirske_prase',
+    name: 'Upíří pašík Hroznata',
+    givenName: 'Hroznata',
+    epithet: 'Upíří pašík',
+    bodyScale: 'beast',
+    sprite: 'enemy.upirske_prase',
+    archetype: 'brute',
+    comboCapacity: 2,
+    maxHp: 10,
+    flying: false,
+    frontShield: false,
+    actionPool: ['step_toward', 'vampig_bite'],
+    flavor: '„Krev má lepší buket než patoky z koryta.“'
+  },
+  sliz: {
+    id: 'sliz',
+    name: 'Plísňový slizák Breberka',
+    givenName: 'Breberka',
+    epithet: 'Slizák',
+    bodyScale: 'human',
+    sprite: 'enemy.sliz',
+    archetype: 'brute',
+    comboCapacity: 2,
+    maxHp: 18,
+    flying: false,
+    frontShield: false,
+    actionPool: ['slime_slap', 'slime_spit'],
+    flavor: '„Nesahej. To není mech, to jsem já.“'
+  },
+  carodejnice: {
+    id: 'carodejnice',
+    name: 'Ježibaba Bětuše',
+    givenName: 'Bětuše',
+    epithet: 'Ježibaba',
+    bodyScale: 'human',
+    sprite: 'enemy.carodejnice',
+    archetype: 'brute',
+    comboCapacity: 2,
+    maxHp: 12,
+    flying: false,
+    frontShield: false,
+    actionPool: ['witch_claw', 'witch_hex'],
+    flavor: '„Perníková chaloupka je v rekonstrukci. Dnes večeřím lovce.“'
+  },
+  drevo: {
+    id: 'drevo',
+    name: 'Dřevorubec Jáchym',
+    givenName: 'Jáchym',
+    epithet: 'Dřevorubec',
+    bodyScale: 'human',
+    sprite: 'enemy.drevo',
+    archetype: 'brute',
+    comboCapacity: 2,
+    maxHp: 16,
+    flying: false,
+    frontShield: false,
+    actionPool: ['windup_roar', 'axe_chop'],
+    flavor: '„Sekera je rezavá. To nevadí. Rez taky řeže.“'
+  },
+  sedlak_stit: {
+    id: 'sedlak_stit',
+    name: 'Sedlák s fošnou Vavřinec',
+    givenName: 'Vavřinec',
+    epithet: 'Štítonoš',
+    bodyScale: 'human',
+    sprite: 'enemy.sedlak_stit',
+    archetype: 'shielder',
+    comboCapacity: 2,
+    maxHp: 12,
+    flying: false,
+    frontShield: true,
+    actionPool: ['plank_bash', 'plank_guard'],
+    flavor: '„Přes tuhle fošnu jenom s povolením rychtáře!“ (Blokuje přímé zásahy zepředu.)'
+  },
+  hrabenka_amalie: {
+    id: 'hrabenka_amalie',
+    name: 'Rokoková hraběnka Amálie',
+    givenName: 'Amálie',
+    epithet: 'Hraběnka',
+    bodyScale: 'human',
+    sprite: 'enemy.hrabenka_amalie',
+    archetype: 'brute',
+    comboCapacity: 2,
+    maxHp: 14,
+    flying: false,
+    frontShield: false,
+    actionPool: ['rococo_claw', 'rococo_laugh'],
+    flavor: '„Krev se nosí letos k modré. A já ji nosím čerstvou.“'
+  },
+  upirka_cilka: {
+    id: 'upirka_cilka',
+    name: 'Upírka v cylindru Cilka',
+    givenName: 'Cilka',
+    epithet: 'Cylindr',
+    bodyScale: 'small',
+    sprite: 'enemy.upirka_cilka',
+    archetype: 'fodder',
+    comboCapacity: 1,
+    maxHp: 8,
+    flying: false,
+    frontShield: false,
+    actionPool: ['cylinder_bite'],
+    flavor: '„Cylindr je vypůjčený. Tesáky jsou moje.“'
+  },
+  vrhac_nozu: {
+    id: 'vrhac_nozu',
+    name: 'Vrhač nožů Tonda',
+    givenName: 'Tonda',
+    epithet: 'Vrhač nožů',
+    bodyScale: 'human',
+    sprite: 'enemy.vrhac_nozu',
+    archetype: 'ranged',
+    comboCapacity: 1,
+    maxHp: 8,
+    flying: false,
+    frontShield: false,
+    actionPool: ['knife_fling'],
+    flavor: '„Nůž je poctivější než vidle. A trefí i od plotu.“'
+  },
+  prase_mutant: {
+    id: 'prase_mutant',
+    name: 'Morové prase Řehoř',
+    givenName: 'Řehoř',
+    epithet: 'Vředovec',
+    bodyScale: 'beast',
+    sprite: 'enemy.prase_mutant',
+    archetype: 'brute',
+    comboCapacity: 2,
+    maxHp: 16,
+    flying: false,
+    frontShield: false,
+    actionPool: ['pustule_gore', 'hnis_spit'],
+    flavor: '„To není sádlo. To jsem já, a teče to.“'
+  },
+  bazinny_sliz: {
+    id: 'bazinny_sliz',
+    name: 'Bažinná slizka Žbluňka',
+    givenName: 'Žbluňka',
+    epithet: 'Bažinka',
+    bodyScale: 'human',
+    sprite: 'enemy.bazinny_sliz',
+    archetype: 'support',
+    comboCapacity: 2,
+    maxHp: 12,
+    flying: false,
+    frontShield: false,
+    actionPool: ['leaf_hug', 'bog_shell'],
+    flavor: '„Nesahej na listí. To nejsou vlasy, to jsem já.“'
+  },
+  upiri_trpaslik: {
+    id: 'upiri_trpaslik',
+    name: 'Upíří trpaslík Šmudla',
+    givenName: 'Šmudla',
+    epithet: 'Trpaslík',
+    bodyScale: 'small',
+    sprite: 'enemy.upiri_trpaslik',
+    archetype: 'fodder',
+    comboCapacity: 1,
+    maxHp: 8,
+    flying: false,
+    frontShield: false,
+    actionPool: ['gnome_rake', 'night_bite'],
+    flavor: '„Noční čepice je rodinné stříbro. Drápy taky.“'
+  },
+  rytir_prizrak: {
+    id: 'rytir_prizrak',
+    name: 'Přízračný rytíř Heřman',
+    givenName: 'Heřman',
+    epithet: 'Rytíř',
+    bodyScale: 'human',
+    sprite: 'enemy.rytir_prizrak',
+    archetype: 'brute',
+    comboCapacity: 2,
+    maxHp: 18,
+    flying: false,
+    frontShield: true,
+    actionPool: ['flail_arc', 'ghost_breath'],
+    flavor: '„V přilbě nikdo není. Jenom to zelené, co po mně zbylo.“ (Zepředu ho kryje plát.)'
+  },
+  zombie_hynek: {
+    id: 'zombie_hynek',
+    name: 'Oživlý nebožtík Hynek',
+    givenName: 'Hynek',
+    epithet: 'Nebožtík',
+    bodyScale: 'human',
+    sprite: 'enemy.zombie_hynek',
+    archetype: 'brute',
+    comboCapacity: 2,
+    maxHp: 16,
+    flying: false,
+    frontShield: false,
+    actionPool: ['grave_clutch', 'dead_shove'],
+    flavor: '„Rakev jsem zaplatil. Vstávat se neplatí.“'
+  },
+  kostlivec_fabian: {
+    id: 'kostlivec_fabian',
+    name: 'Hřbitovní kostlivec Fabián',
+    givenName: 'Fabián',
+    epithet: 'Kostlivec',
+    bodyScale: 'human',
+    sprite: 'enemy.kostlivec_fabian',
+    archetype: 'ranged',
+    comboCapacity: 1,
+    maxHp: 8,
+    flying: false,
+    frontShield: false,
+    actionPool: ['bone_chuck', 'shovel_smack'],
+    flavor: '„Hrob je vykopaný. Chybí jenom nájemník.“'
+  },
+  krysa_piskota: {
+    id: 'krysa_piskota',
+    name: 'Sklepní krysa Piškota',
+    givenName: 'Piškota',
+    epithet: 'Krysa',
+    bodyScale: 'critter',
+    sprite: 'enemy.krysa_piskota',
+    archetype: 'fodder',
+    comboCapacity: 1,
+    maxHp: 6,
+    flying: false,
+    frontShield: false,
+    actionPool: ['rat_gnaw'],
+    flavor: '„Klobása je moje. Česnek si nech.“'
+  },
+  morovy_felcar: {
+    id: 'morovy_felcar',
+    name: 'Morový felčar Kilián',
+    givenName: 'Kilián',
+    epithet: 'Felčar',
+    bodyScale: 'human',
+    sprite: 'enemy.morovy_felcar',
+    archetype: 'ranged',
+    comboCapacity: 1,
+    maxHp: 10,
+    flying: false,
+    frontShield: false,
+    actionPool: ['miasma_waft', 'cane_poke'],
+    flavor: '„Otevřete ústa. Tohle není na kašel, to je na krev.“'
+  },
+  elite_drab: {
+    id: 'elite_drab',
+    name: 'Elitní řeznice Božena',
+    givenName: 'Božena',
+    epithet: 'Elitní řeznice',
+    bodyScale: 'human',
+    sprite: 'enemy.drab',
+    archetype: 'brute',
+    isElite: true,
+    comboCapacity: 3,
+    maxHp: 22,
+    flying: false,
+    frontShield: false,
+    actionPool: ['windup_roar', 'cleaver_chop', 'drab_lunge'],
+    flavor: '„Dvojitá porce tlačenky! Pojď blíž, dědku!“'
+  },
+  elite_urednik: {
+    id: 'elite_urednik',
+    name: 'Vrchní inkvizitor Metoděj',
+    givenName: 'Metoděj',
+    epithet: 'Inkvizitor',
+    bodyScale: 'human',
+    sprite: 'enemy.urednik',
+    archetype: 'ranged',
+    isElite: true,
+    comboCapacity: 3,
+    maxHp: 20,
+    flying: false,
+    frontShield: true,
+    actionPool: ['tax_stamp_shot', 'porter_bash', 'turn_toward'],
+    flavor: '„Hněv temnot se odkládat nebude!“ (Zepředu chráněn kovaným štítem.)'
+  },
+  boss_sosak: {
+    id: 'boss_sosak',
+    name: 'Arcikníže von Sosák',
+    givenName: 'Sosák',
+    epithet: 'Arcikníže',
+    bodyScale: 'boss',
+    sprite: 'boss.arcikniaze_sosak',
+    archetype: 'boss',
+    isBoss: true,
+    act: 1,
+    comboCapacity: 3,
+    maxHp: 28,
+    flying: false,
+    frontShield: false,
+    mirrorCloak: true,
+    enrageTile: 'boss_sosak_summon',
+    actionPool: ['boss_sosak_drain', 'boss_sosak_summon', 'turn_toward'],
+    flavor: '„Zrcadlový plášť z Vídně! Při kombu ze stejného směru si prohodím místo se sudem nebo netopýrem!“'
+  },
+  boss_dagmar: {
+    id: 'boss_dagmar',
+    name: 'Hraběnka Dagmar z Černé Krajky',
+    givenName: 'Dagmar',
+    epithet: 'Hraběnka',
+    bodyScale: 'boss',
+    sprite: 'boss.hrabenka_dagmar',
+    archetype: 'boss',
+    isBoss: true,
+    act: 2,
+    comboCapacity: 3,
+    maxHp: 36,
+    flying: false,
+    frontShield: false,
+    bloodThorns: true,
+    enrageTile: 'accountant_buff',
+    actionPool: ['boss_dagmar_hex', 'boss_dagmar_thorns', 'accountant_buff'],
+    flavor: '„Moje krajky jsou tkané z půlnoční mlhy a neplacených směn!“'
+  },
+  boss_drakula: {
+    id: 'boss_drakula',
+    name: 'Hrabě Drákula, Pán temnot',
+    givenName: 'Drákula',
+    epithet: 'Pán temnot',
+    bodyScale: 'boss',
+    sprite: 'boss.drakula_generalni_reditel',
+    archetype: 'boss',
+    isBoss: true,
+    act: 3,
+    comboCapacity: 3,
+    maxHp: 48,
+    flying: false,
+    frontShield: false,
+    mirrorCloak: true,
+    lordSynergy: true,
+    enrageTile: 'boss_sosak_summon',
+    actionPool: ['boss_dracula_strike', 'boss_dracula_curse', 'boss_sosak_summon'],
+    flavor: '„Tato noc patří nám, smrtelníku! Tvá krev napojí hradní kryptu!“'
+  }
+};
+
+const BLUE_ICHOR_KINDS = new Set([
+  'praktikant',
+  'urednik',
+  'elite_urednik',
+  'ucetni_buffer',
+  'netopyr',
+  'upirske_prase',
+  'upirka_cilka',
+  'upiri_trpaslik',
+  'hrabenka_amalie',
+  'boss_sosak',
+  'boss_dagmar',
+  'boss_drakula'
+]);
+
+const GREEN_ICHOR_KINDS = new Set([
+  'sliz',
+  'morak',
+  'prase_mutant',
+  'bazinny_sliz',
+  'rytir_prizrak',
+  'zombie_hynek',
+  'kostlivec_fabian',
+  'krysa_piskota',
+  'morovy_felcar'
+]);
+
+export function getEntityIchorType(kind, entityType, name = '') {
+  if (entityType === 'prop') return null;
+  if (entityType === 'hero') return 'red';
+  if (GREEN_ICHOR_KINDS.has(kind)) return 'green';
+  if (BLUE_ICHOR_KINDS.has(kind)) return 'blue';
+  const text = `${kind || ''} ${name || ''}`.toLowerCase();
+  if (/upír|upir|vamp|netop|drák|drakula|sosák|sosak|dagmar/.test(text)) return 'blue';
+  if (/sliz|morov|zombie|mutant|plísn|plisn|breber|kostliv|krys|felčar|felcar|nebožt|nebozt/.test(text)) return 'green';
+  return 'red';
+}

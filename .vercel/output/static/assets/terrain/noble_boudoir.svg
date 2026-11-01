@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 800" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="nb-wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#19060f"/>
+      <stop offset="45%" stop-color="#2d0a1b"/>
+      <stop offset="85%" stop-color="#1a0610"/>
+      <stop offset="100%" stop-color="#0e0308"/>
+    </linearGradient>
+    <radialGradient id="nb-mirror-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fdf4ff" stop-opacity="0.85"/>
+      <stop offset="35%" stop-color="#c084fc" stop-opacity="0.45"/>
+      <stop offset="70%" stop-color="#581c87" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#19060f" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="nb-candle-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fffbeb" stop-opacity="1"/>
+      <stop offset="30%" stop-color="#f43f5e" stop-opacity="0.6"/>
+      <stop offset="70%" stop-color="#881337" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#19060f" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="nb-curtain-l" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#4c0519"/>
+      <stop offset="40%" stop-color="#881337"/>
+      <stop offset="70%" stop-color="#350412"/>
+      <stop offset="100%" stop-color="#1c030a"/>
+    </linearGradient>
+    <linearGradient id="nb-curtain-r" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0%" stop-color="#4c0519"/>
+      <stop offset="40%" stop-color="#881337"/>
+      <stop offset="70%" stop-color="#350412"/>
+      <stop offset="100%" stop-color="#1c030a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Dark Damask / Velvet Wall -->
+  <rect width="1920" height="800" fill="url(#nb-wall)"/>
+
+  <!-- Subtle Victorian Damask Diamonds on wall -->
+  <g fill="none" stroke="#4c0519" stroke-width="1.5" opacity="0.45">
+    <path d="M100 200 L160 140 L220 200 L160 260 Z"/>
+    <path d="M260 200 L320 140 L380 200 L320 260 Z"/>
+    <path d="M420 200 L480 140 L540 200 L480 260 Z"/>
+    <path d="M580 200 L640 140 L700 200 L640 260 Z"/>
+    <path d="M1220 200 L1280 140 L1340 200 L1280 260 Z"/>
+    <path d="M1380 200 L1440 140 L1500 200 L1440 260 Z"/>
+    <path d="M1540 200 L1600 140 L1660 200 L1600 260 Z"/>
+    <path d="M1700 200 L1760 140 L1820 200 L1760 260 Z"/>
+
+    <path d="M160 300 L220 240 L280 300 L220 360 Z"/>
+    <path d="M320 300 L380 240 L440 300 L380 360 Z"/>
+    <path d="M480 300 L540 240 L600 300 L540 360 Z"/>
+    <path d="M1280 300 L1340 240 L1400 300 L1340 360 Z"/>
+    <path d="M1440 300 L1500 240 L1560 300 L1500 360 Z"/>
+    <path d="M1600 300 L1660 240 L1720 300 L1660 360 Z"/>
+  </g>
+
+  <!-- Ornate Gilded Baroque Center Mirror -->
+  <g>
+    <!-- Mirror Glow -->
+    <ellipse cx="960" cy="340" rx="200" ry="240" fill="url(#nb-mirror-glow)"/>
+    <!-- Outer Gold Frame -->
+    <ellipse cx="960" cy="340" rx="160" ry="210" fill="#1f1609" stroke="#d97706" stroke-width="14"/>
+    <ellipse cx="960" cy="340" rx="150" ry="200" fill="#0f0714" stroke="#fde68a" stroke-width="4"/>
+    <!-- Glass surface with eerie purple fog reflection -->
+    <ellipse cx="960" cy="340" rx="142" ry="192" fill="#1e1028"/>
+    <!-- Specular highlight streak -->
+    <path d="M910 180 L860 480 L880 480 L930 180 Z" fill="#ffffff" opacity="0.15"/>
+    <path d="M940 180 L900 480 L912 480 L952 180 Z" fill="#ffffff" opacity="0.08"/>
+    <!-- Baroque Crest at mirror top -->
+    <path d="M940 130 Q960 90 980 130 Q960 115 940 130 Z" fill="#fde68a" stroke="#d97706" stroke-width="2"/>
+  </g>
+
+  <!-- Candelabras on Flanks of Mirror -->
+  <!-- Left Candelabra -->
+  <circle cx="750" cy="380" r="110" fill="url(#nb-candle-glow)"/>
+  <g fill="#d97706">
+    <rect x="746" y="420" width="8" height="120"/>
+    <path d="M720 440 Q750 460 750 480 Q750 460 780 440" fill="none" stroke="#d97706" stroke-width="4"/>
+    <!-- Candles -->
+    <rect x="716" y="415" width="8" height="25" fill="#fef2f2"/>
+    <path d="M720 415 Q718 402 720 392 Q722 402 720 415 Z" fill="#f43f5e"/>
+    <rect x="746" y="395" width="8" height="25" fill="#fef2f2"/>
+    <path d="M750 395 Q748 382 750 372 Q752 382 750 395 Z" fill="#f43f5e"/>
+    <rect x="776" y="415" width="8" height="25" fill="#fef2f2"/>
+    <path d="M780 415 Q778 402 780 392 Q782 402 780 415 Z" fill="#f43f5e"/>
+  </g>
+
+  <!-- Right Candelabra -->
+  <circle cx="1170" cy="380" r="110" fill="url(#nb-candle-glow)"/>
+  <g fill="#d97706">
+    <rect x="1166" y="420" width="8" height="120"/>
+    <path d="M1140 440 Q1170 460 1170 480 Q1170 460 1200 440" fill="none" stroke="#d97706" stroke-width="4"/>
+    <!-- Candles -->
+    <rect x="1136" y="415" width="8" height="25" fill="#fef2f2"/>
+    <path d="M1140 415 Q1138 402 1140 392 Q1142 402 1140 415 Z" fill="#f43f5e"/>
+    <rect x="1166" y="395" width="8" height="25" fill="#fef2f2"/>
+    <path d="M1170 395 Q1168 382 1170 372 Q1172 382 1170 395 Z" fill="#f43f5e"/>
+    <rect x="1196" y="415" width="8" height="25" fill="#fef2f2"/>
+    <path d="M1200 415 Q1198 402 1200 392 Q1202 402 1200 415 Z" fill="#f43f5e"/>
+  </g>
+
+  <!-- Heavy Velvet Drapes on Outer Edges -->
+  <!-- Left Curtain -->
+  <path d="M0 0 L240 0 Q180 280 260 520 L0 520 Z" fill="url(#nb-curtain-l)"/>
+  <!-- Gold fringe tie-back -->
+  <path d="M0 320 Q120 340 180 320" stroke="#f59e0b" stroke-width="8" fill="none"/>
+
+  <!-- Right Curtain -->
+  <path d="M1920 0 L1680 0 Q1740 280 1660 520 L1920 520 Z" fill="url(#nb-curtain-r)"/>
+  <!-- Gold fringe tie-back -->
+  <path d="M1920 320 Q1800 340 1740 320" stroke="#f59e0b" stroke-width="8" fill="none"/>
+
+  <!-- Dark Bottom Vignette -->
+  <rect y="500" width="1920" height="300" fill="linear-gradient(180deg, transparent, #0a0206)"/>
+</svg>

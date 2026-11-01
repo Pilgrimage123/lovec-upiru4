@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 800" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="td-wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#080e0c"/>
+      <stop offset="50%" stop-color="#111c18"/>
+      <stop offset="100%" stop-color="#070c0a"/>
+    </linearGradient>
+    <radialGradient id="td-lantern-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ccfbf1" stop-opacity="0.9"/>
+      <stop offset="30%" stop-color="#14b8a6" stop-opacity="0.6"/>
+      <stop offset="70%" stop-color="#042f2e" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#080e0c" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="td-fog" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#080e0c" stop-opacity="0"/>
+      <stop offset="70%" stop-color="#06120e" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#030706" stop-opacity="0.95"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Wet Mossy Dungeon Brick Wall -->
+  <rect width="1920" height="800" fill="url(#td-wall)"/>
+
+  <!-- Rough Brick Texture Lines -->
+  <g stroke="#091410" stroke-width="2.5" opacity="0.65">
+    <line x1="0" y1="140" x2="1920" y2="140"/>
+    <line x1="0" y1="220" x2="1920" y2="220"/>
+    <line x1="0" y1="300" x2="1920" y2="300"/>
+    <line x1="0" y1="380" x2="1920" y2="380"/>
+    <line x1="0" y1="460" x2="1920" y2="460"/>
+    <line x1="0" y1="540" x2="1920" y2="540"/>
+    <line x1="0" y1="620" x2="1920" y2="620"/>
+
+    <line x1="200" y1="140" x2="200" y2="220"/>
+    <line x1="500" y1="140" x2="500" y2="220"/>
+    <line x1="800" y1="140" x2="800" y2="220"/>
+    <line x1="1120" y1="140" x2="1120" y2="220"/>
+    <line x1="1420" y1="140" x2="1420" y2="220"/>
+    <line x1="1720" y1="140" x2="1720" y2="220"/>
+
+    <line x1="80" y1="220" x2="80" y2="300"/>
+    <line x1="360" y1="220" x2="360" y2="300"/>
+    <line x1="650" y1="220" x2="650" y2="300"/>
+    <line x1="960" y1="220" x2="960" y2="300"/>
+    <line x1="1260" y1="220" x2="1260" y2="300"/>
+    <line x1="1580" y1="220" x2="1580" y2="300"/>
+  </g>
+
+  <!-- Heavy Iron Portcullis Gate in Center-Left -->
+  <g stroke="#090f0c" stroke-width="7">
+    <!-- Arch Frame -->
+    <path d="M420 540 L420 280 Q560 180 700 280 L700 540" fill="#040705"/>
+    <!-- Vertical Iron Bars with pointed bottoms -->
+    <line x1="460" y1="230" x2="460" y2="540"/>
+    <line x1="510" y1="205" x2="510" y2="540"/>
+    <line x1="560" y1="190" x2="560" y2="540"/>
+    <line x1="610" y1="205" x2="610" y2="540"/>
+    <line x1="660" y1="230" x2="660" y2="540"/>
+    <!-- Horizontal Cross-Bars -->
+    <line x1="420" y1="280" x2="700" y2="280" stroke-width="10"/>
+    <line x1="420" y1="420" x2="700" y2="420" stroke-width="10"/>
+  </g>
+
+  <!-- Torture Devices & Iron Chains hanging from Ceiling Rings -->
+  <g stroke="#050a08" stroke-width="5" fill="none">
+    <!-- Ceiling Mount Rings -->
+    <circle cx="280" cy="80" r="12"/>
+    <!-- Chain 1 -->
+    <path d="M280 92 L280 240 Q290 280 280 340"/>
+    <circle cx="280" cy="350" r="14" stroke-width="6"/> <!-- Manacle -->
+
+    <circle cx="1280" cy="70" r="12"/>
+    <!-- Chain 2 -->
+    <path d="M1280 82 L1280 210 Q1270 250 1280 300"/>
+    <circle cx="1280" cy="310" r="14" stroke-width="6"/>
+
+    <circle cx="1640" cy="90" r="12"/>
+    <!-- Chain 3 with spiked iron ball -->
+    <path d="M1640 102 L1640 260"/>
+    <circle cx="1640" cy="285" r="22" fill="#080e0c" stroke-width="6"/>
+  </g>
+
+  <!-- Eerie Ghostly Green/Cyan Torches/Lanterns -->
+  <!-- Left Lantern -->
+  <circle cx="180" cy="300" r="170" fill="url(#td-lantern-glow)"/>
+  <g fill="#0b1713" stroke="#040806" stroke-width="3">
+    <rect x="165" y="270" width="30" height="50" rx="4"/>
+    <polygon points="160,270 200,270 180,245"/>
+    <rect x="172" y="280" width="16" height="30" fill="#2dd4bf" stroke="none"/>
+    <line x1="180" y1="245" x2="180" y2="180" stroke-width="4"/>
+  </g>
+
+  <!-- Right Lantern -->
+  <circle cx="1460" cy="280" r="170" fill="url(#td-lantern-glow)"/>
+  <g fill="#0b1713" stroke="#040806" stroke-width="3">
+    <rect x="1445" y="250" width="30" height="50" rx="4"/>
+    <polygon points="1440,250 1480,250 1460,225"/>
+    <rect x="1452" y="260" width="16" height="30" fill="#2dd4bf" stroke="none"/>
+    <line x1="1460" y1="225" x2="1460" y2="160" stroke-width="4"/>
+  </g>
+
+  <!-- Damp green/toxic mist rising from floor -->
+  <rect y="460" width="1920" height="340" fill="url(#td-fog)"/>
+</svg>
