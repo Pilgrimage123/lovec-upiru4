@@ -1,3 +1,4 @@
+import { STARTING_LOADOUTS } from '../config/loadouts.js';
 // @ts-nocheck
 import { getAssetUrl } from './assets.js';
 import { showTooltip, hideTooltip } from './tooltips.js';
@@ -11,6 +12,16 @@ export function renderTileBar(container, state, callbacks = {}) {
   const canStepRight = canHeroMoveDir(state, 1);
   const inGarlic = state.terrain[state.hero.cell]?.type === 'garlic_cloud';
   const hasQueued = state.queue.length > 0;
+
+  const hero = state.hero || {};
+  const hunterKey = hero.hunterId || hero.kind || 'classic';
+  const loadout =
+    STARTING_LOADOUTS[hunterKey] ||
+    Object.values(STARTING_LOADOUTS).find((l) => l.hunterId === hunterKey) ||
+    STARTING_LOADOUTS.classic;
+  const bumpName = loadout?.bumpName || 'Krok do nepřítele';
+  const bumpCd = hero.bumpCooldown || 0;
+  const bumpOnCd = bumpCd > 0;
 
   const tilesHtml = state.hand
     .map((tile, idx) => {
@@ -39,13 +50,13 @@ export function renderTileBar(container, state, callbacks = {}) {
                 ${disabled ? 'disabled' : ''}>
           <div class="tile-card-top">
             <span class="tile-hotkey">[${hotkey}]</span>
-            <span class="tile-cd-stat" title="Cooldown destičky">⏳ ${onCd ? `${tile.currentCooldown}/${tile.maxCooldown}` : `CD ${tile.maxCooldown}`}</span>
+            <span class="tile-cd-stat" title="Chladnutí destičky">⏳ ${onCd ? `${tile.currentCooldown}/${tile.maxCooldown}` : `Chladnutí ${tile.maxCooldown}`}</span>
           </div>
           <div class="tile-card-art">
             <img src="${iconUrl}" alt="${tile.name}" class="tile-art-img" referrerpolicy="no-referrer" />
             ${
               onCd
-                ? `<div class="tile-cooldown-overlay" aria-label="Nabíjí se ještě ${tile.currentCooldown} ${czechTurns(tile.currentCooldown)}">
+                ? `<div class="tile-cooldown-overlay" aria-label="Chladne ještě ${tile.currentCooldown} ${czechTurns(tile.currentCooldown)}">
                      <span class="cd-number">${tile.currentCooldown}</span>
                      <span class="cd-label">${czechTurns(tile.currentCooldown)}</span>
                    </div>`
@@ -90,7 +101,7 @@ export function renderTileBar(container, state, callbacks = {}) {
       <button type="button" class="btn-action btn-act-utility ${inGarlic ? 'btn-action-free' : ''}" id="btn-act-turn" title="${inGarlic ? 'Otočit čelem vzad (ZDARMA v česneku! Klávesa W)' : 'Otočit čelem vzad (Klávesa W)'}">
         🔄 <span>Otočit</span>${inGarlic ? '<span class="garlic-free-tag" title="Otočení zdarma v česneku">0t</span>' : ''} <kbd>W</kbd>
       </button>
-      <button type="button" class="btn-action btn-act-utility" id="btn-act-wait" title="Vyčkat 1 tah a zkrátit cooldowny (Klávesa S)">
+      <button type="button" class="btn-action btn-act-utility" id="btn-act-wait" title="Vyčkat 1 tah a zkrátit Chladnutí (Klávesa S)">
         ⏳ <span>Čekat</span> <kbd>S</kbd>
       </button>
       <button type="button" class="btn-action btn-act-move" id="btn-act-right" ${!canStepRight ? 'disabled' : ''} title="Krok vpravo (Klávesa D nebo ➡)">
@@ -188,7 +199,7 @@ export function buildTileTooltipHtml(tile) {
   return `
     <div class="tt-title">${tile.name}</div>
     <div class="tt-stat-row">
-      ⚔️ Základní DMG: <strong>${tile.dmg}</strong> · ⏳ Cooldown: <strong>${tile.maxCooldown} ${czechTurns(tile.maxCooldown)}</strong>
+      ⚔️ Základní DMG: <strong>${tile.dmg}</strong> · ⏳ Chladnutí: <strong>${tile.maxCooldown} ${czechTurns(tile.maxCooldown)}</strong>
       ${tile.quick ? ' · ⚡ <strong>Rychlovka (0 tahů)</strong>' : ''}
     </div>
     ${tile.tags?.length ? `<div class="tt-tags" style="font-size:0.85em; color:#d4af37; margin-bottom:4px;">${tile.tags.map(t => TILE_TAGS[t] ? `${TILE_TAGS[t].icon} ${TILE_TAGS[t].name}` : '').filter(Boolean).join(' · ')}</div>` : ''}

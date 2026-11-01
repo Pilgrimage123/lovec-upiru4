@@ -4,6 +4,21 @@ Veškeré významné změny v projektu Lovec upírů jsou zaznamenávány v tomt
 
 Formát vychází z [Keep a Changelog](https://keepachangelog.com/cs/1.0.0/).
 
+## [1.3.0] - 2026-11-01
+
+### Přidáno (Added)
+- **Obrana a Štít**: Lovci i nepřátelé mají trvalou Obranu (Jaromír 2, Káča 2, Venca 1, Honza 0; nepřátelé 0–3 podle archetypu). Štít rovný Obraně se nahazuje na začátku bitvy a po každém kole protivníků; nevyužitý Štít na konci kola zcela vyprchá.
+- **Švunk**: Kombo o 2+ destičkách, které zabije nepřítele, zkrátí Chladnutí své první destičky o počet destiček v kombu (kdykoliv během bitvy). Nahrazuje původní Momentum.
+- **Ukazatel manévru**: Stav Chladnutí manévru Krok do nepřítele v HUD a v ovládací liště.
+- **Zobrazení Obrany**: Odznak `🛡️X` u HP baru, Obrana v HUD, inspektoru nepřítele a na kartách lovců.
+- **Dokumentace**: ADR 0002 (Chladnutí a Švunk), ADR 0003 (Obrana a cyklus Štítu), nové pojmy v `GLOSSARY.md`.
+- **Testy**: `scratch_tests/test_obrana_stit.mjs`.
+
+### Změněno (Changed)
+- **Chladnutí**: Destička po zahrání drží plnou hodnotu a začne klesat až v dalších tazích (dříve se hned odečetl 1 tah). Anglicismy „Cooldown/CD“ nahrazeny termínem Chladnutí.
+- **Krok do nepřítele**: Chladnutí manévru podléhá stejným zkracovačům jako destičky (např. Čekání s kapesními hodinkami).
+- **Štít**: Pohlcuje zranění bod po bodu; vedlejší efekty projdou jen při průrazu do HP.
+
 ## [1.2.0] - 2026-11-01
 
 ### Přidáno (Added)

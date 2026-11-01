@@ -41,22 +41,42 @@ export function computeHeroTileBonus(state, tile, slotIdx) {
   return { dmgBonus };
 }
 
-export function checkMomentumBonus(state, comboLength, events = []) {
-  if (comboLength < 2) return false;
-  const anyLivingEnemies = state.enemies.some((e) => e.hp > 0);
-  const anyPendingReinforcements = state.reinforcements.some((r) => !r.spawned);
-  if (anyLivingEnemies || anyPendingReinforcements) return false;
-  for (const tile of state.hand) {
-    if (tile.currentCooldown > 0) {
-      tile.currentCooldown = Math.max(0, tile.currentCooldown - comboLength);
-    }
+export function checkSvunkBonus(state, comboLength, events = []) {
+  if (comboLength < 2) {
+    delete state._livingEnemiesBeforeCombo;
+    delete state._firstComboTileInstanceId;
+    return false;
   }
-  events.push({ type: 'momentum', comboLength, reduction: comboLength });
+  const livingNow = state.enemies.filter((e) => e.hp > 0).length;
+  const before = state._livingEnemiesBeforeCombo ?? livingNow;
+  const kills = Math.max(0, before - livingNow);
+  delete state._livingEnemiesBeforeCombo;
+  const firstTileId = state._firstComboTileInstanceId;
+  delete state._firstComboTileInstanceId;
+
+  if (kills <= 0) return false;
+
+  const firstTile = (state.hand || []).find((t) => t.instanceId === firstTileId);
+  if (!firstTile) return false;
+
+  const reduction = comboLength;
+  firstTile.currentCooldown = Math.max(0, firstTile.currentCooldown - reduction);
+  events.push({
+    type: 'svunk',
+    instanceId: firstTile.instanceId,
+    tileName: firstTile.name,
+    reduction,
+    newCooldown: firstTile.currentCooldown
+  });
   events.push({
     type: 'log',
-    text: `🔥 ${STRINGS.momentumQuotes[0]} (−${comboLength} CD všem destičkám)`
+    text: `⚡ ŠVUNK! Padl upír v kombu – otevírací destička „${firstTile.name}“ chytila švunk a zkrátila Chladnutí o ${reduction} (zbývá: ${firstTile.currentCooldown})!`
   });
   return true;
+}
+
+export function checkMomentumBonus(state, comboLength, events = []) {
+  return checkSvunkBonus(state, comboLength, events);
 }
 
 export function resolveEnemyStepOrIntentAction(state, enemy, action, events) {
@@ -996,11 +1016,19 @@ export function advanceTurnAfterPlayerAction(state, events = [], extraCdReductio
   const cdTick = 1 + extraCdReduction;
   for (const tile of state.hand) {
     if (!tile.inQueue && tile.currentCooldown > 0) {
+      if (tile.justPlayedInCombo) {
+        delete tile.justPlayedInCombo;
+        continue;
+      }
       tile.currentCooldown = Math.max(0, tile.currentCooldown - cdTick);
     }
   }
   if (state.hero && (state.hero.bumpCooldown || 0) > 0) {
-    state.hero.bumpCooldown = Math.max(0, state.hero.bumpCooldown - 1);
+    if (state.hero.justBumpedThisTurn) {
+      delete state.hero.justBumpedThisTurn;
+    } else {
+      state.hero.bumpCooldown = Math.max(0, state.hero.bumpCooldown - cdTick);
+    }
   }
 
   if (checkBattleEnd(state, events) !== 'playing') return events;
@@ -1017,20 +1045,22 @@ export function advanceTurnAfterPlayerAction(state, events = [], extraCdReductio
   }
   if (checkBattleEnd(state, events) !== 'playing') return events;
 
+  // 1. All leftover shield completely expires at the end of the enemy round
   for (const ent of actors) {
-    if (ent.hp > 0 && ent.statuses?.shield > 0 && typeof ent.statuses.shieldTurnsLeft === 'number') {
-      if (ent.statuses.shieldTurnsLeft > 0) {
-        ent.statuses.shieldTurnsLeft -= 1;
-      } else {
-        const expired = ent.statuses.shield;
-        delete ent.statuses.shield;
-        delete ent.statuses.shieldTurnsLeft;
-        events.push({ type: 'shield_expired', targetId: ent.id, cell: ent.cell, amount: expired });
-        events.push({
-          type: 'log',
-          text: `🛡️ Štít postavy ${ent.name} (${expired} bodů) vyprchal na konci kola.`
-        });
-      }
+    if (ent.hp > 0 && ent.statuses?.shield > 0) {
+      const expired = ent.statuses.shield;
+      delete ent.statuses.shield;
+      delete ent.statuses.shieldTurnsLeft;
+      events.push({ type: 'shield_expired', targetId: ent.id, cell: ent.cell, amount: expired });
+    }
+  }
+
+  // 2. Next round begins: All actors with Defense receive their fresh Shield
+  for (const ent of actors) {
+    if (ent.hp > 0 && (ent.defense || 0) > 0) {
+      ent.statuses = ent.statuses || {};
+      ent.statuses.shield = ent.defense;
+      events.push({ type: 'shield_granted', targetId: ent.id, cell: ent.cell, amount: ent.defense });
     }
   }
 
@@ -1053,6 +1083,7 @@ export function advanceTurnAfterPlayerAction(state, events = [], extraCdReductio
 }
 
 export function resolveHeroBump(state, hero, enemy, dir, targetCell, hunterId, events) {
+  hero.justBumpedThisTurn = true;
   events.push({
     type: 'hero_bump',
     hunterId,
@@ -1156,7 +1187,7 @@ export function stepHero(state, direction) {
     if ((hero.bumpCooldown || 0) > 0) {
       events.push({
         type: 'invalid_action',
-        reason: `Manévr nárazu ještě chladne (zbývá ${hero.bumpCooldown} tahů)!`
+        reason: `Manévr nárazu ještě chladne (zbývá ${hero.bumpCooldown} ${czechTurns(hero.bumpCooldown)})!`
       });
       return { ok: false, events };
     }
@@ -1243,7 +1274,7 @@ export function waitHero(state) {
     type: 'log',
     text:
       extraCd > 0
-        ? '⏳ Venca vyčkává a natahuje dědovy cibule (cooldowny −2).'
+        ? '⏳ Venca vyčkává a natahuje dědovy cibule (Chladnutí −2).'
         : '⏳ Venca si upravil klobouk a vyčkává (1 tah).'
   });
   return { ok: true, extraCd, events };
@@ -1268,7 +1299,7 @@ export function insertTileIntoQueue(state, instanceId) {
   if (tile.currentCooldown > 0) {
     events.push({
       type: 'invalid_action',
-      reason: `Destička „${tile.name}“ se ještě nabíjí (${tile.currentCooldown} ${czechTurns(tile.currentCooldown)})!`
+      reason: `Destička „${tile.name}“ ještě chladne (${tile.currentCooldown} ${czechTurns(tile.currentCooldown)})!`
     });
     return { ok: false, events };
   }
@@ -1353,6 +1384,8 @@ export function executeSingleQueueSlot(
   if (!tile) return events;
 
   if (slotIdx === 0) {
+    state._livingEnemiesBeforeCombo = state.enemies.filter((e) => e.hp > 0).length;
+    state._firstComboTileInstanceId = instanceId;
     for (const e of state.enemies) {
       e.lastComboHitDir = null;
     }
@@ -1377,6 +1410,7 @@ export function executeSingleQueueSlot(
   executeHeroTileEffect(state, tile, slotIdx, comboLength, events);
   tile.inQueue = false;
   tile.currentCooldown = tile.maxCooldown;
+  tile.justPlayedInCombo = true;
 
   if (tile.resonance?.nextTileCdReduction && nextInstanceId) {
     const nextTile = state.hand.find((t) => t.instanceId === nextInstanceId);
@@ -1391,7 +1425,7 @@ export function executeSingleQueueSlot(
       });
       events.push({
         type: 'log',
-        text: `✨ Rezonance! „${nextTile.name}“ bude mít po odehrání cooldown kratší o ${tile.resonance.nextTileCdReduction}!`
+        text: `✨ Rezonance! „${nextTile.name}“ bude mít po odehrání Chladnutí kratší o ${tile.resonance.nextTileCdReduction}!`
       });
     }
   }
@@ -1436,6 +1470,9 @@ export function resolveHunterCombo3Bonus(state, hero, events) {
         t.currentCooldown = Math.max(0, t.currentCooldown - 1);
       }
     }
+    if ((hero.bumpCooldown || 0) > 0) {
+      hero.bumpCooldown = Math.max(0, hero.bumpCooldown - 1);
+    }
   } else if (hunterId === 'zlodejka') {
     addStatus(hero, 'shield', 4, events);
     hero.bumpCooldown = 0;
@@ -1467,7 +1504,7 @@ export function finalizeComboAndAdvanceTurn(state, comboLength) {
     resolveHunterCombo3Bonus(state, state.hero, events);
   }
   delete state.comboResonanceBonusPush;
-  checkMomentumBonus(state, comboLength, events);
+  checkSvunkBonus(state, comboLength, events);
   advanceTurnAfterPlayerAction(state, events);
   return events;
 }

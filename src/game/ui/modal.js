@@ -33,7 +33,7 @@ export function openRulesModal(modalRoot) {
             <ul>
               <li><strong>Krok vlevo / vpravo (A / D):</strong> Posun o 1 pole bez změny směru pohledu. Cílové pole musí být volné (do obsazeného pole nelze vstoupit ani ho krokem přeskočit – přes překážky skáče pouze destička <em>Hospodský přemet</em>).</li>
               <li><strong>Otočení (W):</strong> Změní směr pohledu (◀ / ▶). Stojíš-li v <strong>Česnekovém oblaku</strong>, je otočení <strong>ZDARMA (0 tahů)</strong>!</li>
-              <li><strong>Čekání (S):</strong> Stojí 1 tah, sníží cooldowny tvých destiček.</li>
+              <li><strong>Čekání (S):</strong> Stojí 1 tah, zkrátí Chladnutí tvých destiček i manévru.</li>
               <li><strong>Vložení destičky do Fronty (1–4 / klik):</strong> Stojí 1 tah (vyjma destiček s vlastností <em>Rychlovka</em>, jejichž vložení stojí 0 tahů). Vyjmutí i libovolné přerovnání destiček ve frontě je vždy zdarma.</li>
               <li><strong>PROVÉST KOMBO (Mezerník / Space):</strong> Okamžitý odpal! Všechny destičky ve frontě se provedou zleva doprava bez nutnosti přípravného nápřahu za <strong>JEDEN tah</strong>!</li>
             </ul>
@@ -55,7 +55,7 @@ export function openRulesModal(modalRoot) {
               <li><strong>Odhození (Push) a Kolize:</strong> Narazí-li odhozená postava do zdi nebo do jiné postavy, utrpí obě <strong>+1 kolizní DMG</strong>. Vhození do sudu se zelím sud rozbije (2 DMG + Zmatení).</li>
               <li><strong>Ještě jedna akce:</strong> Když nepřítel zčervená (🚨), útok ještě nejde. Stihneš jednu obyčejnou akci — krok, otočku, destičku nebo čekání. Pak teprve útok dopadne. Žádné zvláštní okno.</li>
               <li><strong>Terén:</strong> <em>Propast</em> = okamžitá smrt (kromě létajících netopýrů). <em>Kůly</em> = 2 DMG. <em>Prohnilé prkno</em> = 1. stoupnutí zapraská, 2. stoupnutí se prolomí za 2 DMG.</li>
-              <li><strong>Momentum:</strong> Zabiješ-li posledního nepřítele bitvy kombem 2+ destiček, zkrátí se cooldowny všech tvých destiček o počet destiček v kombu!</li>
+              <li><strong>Švunk:</strong> Zabiješ-li nepřítele kombem 2+ destiček kdykoliv během bitvy, zkrátí se Chladnutí první (otevírací) destičce tohoto komba o počet destiček v kombu!</li>
             </ul>
           </div>
         </div>
@@ -689,7 +689,7 @@ export function openCastleArchiveModal(modalRoot, appState, onUpdate = null, onS
         <div class="loadout-card-header">
           <span class="loadout-card-icon">${loadout.icon}</span>
           <div>
-            <h4 class="loadout-card-title">${loadout.name} <span class="badge-hp">❤️ ${loadout.maxHp || 20} HP</span></h4>
+            <h4 class="loadout-card-title">${loadout.name} <span class="badge-hp">❤️ ${loadout.maxHp || 20} HP</span> <span class="badge-defense" style="margin-left: 4px; padding: 1px 6px; border-radius: 4px; background: rgba(30, 64, 175, 0.4); border: 1px solid rgba(59, 130, 246, 0.5); font-size: 0.78rem; color: #bfdbfe;">🛡️ ${loadout.defense ?? 0} Obrana</span></h4>
             <div class="loadout-card-epithet">${loadout.epithet}</div>
           </div>
         </div>

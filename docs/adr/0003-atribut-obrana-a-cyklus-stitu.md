@@ -1,0 +1,3 @@
+# 3. Zavedení atributu Obrana a round-clearing cyklu Štítu
+
+Zavedli jsme trvalý atribut **Obrana** pro lovce i nepřátele, který reprezentuje schopnost aktivního krytí a úhybu. Na začátku každého taktického tahu se všem postavám s Obranou vygeneruje dočasný **Štít** v hodnotě jejich Obrany. Když lovec útočí, nepřátelé se brání svým Štítem; když útočí nepřátelé, lovec se brání svým Štítem. Na konci kola protivníků veškerý zbývající nevyužitý Štít zcela vyprchá na 0 (round-clearing model). Rozhodli jsme se tak proto, abychom zamezili neomezené kumulaci obrany při vyčkávání a přirozeně odlišili mrštné šermíře a akrobaty od těžkopádných monster, aniž bychom narušili speciální směrovou mechaniku Čelního štítu (pavézy).

@@ -252,7 +252,7 @@ export function buildEnemyTooltipHtml(enemy, initiativeRank) {
         ? `<span class="tt-tag tt-tag-queued">Ve frontě</span>`
         : isReady
         ? `<span class="tt-tag tt-tag-ready">Připraveno (0 CD)</span>`
-        : `<span class="tt-tag tt-tag-cd">CD: ${item.currentCooldown}/${item.maxCooldown}</span>`;
+        : `<span class="tt-tag tt-tag-cd">Chladnutí: ${item.currentCooldown}/${item.maxCooldown}</span>`;
 
       return `
         <div class="tt-pool-item">
@@ -313,7 +313,7 @@ export function buildEnemyTooltipHtml(enemy, initiativeRank) {
       <span class="tt-sub">(Iniciativa #${initiativeRank})</span>
     </div>
     <div class="tt-stat-row">
-      ❤️ Zdraví: <strong>${enemy.hp}/${enemy.maxHp} HP</strong> · Směr: <strong>${enemy.facing === 1 ? 'Vpravo ▶' : 'Vlevo ◀'}</strong> · Archetyp: <strong>${enemy.archetype || 'základní'}</strong>
+      ❤️ Zdraví: <strong>${enemy.hp}/${enemy.maxHp} HP</strong> · 🛡️ Obrana: <strong>${enemy.defense || 0}</strong> · Směr: <strong>${enemy.facing === 1 ? 'Vpravo ▶' : 'Vlevo ◀'}</strong> · Archetyp: <strong>${enemy.archetype || 'základní'}</strong>
     </div>
     ${enemy.frontShield ? '<div class="tt-next-intent-line">🛡️ Zepředu krytý štítem. Úder musí přijít zezadu, odhozením nebo po otočení.</div>' : ''}
     ${enemy.mirrorCloak ? '<div class="tt-next-intent-line">🪞 Zrcadlový plášť: druhý zásah komba ze stejné strany ho prohodí se sudem nebo netopýrem.</div>' : ''}

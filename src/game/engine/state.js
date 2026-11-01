@@ -744,11 +744,13 @@ export function spawnEnemyEntity(enemyId, cell, facing = -1) {
     sprite: def.sprite,
     maxHp: def.maxHp,
     hp: def.maxHp,
+    defense: def.defense || 0,
     cell,
     facing,
     flying: Boolean(def.flying),
     ichor: getEntityIchorType(enemyId, 'enemy', def.name),
     frontShield: Boolean(def.frontShield),
+    statuses: (def.defense || 0) > 0 ? { shield: def.defense } : {},
     isElite: Boolean(def.isElite),
     isBoss: Boolean(def.isBoss),
     mirrorCloak: Boolean(def.mirrorCloak),
@@ -885,6 +887,7 @@ export function createBattleState(opts = {}) {
         : 'hero.idle',
     maxHp: heroMaxHp,
     hp: heroHp,
+    defense: typeof opts.defense === 'number' ? opts.defense : (hunterId === 'dragoun' ? 2 : hunterId === 'zlodejka' ? 2 : hunterId === 'honza' ? 0 : 1),
     cell: enc.heroCell ?? 2,
     facing: enc.heroFacing ?? 1,
     flying: false,
@@ -912,6 +915,10 @@ export function createBattleState(opts = {}) {
     return ent;
   });
 
+  if (hero.defense > 0) {
+    hero.statuses = hero.statuses || {};
+    hero.statuses.shield = (hero.statuses.shield || 0) + hero.defense;
+  }
   const occupiedCells = new Set([hero.cell, ...enemies.map((e) => e.cell)]);
   const props = [];
   if (enc.props) {

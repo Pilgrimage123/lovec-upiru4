@@ -3,6 +3,7 @@ import { getHeroTileDefinition } from "@/game/config/tiles.js";
 import { SFX, setSoundEnabled } from "@/game/ui/audio.js";
 import {
   Heart,
+  Shield,
   Swords,
   Dice5,
   BookOpen,
@@ -42,6 +43,7 @@ export interface HunterDeed {
   tag: string;
   beerBadge: string;
   maxHp: number;
+  defense: number;
   icon: string;
   heraldicColor: string;
   heraldicBorder: string;
@@ -64,6 +66,7 @@ export const HUNTERS_DATA: Record<string, HunterDeed> = {
     tag: "Vyvážený taktik · Odhazování & Dým",
     beerBadge: "Paličák 12°",
     maxHp: 20,
+    defense: 1,
     icon: "🧄",
     heraldicColor: "from-emerald-950 via-stone-900 to-amber-950",
     heraldicBorder: "border-emerald-500",
@@ -72,7 +75,7 @@ export const HUNTERS_DATA: Record<string, HunterDeed> = {
     signatureWeapon: "Dubový kolík & Svěcená hasičská stříkačka",
     bumpName: "Česnekové žduchnutí",
     bumpDesc:
-      "Krok do nepřítele: Odhodí cíl o 1 pole a zanechá Česnekový oblak (CD 3). V dýmu je otočení čelem vzad ZDARMA!",
+      "Krok do nepřítele: Odhodí cíl o 1 pole a zanechá Česnekový oblak (Chladnutí 3). V dýmu je otočení čelem vzad ZDARMA!",
     comboName: "Česneková aura",
     comboDesc:
       "3-kombo: Získá +4 Štít a omámí okolní upíry (Zmatení — vrávorají náhodným směrem).",
@@ -90,6 +93,7 @@ export const HUNTERS_DATA: Record<string, HunterDeed> = {
     tag: "Drtivá síla · Kolize & Beraní průraz",
     beerBadge: "Selský ležák",
     maxHp: 20,
+    defense: 0,
     icon: "🥖",
     heraldicColor: "from-amber-950 via-stone-900 to-yellow-950",
     heraldicBorder: "border-amber-500",
@@ -98,7 +102,7 @@ export const HUNTERS_DATA: Record<string, HunterDeed> = {
     signatureWeapon: "Okovaný husitský cep & Pekáč povidlových buchet",
     bumpName: "Selský beran",
     bumpDesc:
-      "Krok do nepřítele: Odhodí cíl, sám obsadí jeho pole a způsobí mu 2 drtivé DMG (CD 3)!",
+      "Krok do nepřítele: Odhodí cíl, sám obsadí jeho pole a způsobí mu 2 drtivé DMG (Chladnutí 3)!",
     comboName: "Selský hněv",
     comboDesc:
       "3-kombo: Získá +6 Štít a mocná rázová vlna zasáhne všechny okolní nepřátele za 4 DMG.",
@@ -124,10 +128,10 @@ export const HUNTERS_DATA: Record<string, HunterDeed> = {
     signatureWeapon: "Důstojnická šavle vzor 1877 & Křesadlová bambitka",
     bumpName: "Úder těžkým jílcem",
     bumpDesc:
-      "Krok do nepřítele: Praští ho mosazným jílcem za 2 DMG, odhodí ho a na 1 tah omráčí (CD 3).",
+      "Krok do nepřítele: Praští ho mosazným jílcem za 2 DMG, odhodí ho a na 1 tah omráčí (Chladnutí 3).",
     comboName: "Kavaleristická salva",
     comboDesc:
-      "3-kombo: Vypálí kartáčovou salvu (4 DMG všem v linii pohledu) a zkrátí CD všech destiček o 1.",
+      "3-kombo: Vypálí kartáčovou salvu (4 DMG všem v linii pohledu) a zkrátí Chladnutí všech destiček o 1.",
     deck: [
       { id: "dragoon_sabre", upgradeLevel: 0 },
       { id: "dragoon_pistol", upgradeLevel: 0 },
@@ -150,7 +154,7 @@ export const HUNTERS_DATA: Record<string, HunterDeed> = {
     signatureWeapon: "Italské stiletto & Křemenné střepy z Malé Strany",
     bumpName: "Kapsářská záměna",
     bumpDesc:
-      "Krok do nepřítele: Prohodí si s ním pozici a otočí ho zády k sobě (CD 2) pro okamžitý úder do zad!",
+      "Krok do nepřítele: Prohodí si s ním pozici a otočí ho zády k sobě (Chladnutí 2) pro okamžitý úder do zad!",
     comboName: "Pavučinový únik",
     comboDesc:
       "3-kombo: Získá +4 Štít a okamžitě obnoví připravenost manévru Kapsářské záměny.",
@@ -355,6 +359,10 @@ export function TitleScreen({
                       <Heart className="w-3.5 h-3.5 fill-red-500 text-red-300" />
                       <span>{hunterItem.maxHp} HP</span>
                     </div>
+                    <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border-2 border-blue-600 bg-blue-950 text-blue-100 text-xs font-black shadow-sm" title={`Obrana ${hunterItem.defense}: na začátku každého kola dá ${hunterItem.defense} Štítu`}>
+                      <Shield className="w-3.5 h-3.5 fill-blue-500 text-blue-300" />
+                      <span>{hunterItem.defense} Obrana</span>
+                    </div>
                   </div>
 
                   {/* Role a pivní známka v kontrastním pruhu */}
@@ -491,7 +499,7 @@ export function TitleScreen({
                                 {tile?.dmg ? `⚔️ ${tile.dmg} D` : "🛡️ Štít"}
                               </span>
                               <span className="text-amber-300 font-bold">
-                                CD {tile?.cooldown}
+                                Chladnutí {tile?.cooldown}
                               </span>
                             </div>
                           </div>

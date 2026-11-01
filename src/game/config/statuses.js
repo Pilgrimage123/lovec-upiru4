@@ -26,11 +26,11 @@ export const STATUSES = {
   },
   shield: {
     id: 'shield',
-    name: 'Štít z poklopu',
+    name: 'Štít',
     icon: 'status.shield',
     badge: '🛡️',
     color: '#2980b9',
-    description: 'Zcela vykryje příští obdržený zásah (1 vrstva = 1 zásah).'
+    description: 'Pohlcuje přicházející poškození bod po bodu dříve, než zasáhne zdraví.'
   },
   empower: {
     id: 'empower',

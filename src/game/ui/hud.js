@@ -1,3 +1,4 @@
+import { STARTING_LOADOUTS } from '../config/loadouts.js';
 // @ts-nocheck
 import { TALISMANS } from '../config/talismans.js';
 import { STRINGS } from '../config/strings.cs.js';
@@ -38,6 +39,20 @@ export function renderHud(container, runState, battleState, callbacks = {}) {
           })
           .join('');
 
+  let maneuverHtml = '';
+  if (battleState && battleState.hero) {
+    const hero = battleState.hero;
+    const hunterKey = hero.hunterId || hero.kind || 'classic';
+    const loadout =
+      STARTING_LOADOUTS[hunterKey] ||
+      Object.values(STARTING_LOADOUTS).find((l) => l.hunterId === hunterKey) ||
+      STARTING_LOADOUTS.classic;
+    const bumpName = loadout?.bumpName || 'Krok do nepřítele';
+    const bumpCd = hero.bumpCooldown || 0;
+    const bumpOnCd = bumpCd > 0;
+    maneuverHtml = `<span class="hud-separator">·</span><div class="hud-maneuver ${bumpOnCd ? 'hud-maneuver-cooling' : 'hud-maneuver-ready'}" title="${loadout?.bumpDesc || 'Manévr při kroku do nepřítele'}">👢 <strong>${bumpName}:</strong> ${bumpOnCd ? `Chladne (${bumpCd} t.)` : 'Připraven'}</div>`;
+  }
+
   const isMapView = Boolean(callbacks.isMapScreen);
   const canToggleBattle = Boolean(isMapView && battleState && battleState.status === 'playing');
 
@@ -56,6 +71,10 @@ export function renderHud(container, runState, battleState, callbacks = {}) {
             <span class="hud-vital-label">Zdraví:</span>
             <div class="hud-hearts">${heartsHtml}</div>
             <span class="hud-hp-numbers"><span class="hud-hp-icon" aria-hidden="true">❤️</span>${hp}/${maxHp}<span class="hud-unit-suffix"> HP</span></span>
+          </div>
+          <span class="hud-separator">·</span>
+          <div class="hud-defense" title="Obrana lovce (${(battleState?.hero?.defense ?? runState?.defense) || 1}): na začátku každého kola získá ${(battleState?.hero?.defense ?? runState?.defense) || 1} Štítu">
+            🛡️ <strong>${battleState?.hero?.statuses?.shield ? `${battleState.hero.statuses.shield} Štít` : `${(battleState?.hero?.defense ?? runState?.defense) ?? 1} Obrana`}</strong>
           </div>
           <span class="hud-separator">·</span>
           <div class="hud-gold" title="Hradní dukáty na útratu v hospodě a dílně">

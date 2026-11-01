@@ -19,8 +19,11 @@ export const STRINGS = {
     '„Hradní zeď nepovolila, zato upírovi křuplo v kříži!“',
     '„Srážka v chodbě bez přednosti zprava!“'
   ],
+  svunkQuotes: [
+    '„ŠVUNK! Padla bestie v kombu – otevírací destička chytila švunk a zkrátila Chladnutí!“'
+  ],
   momentumQuotes: [
-    '„MOMENTUM! Poslední pijavice padla v kombu – Venca popadl druhý dech a zkrátil cooldowny!“'
+    '„ŠVUNK! Padla bestie v kombu – otevírací destička chytila švunk a zkrátila Chladnutí!“'
   ],
   tutorialHints: [
     'TIP 1 (Kroky): Klávesami A / D popojdeš o 1 pole. Do obsazeného pole se vejít nedá. Přes překážku skáče jen destička Hospodský přemet.',

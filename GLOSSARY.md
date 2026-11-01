@@ -31,3 +31,22 @@ _Avoid_: Karta postavy, Hero card, Panel
 **C. k. výpravní glejt**:
 Úřední expediční povolení k výpravě na Drákulův hrad obsahující číslo spisu (seed), hejtmanskou pečeť a rozkaz k zahájení honu.
 _Avoid_: Startovací formulář, Launcher, Panel spuštění
+
+**Chladnutí**:
+Počet odehraných tahů spotřebovávajících čas, po které musí destička nebo manévr odpočívat na opasku, než je lze znovu zařadit do fronty či provést.
+_Avoid_: Cooldown, CD, Nabíjení, Přebíjení, Odpočinek
+
+**Švunk**:
+Bojová hybnost získaná při usmrcení nepřítele kombem, která okamžitě zkrátí Chladnutí první destičce tohoto komba o počet destiček v něm zařazených.
+_Avoid_: Momentum, Druhý dech, Reset, Tempo
+
+**Obrana**:
+Trvalá vlastnost postavy vyjadřující schopnost aktivního krytí a úhybů, která na začátku každého kola vygeneruje stejné množství Štítu.
+_Avoid_: Brnění, Armor, Defenziva
+
+**Štít**:
+Dočasná vrstva ochrany pohlcující zranění bod po bodu před zásahem do zdraví, která na konci kola zcela vyprchá.
+_Avoid_: Blok, Absorpce, Bariéra
+
+
+

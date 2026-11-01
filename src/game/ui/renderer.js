@@ -614,10 +614,11 @@ function renderEntityOnCellHtml(entity, initiativeRank = 1, impact = null) {
             ${entity.facing === 1 && entity.entityType !== 'prop' ? facingArrow : ''}
           </div>
         </div>
-        <div class="entity-hp-bar-outer" title="Zdraví: ${entity.hp}/${entity.maxHp} HP">
+        <div class="entity-hp-bar-outer" title="Zdraví: ${entity.hp}/${entity.maxHp} HP${(entity.statuses?.shield || 0) > 0 ? ` · Štít: ${entity.statuses.shield}` : ''}">
           <div class="entity-hp-bar-inner hp-${entity.entityType}" style="width: ${hpPercent}%"></div>
           <div class="entity-hp-bar-preview" style="left: ${previewLeft}%; width: ${previewWidth}%;"></div>
           <span class="entity-hp-text">${impact && impact.dmgTaken > 0 ? `${Math.max(0, entity.hp - impact.dmgTaken)}/${entity.maxHp}` : `${entity.hp}/${entity.maxHp}`}${previewSkullHtml}</span>
+          ${(entity.statuses?.shield || 0) > 0 ? `<span class="entity-shield-pill" title="Aktivní Štít: ${entity.statuses.shield}">🛡️${entity.statuses.shield}</span>` : ''}
         </div>
       </div>
 
@@ -1209,12 +1210,13 @@ export async function playEngineEvents(container, events, animSpeed = 1, state =
         break;
       }
 
+      case 'svunk':
       case 'momentum':
         SFX.friendlyFire();
         spawnFloatingBadgeOnEntity(
           container,
           'hero_venca',
-          `🔥 MOMENTUM! (−${ev.reduction} CD)`,
+          `⚡ ŠVUNK! (−${ev.reduction} Chladnutí)`,
           'float-heal'
         );
         await sleep(220, animSpeed);

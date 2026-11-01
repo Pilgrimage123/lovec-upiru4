@@ -14,7 +14,7 @@ export function formatLogEntryHtml(rawText, isLatest = false) {
   let formatted = text
     .replace(/(\b\d+\s*DMG\b)/g, '<span class="log-hl-dmg">$1</span>')
     .replace(/(FRIENDLY FIRE!)/g, '<span class="log-hl-ff">$1</span>')
-    .replace(/(MOMENTUM!)/g, '<span class="log-hl-mom">$1</span>')
+    .replace(/(ŠVUNK!|MOMENTUM!)/g, '<span class="log-hl-mom">$1</span>')
     .replace(/(\b\+\d+\s*HP\b)/g, '<span class="log-hl-heal">$1</span>');
 
   return `
