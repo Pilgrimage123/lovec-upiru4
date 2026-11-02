@@ -236,6 +236,8 @@ export function openBattleRewardModal(modalRoot, runState, choices, onComplete) 
     )
     .join('');
 
+  const hunterName = runState.hunterName || STARTING_LOADOUTS[runState.loadoutId]?.name || 'Venca Česnekáč';
+
   modalRoot.innerHTML = `
     <div class="modal-backdrop">
       <div class="modal-card modal-lg">
@@ -243,7 +245,7 @@ export function openBattleRewardModal(modalRoot, runState, choices, onComplete) 
           <h3>🏆 Bitva vyhrána! Vyber si 1 ze 3 odměn</h3>
         </div>
         <div class="modal-body">
-          <p class="modal-lead">Venca vytřel podlahu s upíří patrolou a prohledává kapsy poražených:</p>
+          <p class="modal-lead">${hunterName} vytřel podlahu s upíří patrolou a prohledává kapsy poražených:</p>
           <div class="reward-choices-grid">
             ${cardsHtml}
           </div>
@@ -559,6 +561,8 @@ export function openTreasureModal(modalRoot, runState, onComplete, onUpdate) {
   runState.gold += bonusGold;
   onUpdate?.();
 
+  const hunterName = runState.hunterName || STARTING_LOADOUTS[runState.loadoutId]?.name || 'Venca Česnekáč';
+
   modalRoot.innerHTML = `
     <div class="modal-backdrop">
       <div class="modal-card">
@@ -566,7 +570,7 @@ export function openTreasureModal(modalRoot, runState, onComplete, onUpdate) {
           <h3>💎 Hradní pokladnice!</h3>
         </div>
         <div class="modal-body">
-          <p class="modal-lead">Venca vypáčil dubovou truhlici za oltářem a našel:</p>
+          <p class="modal-lead">${hunterName} vypáčil dubovou truhlici za oltářem a našel:</p>
           <div class="reward-choice-card">
             ${
               tal
@@ -592,19 +596,20 @@ export function openTreasureModal(modalRoot, runState, onComplete, onUpdate) {
 
 export function openRunEndModal(modalRoot, runState, isVictory, callbacks = {}) {
   modalRoot.classList.remove('hidden');
+  const hunterName = runState.hunterName || STARTING_LOADOUTS[runState.loadoutId]?.name || 'Venca Česnekáč';
 
   modalRoot.innerHTML = `
     <div class="modal-backdrop">
       <div class="modal-card modal-lg">
         <div class="modal-header">
-          <h3>${isVictory ? '🏆 SLAVNÉ VÍTĚZSTVÍ VENCI ČESNEKÁČE!' : '⚰️ VENCA ČESNEKÁČ PADL V BOJI'}</h3>
+          <h3>${isVictory ? `🏆 SLAVNÉ VÍTĚZSTVÍ: ${hunterName.toUpperCase()}!` : `⚰️ ${hunterName.toUpperCase()} PADL V BOJI`}</h3>
         </div>
         <div class="modal-body">
           <p class="modal-lead">
             ${
               isVictory
-                ? 'Pán temnot hrabě Drákula dostal dubovým kolíkem přímo do svého černého srdce! Hrad je vyčištěn a Venca míří na zaslouženou dvanáctku!'
-                : 'Temné upíří hordy tentokrát Vencu udolaly. Ale moravský česnek ještě neřekl poslední slovo!'
+                ? `Pán temnot hrabě Drákula dostal přímo do svého černého srdce! Hrad je vyčištěn a ${hunterName} míří na zaslouženou dvanáctku!`
+                : `Temné upíří hordy tentokrát lovce (${hunterName}) udolaly. Ale moravský česnek ještě neřekl poslední slovo!`
             }
           </p>
           <div class="summary-stats-grid">

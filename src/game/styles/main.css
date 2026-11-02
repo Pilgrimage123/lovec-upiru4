@@ -66,7 +66,11 @@ body {
 
 #modal-root.hidden,
 #loading-overlay.hidden,
-#app-shell.hidden {
+#app-shell.hidden,
+#event-choices-box.hidden,
+#event-outcome-box.hidden,
+.neprakta-tooltip.hidden,
+.enemy-threat-warning-post-combo.hidden {
   display: none !important;
 }
 

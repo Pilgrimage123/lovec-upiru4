@@ -4,6 +4,21 @@ Veškeré významné změny v projektu Lovec upírů jsou zaznamenávány v tomt
 
 Formát vychází z [Keep a Changelog](https://keepachangelog.com/cs/1.0.0/).
 
+## [1.3.2] - 2026-11-02
+
+### Opraveno (Fixed)
+- **Kritický pád invariantu u Hloupého Honzy (`resolveHeroBump`)**: Při manévru *Selský beran* do nepřítele přiraženého ke zdi nebo překážce se pozice hrdiny dříve posouvala bezpodmínečně na obsazené pole, což vyvolalo pád hry a zamrznutí animací. Nyní se poškození a odhození vyhodnocují bezpečně a hrdina vstoupí na pole pouze v případě, že se uvolnilo.
+- **Tlačítka kroku vedle nepřítele (`canHeroMoveDir`)**: Opravena podmínka v ovládací liště, která zakazovala krok vlevo/vpravo při sousedství s nepřítelem. Hráči na myši i dotykových obrazovkách nyní mohou kliknutím provést podpisový *Krok do nepřítele*.
+- **Únik klávesových vstupů do bitvy na pozadí**: Ošetřena inicializace `appState.screen = 'title'` a zámek klávesnice v `main.js`, aby stisk kláves `1`–`4` či mezerníku na úvodní obrazovce nespouštěl akce ve skryté bitvě.
+- **Klávesové zkratky v otevřených modálech**: Klávesové zkratky úvodní obrazovky (1–4, Enter, mezerník, R) jsou nyní zablokovány, pokud je otevřený jakýkoliv dialog (pravidla, archiv, animační laboratoř), a neaktivují omylem start hry při interakci s tlačítky.
+- **Synchronizace výběru lovce z Hradního archivu**: Výběr lovce uvnitř modálu archivu na úvodní obrazovce se nyní okamžitě promítne do výběru na titulní straně.
+- **Ukazatel manévru a chladnutí v HUD a ovládací liště**: Do DOM šablony HUDu a lišty akcí byly doplněny chybějící prvky manévru *Krok do nepřítele* s indikací chladnutí.
+- **Oprava zobrazení Obrany pro Honzu**: V tooltipech HUDu byla opravena logická chyba `0 || 1`, která Honzovi mylně přisuzovala 1 Obranu namísto 0. Na mapě se nyní správně zobrazuje hodnota Obrany daného lovce.
+- **Kolize CSS pravidla `.hidden`**: Doplněna explicitní specifičnost pro `#event-choices-box.hidden`, `#event-outcome-box.hidden`, `.neprakta-tooltip.hidden` a varovné odznaky ohrožení, které dříve zůstávaly viditelné kvůli `display: flex` v `ui.css`.
+- **Kontrast textů v HUD, tooltipech a archivu**: Přepracovány barvy v `.hud-defense`, `.hud-maneuver`, depeších terénu v tooltipech a seznamu destiček v archivu pro bezchybnou čitelnost a splnění kontrastních norem.
+- **Mobilní rozvržení akcí a výšky spritů**: Opraven selektor tlačítka náhledu `#btn-act-preview-toggle` v mobilní mřížce a upraveny výšky spritů v `@media (max-width: 720px)`, aby nepřetékaly z polí bojiště.
+- **Animace a hlášení pro všechny lovce**: Opravena animace manévru *Kapsářská záměna* u Káči, aktualizace HP baru a odznaku při léčení, a nahrazena natvrdo zapsaná jména „Venca“ v bojových zprávách a oknech dynamickým jménem zvoleného lovce (Honza, Jaromír, Káča).
+
 ## [1.3.1] - 2026-11-02
 
 ### Opraveno (Fixed)

@@ -62,8 +62,8 @@ export function renderMapScreen(container, runState, callbacks = {}) {
           ${runState.curseLevel > 0 ? `<div class="map-curse-pill">🌙 ${getCurseDefinition(runState.curseLevel).name}</div>` : ""}
           <p class="map-act-subtitle">${
             callbacks.canReturnToBattle
-              ? "Venca má rozdělanou bitvu! K dokončení střetnutí se vrať tlačítkem zpět do probíhající bitvy."
-              : "Vyber další zastávku Vencovy výpravy hradním labyrintem. Zvýrazněné uzly jsou dostupné."
+              ? `${runState.hunterName || "Lovec"} má rozdělanou bitvu! K dokončení střetnutí se vrať tlačítkem zpět do probíhající bitvy.`
+              : `Vyber další zastávku výpravy (${runState.hunterName || "Venca Česnekáč"}) hradním labyrintem. Zvýrazněné uzly jsou dostupné.`
           }</p>
         </div>
         ${callbacks.canReturnToBattle ? `<button type="button" class="btn-parchment" id="btn-return-battle">⚔️ Zpět do probíhající bitvy</button>` : ""}

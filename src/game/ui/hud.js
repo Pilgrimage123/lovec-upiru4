@@ -55,6 +55,8 @@ export function renderHud(container, runState, battleState, callbacks = {}) {
 
   const isMapView = Boolean(callbacks.isMapScreen);
   const canToggleBattle = Boolean(isMapView && battleState && battleState.status === 'playing');
+  const heroDef = battleState?.hero?.defense ?? runState?.defense ?? 1;
+  const heroDisplayName = battleState?.hero?.name || runState?.hunterName || 'Venca Česnekáč';
 
   container.innerHTML = `
     <div class="hud-bar">
@@ -67,15 +69,15 @@ export function renderHud(container, runState, battleState, callbacks = {}) {
           <span class="hud-location" title="${locationTitle}">${locationTitle}</span>${curseHtml}
         </div>
         <div class="hud-vitals">
-          <div class="hud-hp-group" title="Zdraví Venci Česnekáče">
+          <div class="hud-hp-group" title="Zdraví lovce (${heroDisplayName})">
             <span class="hud-vital-label">Zdraví:</span>
             <div class="hud-hearts">${heartsHtml}</div>
             <span class="hud-hp-numbers"><span class="hud-hp-icon" aria-hidden="true">❤️</span>${hp}/${maxHp}<span class="hud-unit-suffix"> HP</span></span>
           </div>
           <span class="hud-separator">·</span>
-          <div class="hud-defense" title="Obrana lovce (${(battleState?.hero?.defense ?? runState?.defense) || 1}): na začátku každého kola získá ${(battleState?.hero?.defense ?? runState?.defense) || 1} Štítu">
-            🛡️ <strong>${battleState?.hero?.statuses?.shield ? `${battleState.hero.statuses.shield} Štít` : `${(battleState?.hero?.defense ?? runState?.defense) ?? 1} Obrana`}</strong>
-          </div>
+          <div class="hud-defense" title="Obrana lovce (${heroDef}): na začátku každého kola získá ${heroDef} Štítu">
+            🛡️ <strong>${battleState?.hero?.statuses?.shield ? `${battleState.hero.statuses.shield} Štít` : `${heroDef} Obrana`}</strong>
+          </div>${maneuverHtml}
           <span class="hud-separator">·</span>
           <div class="hud-gold" title="Hradní dukáty na útratu v hospodě a dílně">
             💰 <strong>${runState.gold}</strong><span class="hud-unit-suffix"> dukátů</span>

@@ -248,7 +248,7 @@ export function executeEnemyQueuedTile(state, enemy, tileDef, events = []) {
   if (tileDef.type === 'otočení') {
     enemy.facing = Math.sign(hero.cell - enemy.cell) || enemy.facing;
     events.push({ type: 'turn', entityId: enemy.id, facing: enemy.facing });
-    events.push({ type: 'log', text: `🔄 ${enemy.name} se otočil směrem k Vencovi.` });
+    events.push({ type: 'log', text: `🔄 ${enemy.name} se otočil směrem k postavě ${hero.givenName || hero.name}.` });
     return;
   }
 
@@ -303,7 +303,7 @@ export function executeEnemyQueuedTile(state, enemy, tileDef, events = []) {
     target.hp = Math.min(target.maxHp, target.hp + healAmt);
     const actualHealed = target.hp - prevHp;
     if (actualHealed > 0) {
-      events.push({ type: 'heal', targetId: target.id, cell: target.cell, amount: actualHealed });
+      events.push({ type: 'heal', targetId: target.id, cell: target.cell, amount: actualHealed, remainingHp: target.hp });
     }
     if (tileDef.empowerAmount) {
       addStatus(target, 'empower', tileDef.empowerAmount, events);
@@ -337,7 +337,7 @@ export function executeEnemyQueuedTile(state, enemy, tileDef, events = []) {
     events.push({ type: 'terrain_spawn', terrainType: 'spikes', cell: hero.cell });
     events.push({
       type: 'log',
-      text: `🗡️ ${enemy.name} nechal vyrazit kůly přímo pod Vencou (pole ${hero.cell + 1})!`
+      text: `🗡️ ${enemy.name} nechal vyrazit kůly přímo pod nohama postavy ${hero.givenName || hero.name} (pole ${hero.cell + 1})!`
     });
     if (!hero.flying) {
       dealDamage(
@@ -728,7 +728,7 @@ export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events 
     const healed = Math.min(tile.healAmount, missing);
     if (healed > 0) {
       hero.hp += healed;
-      events.push({ type: 'heal', targetId: hero.id, amount: healed, hp: hero.hp });
+      events.push({ type: 'heal', targetId: hero.id, cell: hero.cell, amount: healed, hp: hero.hp, remainingHp: hero.hp });
       events.push({
         type: 'log',
         text: `🥟 ${hero.name} si zakousl do buchty a vyléčil se o ${healed} HP!`
@@ -757,12 +757,15 @@ export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events 
 
   if (tile.leapDistance) {
     const fromCell = hero.cell;
+    const hName = hero.givenName || hero.name;
     if (tile.leaveGarlicCloud) {
-      state.terrain[fromCell] = { type: 'garlic_cloud', duration: 2 };
+      if (state.terrain[fromCell]?.type !== 'pit') {
+        state.terrain[fromCell] = { type: 'garlic_cloud', duration: 2 };
+      }
       events.push({ type: 'terrain_spawn', terrainType: 'garlic_cloud', cell: fromCell });
       events.push({
         type: 'log',
-        text: `🧄 Venca zanechal na poli ${fromCell + 1} štiplavý Česnekový oblak!`
+        text: `🧄 ${hName} zanechal na poli ${fromCell + 1} štiplavý Česnekový oblak!`
       });
     }
     const dest = findNearestFreeCell(
@@ -776,7 +779,7 @@ export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events 
       events.push({ type: 'leap', entityId: hero.id, from: fromCell, to: dest });
       events.push({
         type: 'log',
-        text: `🤸 ${tile.name}: Venca přeskočil z pole ${fromCell + 1} na pole ${dest + 1}!`
+        text: `🤸 ${tile.name}: ${hName} přeskočil z pole ${fromCell + 1} na pole ${dest + 1}!`
       });
       triggerCellTerrainOnEnter(state, hero, dest, events);
       if (state.talismans?.includes('beer_frog')) {
@@ -794,12 +797,13 @@ export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events 
           addStatus(hero, 'shield', 1, events);
           events.push({
             type: 'log',
-            text: '🐸 Pivní žába: Venca získal po přemetu Štít!'
+            text: `🐸 Pivní žába: ${hName} získal po přemetu Štít!`
           });
         }
       }
     }
   } else if (tile.stepBackward && hero.hp > 0) {
+    const hName = hero.givenName || hero.name;
     const dest = hero.cell - hero.facing * tile.stepBackward;
     if (isValidCell(dest, state) && !getEntityAt(state, dest)) {
       const from = hero.cell;
@@ -807,11 +811,11 @@ export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events 
       events.push({ type: 'step', entityId: hero.id, from, to: dest, facing: hero.facing });
       events.push({
         type: 'log',
-        text: `🏃 ${tile.name}: Venca uskočil z pole ${from + 1} vzad na pole ${dest + 1}!`
+        text: `🏃 ${tile.name}: ${hName} uskočil z pole ${from + 1} vzad na pole ${dest + 1}!`
       });
       triggerCellTerrainOnEnter(state, hero, dest, events);
     } else {
-      events.push({ type: 'log', text: `🚫 ${tile.name}: Pole za Vencou je zablokováno!` });
+      events.push({ type: 'log', text: `🚫 ${tile.name}: Pole za lovcem (${hName}) je zablokováno!` });
     }
   } else if (tile.projectileRange) {
     let hitTarget = null;
@@ -903,7 +907,9 @@ export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events 
             text: `🗡️ Z podlahy na poli ${c + 1} vyrazily naostřené kůly!`
           });
         } else if (eff.type === 'spawn_garlic_target') {
-          state.terrain[c] = { type: 'garlic_cloud', duration: 2 };
+          if (state.terrain[c]?.type !== 'pit') {
+            state.terrain[c] = { type: 'garlic_cloud', duration: 2 };
+          }
           events.push({ type: 'terrain_spawn', terrainType: 'garlic_cloud', cell: c });
         }
       }
@@ -939,7 +945,7 @@ export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events 
     events.push({ type: 'turn', entityId: hero.id, facing: hero.facing, free: true });
     events.push({
       type: 'log',
-      text: `🔄 Venca se po ráně otočil čelem ${hero.facing === 1 ? 'vpravo ▶' : 'vlevo ◀'}.`
+      text: `🔄 ${hero.givenName || hero.name} se po ráně otočil čelem ${hero.facing === 1 ? 'vpravo ▶' : 'vlevo ◀'}.`
     });
   }
 
@@ -1006,7 +1012,7 @@ export function consumeHeroStunIfPresent(state) {
     stunned: true,
     events: [
       { type: 'hero_stun_skipped', targetId: hero.id, cell: hero.cell },
-      { type: 'log', text: '🔔 Venca je omráčený a vynechává akci!' }
+      { type: 'log', text: `🔔 ${hero.givenName || hero.name} je omráčený a vynechává akci!` }
     ]
   };
 }
@@ -1093,21 +1099,30 @@ export function resolveHeroBump(state, hero, enemy, dir, targetCell, hunterId, e
   });
   if (hunterId === 'honza') {
     hero.bumpCooldown = 3;
-    pushEntity(state, enemy, dir, 1, events);
-    const from = hero.cell;
-    hero.cell = targetCell;
-    events.push({ type: 'move', entityId: hero.id, from, to: targetCell, facing: hero.facing });
-    triggerCellTerrainOnEnter(state, hero, targetCell, events);
     dealDamage(state, enemy, 2, { reason: 'honza_bump', attackerId: hero.id }, events);
+    if (enemy.hp > 0) {
+      pushEntity(state, enemy, dir, 1, events);
+    }
+    const vacated = !getEntityAt(state, targetCell);
+    if (vacated && hero.hp > 0) {
+      const from = hero.cell;
+      hero.cell = targetCell;
+      events.push({ type: 'move', entityId: hero.id, from, to: targetCell, facing: hero.facing });
+      triggerCellTerrainOnEnter(state, hero, targetCell, events);
+    }
     events.push({
       type: 'log',
-      text: `🔨 Selský beran! Honza vrazil do ${enemy.name} plnou vahou (2 DMG), odhodil ho a obsadil jeho pole!`
+      text: vacated
+        ? `🔨 Selský beran! Honza vrazil do ${enemy.name} plnou vahou (2 DMG), odhodil ho a obsadil jeho pole!`
+        : `🔨 Selský beran! Honza vrazil do ${enemy.name} plnou vahou (2 DMG) a přimáčkl ho k překážce!`
     });
   } else if (hunterId === 'dragoun') {
     hero.bumpCooldown = 3;
     dealDamage(state, enemy, 2, { reason: 'dragoon_bump', attackerId: hero.id }, events);
-    pushEntity(state, enemy, dir, 1, events);
-    addStatus(enemy, 'stun', 1, events);
+    if (enemy.hp > 0) {
+      pushEntity(state, enemy, dir, 1, events);
+      addStatus(enemy, 'stun', 1, events);
+    }
     events.push({
       type: 'log',
       text: `⚔️ Úder těžkým jílcem! Rittmeister Jaromír udeřil ${enemy.name} mosazným jílcem (2 DMG), odhodil ho a omráčil!`
@@ -1120,6 +1135,10 @@ export function resolveHeroBump(state, hero, enemy, dir, targetCell, hunterId, e
     enemy.facing = dir;
     events.push({
       type: 'swap',
+      entityAId: hero.id,
+      entityBId: enemy.id,
+      cellA: targetCell,
+      cellB: from,
       heroFrom: from,
       heroTo: targetCell,
       enemyId: enemy.id,
@@ -1135,8 +1154,11 @@ export function resolveHeroBump(state, hero, enemy, dir, targetCell, hunterId, e
   } else {
     hero.bumpCooldown = 3;
     pushEntity(state, enemy, dir, 1, events);
-    state.terrain[enemy.cell] = { type: 'garlic_cloud', duration: 2 };
-    events.push({ type: 'terrain_spawn', terrainType: 'garlic_cloud', cell: enemy.cell });
+    const cloudCell = enemy.hp > 0 ? enemy.cell : targetCell;
+    if (state.terrain[cloudCell]?.type !== 'pit') {
+      state.terrain[cloudCell] = { type: 'garlic_cloud', duration: 2 };
+    }
+    events.push({ type: 'terrain_spawn', terrainType: 'garlic_cloud', cell: cloudCell });
     events.push({
       type: 'log',
       text: `🧄 Česnekové žduchnutí! Venca vrazil do ${enemy.name} česnekovým pupkem, odhodil ho a zamořil jeho pole česnekem!`
@@ -1153,13 +1175,14 @@ export function stepHero(state, direction) {
   let dir = Math.sign(direction);
   if (!dir) return { ok: false, events };
   const hero = state.hero;
+  const hName = hero.givenName || hero.name || 'Venca';
   const confused = hasStatus(hero, 'confusion');
   if (confused) {
     dir = state.rng.nextFloat() < 0.5 ? -1 : 1;
     consumeStatus(hero, 'confusion', 1);
     events.push({
       type: 'log',
-      text: '🌀 Venca má v hlavě motolici a vykročil náhodným směrem!'
+      text: `🌀 ${hName} má v hlavě motolici a vykročil náhodným směrem!`
     });
   }
 
@@ -1168,7 +1191,7 @@ export function stepHero(state, direction) {
     if (confused) {
       events.push({
         type: 'log',
-        text: '🧱 Zmatený Venca narazil do hradní zdi a ztratil tah.'
+        text: `🧱 Zmatený ${hName} narazil do hradní zdi a ztratil tah.`
       });
       return { ok: true, events };
     }
@@ -1181,7 +1204,7 @@ export function stepHero(state, direction) {
     const from = hero.cell;
     hero.cell = targetCell;
     events.push({ type: 'move', entityId: hero.id, from, to: targetCell, facing: hero.facing });
-    events.push({ type: 'log', text: `👣 Venca popošel na pole ${targetCell + 1}.` });
+    events.push({ type: 'log', text: `👣 ${hName} popošel na pole ${targetCell + 1}.` });
     triggerCellTerrainOnEnter(state, hero, targetCell, events);
   } else if (occupant.entityType === 'enemy') {
     if ((hero.bumpCooldown || 0) > 0) {
@@ -1196,7 +1219,7 @@ export function stepHero(state, direction) {
   } else if (confused) {
     events.push({
       type: 'log',
-      text: '🧱 Zmatený Venca se zamotal do překážky a ztratil tah.'
+      text: `🧱 Zmatený ${hName} se zamotal do překážky a ztratil tah.`
     });
     return { ok: true, events };
   } else {
@@ -1218,6 +1241,7 @@ export function turnHero(state) {
   if (stunRes) return stunRes;
 
   const hero = state.hero;
+  const hName = hero.givenName || hero.name || 'Venca';
   hero.facing = -hero.facing;
   const inGarlic = state.terrain[hero.cell]?.type === 'garlic_cloud';
   events.push({ type: 'turn', entityId: hero.id, facing: hero.facing, free: inGarlic });
@@ -1257,7 +1281,7 @@ export function turnHero(state) {
   }
   events.push({
     type: 'log',
-    text: `🔄 Venca se otočil čelem ${hero.facing === 1 ? 'vpravo ▶' : 'vlevo ◀'}.`
+    text: `🔄 ${hName} se otočil čelem ${hero.facing === 1 ? 'vpravo ▶' : 'vlevo ◀'}.`
   });
   return { ok: true, freeTurn: false, events };
 }
@@ -1268,14 +1292,15 @@ export function waitHero(state) {
   const stunRes = consumeHeroStunIfPresent(state);
   if (stunRes) return stunRes;
 
+  const hName = state.hero?.givenName || state.hero?.name || 'Venca';
   const extraCd = state.talismans?.includes('pocket_watch') ? 1 : 0;
   events.push({ type: 'wait', entityId: state.hero.id });
   events.push({
     type: 'log',
     text:
       extraCd > 0
-        ? '⏳ Venca vyčkává a natahuje dědovy cibule (Chladnutí −2).'
-        : '⏳ Venca si upravil klobouk a vyčkává (1 tah).'
+        ? `⏳ ${hName} vyčkává a natahuje dědovy cibule (Chladnutí −2).`
+        : `⏳ ${hName} si upravil výstroj a vyčkává (1 tah).`
   });
   return { ok: true, extraCd, events };
 }

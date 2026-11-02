@@ -234,7 +234,10 @@ export function TitleScreen({
   // Klávesové zkratky: 1-4 výběr lovce, R náhodný seed, Enter start
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (document.activeElement?.tagName === "INPUT") return;
+      const modalRoot = document.getElementById("modal-root");
+      if (modalRoot && !modalRoot.classList.contains("hidden")) return;
+      const activeTag = document.activeElement?.tagName;
+      if (activeTag === "INPUT" || activeTag === "TEXTAREA" || activeTag === "SELECT") return;
       if (e.key === "1") handleSelectHunter("classic");
       else if (e.key === "2") handleSelectHunter("honza");
       else if (e.key === "3") handleSelectHunter("dragoun");
@@ -243,6 +246,7 @@ export function TitleScreen({
         e.preventDefault();
         handleRandomSeed();
       } else if (e.key === "Enter" || e.key === " ") {
+        if (activeTag === "BUTTON" || activeTag === "A") return;
         e.preventDefault();
         handleLaunch();
       }

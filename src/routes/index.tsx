@@ -11,6 +11,9 @@ import "@/game/styles/animations.css";
 export function Home() {
   const [isAnimLabOpen, setIsAnimLabOpen] = useState(false);
   const [screen, setScreen] = useState<"title" | "game">("title");
+  const [selectedHunterId, setSelectedHunterId] = useState<string>(
+    () => appState?.metaStats?.selectedLoadout || "classic"
+  );
 
   useEffect(() => {
     void startGame();
@@ -18,7 +21,10 @@ export function Home() {
 
   useEffect(() => {
     const handleOpenLab = () => setIsAnimLabOpen(true);
-    const handleOpenTitle = () => setScreen("title");
+    const handleOpenTitle = () => {
+      setSelectedHunterId(appState?.metaStats?.selectedLoadout || "classic");
+      setScreen("title");
+    };
 
     window.addEventListener("open-animation-lab", handleOpenLab);
     window.addEventListener("open-title-screen", handleOpenTitle);
@@ -30,6 +36,7 @@ export function Home() {
   }, []);
 
   const handleStartHunt = (hunterId: string, seed: string) => {
+    setSelectedHunterId(hunterId);
     setScreen("game");
     startNewRun(seed, hunterId);
   };
@@ -45,9 +52,14 @@ export function Home() {
       openCastleArchiveModal(
         modalRoot,
         appState,
-        () => {},
+        () => {
+          if (appState?.metaStats?.selectedLoadout) {
+            setSelectedHunterId(appState.metaStats.selectedLoadout);
+          }
+        },
         (loadoutId) => {
           appState.metaStats.selectedLoadout = loadoutId;
+          setSelectedHunterId(loadoutId);
         }
       );
     }
@@ -71,7 +83,7 @@ export function Home() {
           onStartHunt={handleStartHunt}
           onOpenRules={handleOpenRules}
           onOpenArchive={handleOpenArchive}
-          initialHunterId={appState?.metaStats?.selectedLoadout || "classic"}
+          initialHunterId={selectedHunterId}
           initialSeed={appState?.settings?.currentSeed || "VENCA-1899"}
         />
       )}

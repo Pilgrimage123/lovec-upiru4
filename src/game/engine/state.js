@@ -206,7 +206,7 @@ export function resolveEntityDeath(state, target, opts = {}, events = []) {
   } else if (target.entityType === 'hero') {
     events.push({
       type: 'log',
-      text: '⚰️ Venca Česnekáč padl! Upíři a noční stvůry dnes zvítězili.'
+      text: `⚰️ ${target.name || 'Venca Česnekáč'} padl! Upíři a noční stvůry dnes zvítězili.`
     });
   }
   target.corpse = true;
@@ -991,7 +991,7 @@ export function createBattleState(opts = {}) {
     queue: [],
     reinforcements,
     cellBlood: {},
-    log: [`⚔️ Bitva začíná: ${enc.name}! Venca si odplivl a pozvedl krucifix.`],
+    log: [`⚔️ Bitva začíná: ${enc.name}! ${hero.name} tasí výzbroj do boje.`],
     stats: {
       turnsTaken: 0,
       damageDealt: 0,

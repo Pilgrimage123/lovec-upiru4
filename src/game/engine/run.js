@@ -18,6 +18,8 @@ export function createNewRun(seedInput = 'VENCA-1899', loadoutId = 'classic', cu
     seed,
     loadoutId: loadout.id,
     hunterId: loadout.hunterId || loadout.id,
+    hunterName: loadout.name || 'Venca Česnekáč',
+    defense: loadout.defense ?? 1,
     curseLevel: cLvl,
     rng,
     act: 1,

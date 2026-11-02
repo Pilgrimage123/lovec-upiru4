@@ -94,6 +94,10 @@ export function renderTileBar(container, state, callbacks = {}) {
   const executeBtnText = `🔥 <span class="btn-label-full">ODPÁLIT KOMBO</span><span class="btn-label-short">ODPÁLIT</span> <span class="exec-count">(${state.queue.length}/${state.maxQueueSlots})</span> <kbd>Space</kbd>`;
 
   container.innerHTML = `
+    <div class="action-maneuver-bar ${bumpOnCd ? 'maneuver-bar-cooling' : 'maneuver-bar-ready'}" title="${loadout?.bumpDesc || 'Manévr při kroku do sousedního nepřítele'}">
+      <span class="maneuver-tag">👢 Manévr kroku: ${bumpName}</span>
+      <span class="maneuver-status-badge ${bumpOnCd ? 'status-cooling' : 'status-ready'}">${bumpOnCd ? `⏳ Chladne (${bumpCd} ${czechTurns(bumpCd)})` : '✅ Připraven (Krok do nepřítele)'}</span>
+    </div>
     <div class="action-controls-row">
       <button type="button" class="btn-action btn-act-move" id="btn-act-left" ${!canStepLeft ? 'disabled' : ''} title="Krok vlevo (Klávesa A nebo ⬅)">
         ⬅ <span class="btn-label-full">Krok vlevo</span><span class="btn-label-short">Vlevo</span> <kbd>A</kbd>
@@ -169,10 +173,12 @@ function canHeroMoveDir(state, dir) {
   const limit = state.boardSize || 7;
   const nextCell = state.hero.cell + dir;
   if (!Number.isInteger(nextCell) || nextCell < 0 || nextCell >= limit) return false;
-  const occ =
-    state.enemies.find((e) => e.hp > 0 && e.cell === nextCell) ||
-    state.props.find((p) => p.hp > 0 && p.cell === nextCell);
-  return !occ;
+  const enemyOcc = state.enemies.find((e) => e.hp > 0 && e.cell === nextCell);
+  if (enemyOcc) {
+    return (state.hero.bumpCooldown || 0) <= 0;
+  }
+  const propOcc = state.props.find((p) => p.hp > 0 && p.cell === nextCell);
+  return !propOcc;
 }
 
 function formatTileRangeLabel(tile) {

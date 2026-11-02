@@ -449,7 +449,7 @@ export function renderBattleBoard(container, state, uiState = {}, callbacks = {}
     const cellIdx = Number(cellEl.getAttribute('data-cell-index'));
     const terrainObj = state.terrain[cellIdx];
     const durationInfo = terrainObj?.duration
-      ? `<div class="tt-meta" style="color:#fef08a;font-weight:700;margin:2px 0;">⏳ Zbývá: <strong>${terrainObj.duration} ${czechTurns(terrainObj.duration)}</strong></div>`
+      ? `<div class="tt-meta" style="color:#b45309;font-weight:800;margin:2px 0;">⏳ Zbývá: <strong>${terrainObj.duration} ${czechTurns(terrainObj.duration)}</strong></div>`
       : '';
     const html = `<div class="tt-title"><strong>${def.name}</strong></div>${durationInfo}<div class="tt-desc">${def.description}</div>`;
     floorEl.addEventListener('mouseenter', (ev) => {
@@ -473,9 +473,9 @@ export function renderBattleBoard(container, state, uiState = {}, callbacks = {}
     if (reinf) {
       const enemyDef = ENEMIES?.[reinf.enemyId] || null;
       const enemyName = enemyDef?.name || 'Upíří posila';
-      tooltipHtml += `<div class="tt-meta" style="color:#f87171;font-weight:800;margin:3px 0;">⚠️ Příchod posily za <strong>${reinf.turnsRemaining} ${czechTurns(reinf.turnsRemaining)}</strong></div><div class="tt-desc">Zpoza brány se blíží: <strong>${enemyName}</strong> (Max HP: ${enemyDef?.maxHp || '?'}).</div>`;
+      tooltipHtml += `<div class="tt-meta" style="color:#b91c1c;font-weight:800;margin:3px 0;">⚠️ Příchod posily za <strong>${reinf.turnsRemaining} ${czechTurns(reinf.turnsRemaining)}</strong></div><div class="tt-desc">Zpoza brány se blíží: <strong>${enemyName}</strong> (Max HP: ${enemyDef?.maxHp || '?'}).</div>`;
     } else {
-      tooltipHtml += `<div class="tt-desc" style="color:#94a3b8;">V této bráně je momentálně klid. Žádná posila se neblíží.</div>`;
+      tooltipHtml += `<div class="tt-desc" style="color:#57402a;">V této bráně je momentálně klid. Žádná posila se neblíží.</div>`;
     }
     gateEl.addEventListener('mouseenter', (ev) => {
       showTooltip(tooltipHtml, ev.clientX, ev.clientY);
@@ -964,13 +964,19 @@ export async function playEngineEvents(container, events, animSpeed = 1, state =
         );
         break;
 
-      case 'swap':
+      case 'swap': {
         SFX.swap();
-        triggerSpriteAnim(container, ev.entityAId, 'anim-leap');
-        triggerSpriteAnim(container, ev.entityBId, 'anim-leap');
-        spawnFloatingBadgeOnCell(container, ev.cellA, '🤸 PŘESKOK!', 'float-info');
+        const entA = ev.entityAId || activeState?.hero?.id || 'hero_venca';
+        const entB = ev.entityBId || ev.enemyId;
+        const swapCell = ev.cellA ?? ev.heroTo ?? ev.enemyFrom;
+        triggerSpriteAnim(container, entA, 'anim-leap');
+        if (entB) triggerSpriteAnim(container, entB, 'anim-leap');
+        if (swapCell !== undefined) {
+          spawnFloatingBadgeOnCell(container, swapCell, '🤸 PŘESKOK!', 'float-info');
+        }
         await sleep(ANIMATION_TIMINGS.MOVE_MS, animSpeed);
         break;
+      }
 
       case 'turn':
         SFX.turn();
@@ -1194,18 +1200,22 @@ export async function playEngineEvents(container, events, animSpeed = 1, state =
 
       case 'heal': {
         const healedEl = container.querySelector(`#entity-dom-${ev.targetId}`);
-        if (healedEl && ev.remainingHp !== undefined) {
+        const newHp = ev.remainingHp ?? ev.hp;
+        if (healedEl && newHp !== undefined) {
           const hpInnerEl = healedEl.querySelector('.entity-hp-bar-inner');
           const hpTextEl = healedEl.querySelector('.entity-hp-text');
           if (hpInnerEl && hpTextEl) {
             const parts = (hpTextEl.textContent || '').split('/');
-            const maxHp = Number(parts[1]) || Math.max(1, ev.remainingHp);
-            const curHp = Math.min(maxHp, ev.remainingHp);
+            const maxHp = Number(parts[1]) || Math.max(1, newHp);
+            const curHp = Math.min(maxHp, newHp);
             hpTextEl.textContent = `${curHp}/${maxHp}`;
             hpInnerEl.style.width = `${Math.max(0, Math.min(100, Math.round((curHp / maxHp) * 100)))}%`;
           }
         }
-        spawnFloatingBadgeOnCell(container, ev.cell, `+${ev.amount} HP`, 'float-heal');
+        const targetCell = ev.cell ?? activeState?.hero?.cell;
+        if (targetCell !== undefined) {
+          spawnFloatingBadgeOnCell(container, targetCell, `+${ev.amount} HP`, 'float-heal');
+        }
         await sleep(140, animSpeed);
         break;
       }
@@ -1215,7 +1225,7 @@ export async function playEngineEvents(container, events, animSpeed = 1, state =
         SFX.friendlyFire();
         spawnFloatingBadgeOnEntity(
           container,
-          'hero_venca',
+          activeState?.hero?.id || 'hero_venca',
           `⚡ ŠVUNK! (−${ev.reduction} Chladnutí)`,
           'float-heal'
         );

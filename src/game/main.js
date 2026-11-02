@@ -31,7 +31,7 @@ const META_STORAGE_KEY = 'lovec_upiru_meta_v1';
 const loadedMeta = loadMetaStats();
 
 export const appState = {
-  screen: 'battle',
+  screen: 'title',
   runState: null,
   battleState: null,
   isAnimating: false,
@@ -136,6 +136,7 @@ async function bootstrap(token) {
     isInputLocked: () =>
       appState.isAnimating ||
       appState.screen !== 'battle' ||
+      document.getElementById('app-shell')?.classList.contains('hidden') ||
       !document.getElementById('modal-root')?.classList.contains('hidden'),
     onStep: (dir) => actions.handlePlayerStep(dir),
     onTurn: () => actions.handlePlayerTurn(),
@@ -191,7 +192,11 @@ async function bootstrap(token) {
     });
   }
 
+  const wasOnTitle = document.getElementById('app-shell')?.classList.contains('hidden');
   startNewRun(appState.metaStats.lastSeed || 'VENCA-1899');
+  if (wasOnTitle) {
+    appState.screen = 'title';
+  }
 }
 
 export function startNewRun(seedInput = 'VENCA-1899', loadoutId = null, curseLevel = null) {
