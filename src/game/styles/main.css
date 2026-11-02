@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   --bg-parchment: #f4ead2;
   --bg-parchment-dark: #e4cf9e;
@@ -60,7 +62,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-.hidden {
+
+
+#modal-root.hidden,
+#loading-overlay.hidden,
+#app-shell.hidden {
   display: none !important;
 }
 

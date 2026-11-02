@@ -4,6 +4,16 @@ Veškeré významné změny v projektu Lovec upírů jsou zaznamenávány v tomt
 
 Formát vychází z [Keep a Changelog](https://keepachangelog.com/cs/1.0.0/).
 
+## [1.3.1] - 2026-11-02
+
+### Opraveno (Fixed)
+- **Výběr lovců na úvodní obrazovce**: Opraveno zobrazení a interaktivita Síně lovců:
+  - Doplněn `@import "tailwindcss";` do `src/game/styles/main.css` pro plnou funkčnost Tailwind v4 utility tříd v produkčním i náhledovém sestavení.
+  - Odstraněna kolize generického CSS pravidla `.hidden { display: none !important; }`, která potlačovala responzivní zobrazení `hidden lg:grid` a způsobovala skrytí karet na desktopech.
+  - Doplněna chybějící vlastnost `defense: 2` pro Rittmeistera Jaromíra a Káču v `HUNTERS_DATA` dle TypeScript definice `HunterDeed`.
+  - **Responzivní adaptace**: Kompaktní přepínač 4 záložek (`hunters-mobile-view`) na mobilech a tabletech (< 1024px) a 4 paralelní sloupce (`hunters-desktop-view`) na laptopech a desktopech (>= 1024px), vertikálně optimalizované pro standardní výšku 768px tak, aby tlačítko „VYRAZIT NA DRÁKULU“ bylo vždy viditelné bez ořezu.
+  - **Klávesa Enter v poli seedu**: Stisk Enter při psaní v poli expedičního spisu nyní rovnou odstartuje hru se zvoleným lovcem a zadaným seedem.
+
 ## [1.3.0] - 2026-11-01
 
 ### Přidáno (Added)
