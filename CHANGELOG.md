@@ -4,6 +4,18 @@ Veškeré významné změny v projektu Lovec upírů jsou zaznamenávány v tomt
 
 Formát vychází z [Keep a Changelog](https://keepachangelog.com/cs/1.0.0/).
 
+## [1.3.4] - 2026-11-03
+
+### Opraveno (Fixed)
+- **Hierarchie velikostí a proporce postav (Unit Scaling)**:
+  - Vyřešena dlouhodobá disproporce dětských a drobných nepřátel (Upírka Cilka, Lojzíček, Šmudla) vůči lovci na všech typech zařízení. Děti nyní konzistentně tvoří ~41–42 % výšky hrdiny a ~50–53 % dospělého člověka.
+  - Odstraněny konfliktní a přepisující responzivní bloky v `src/game/styles/ui.css`, které dříve přebíjely pravidla z `board.css` a způsobovaly nežádoucí zvětšování spritů na laptopech a mobilech.
+  - Zavedena nová responzivní hladina v `src/game/styles/board.css` pro běžné obrazovky s omezenou výškou (`(min-width: 721px) and (max-height: 820px)`) a opraveny invertované hodnoty v media queries pro tablety a mobily.
+  - Upraven maximální horizontální rozptyl lovce (`max-width: 215%`) v mřížce bojiště, čímž se zamezilo nechtěnému stlačování a vertikálnímu zmenšování širokého spritu lovce v úzkých buňkách.
+  - Zavedena centralizovaná funkce `getEntityBodyScale(entity)` v `src/game/ui/renderer.js`, která spolehlivě detekuje dětské a drobné entity podle `id`, `kind`, `name` i `givenName` a brání jejich nesprávnému zařazení mezi dospělé lidi (`human`).
+  - Proporcionálně sjednocen výchozí rozměr spritů v komponentě `UnitSprite.tsx` pro karty a náhledy jednotek.
+  - Přidán automatizovaný regresní test `scratch_tests/test_scale_hierarchy.mjs` ověřující správné proporce pro všechny třídy a responzivní rozlišení.
+
 ## [1.3.3] - 2026-11-02
 
 ### Opraveno (Fixed)

@@ -537,22 +537,46 @@ function renderGateBannerHtml(cellIdx, leftReinf, rightReinf, boardSize = BOARD_
   `;
 }
 
+export function getEntityBodyScale(entity) {
+  if (!entity) return 'human';
+  if (entity.bodyScale) return entity.bodyScale;
+  if (entity.entityType === 'hero' || entity.id?.startsWith('hero') || entity.hunterId) return 'hero';
+  if (entity.entityType === 'prop' || entity.id?.startsWith('barrel') || entity.id?.startsWith('prop')) return 'prop';
+  if (entity.flying) return 'flyer';
+  if (entity.isBoss || entity.archetype === 'boss') return 'boss';
+  const id = (entity.id || '').toLowerCase();
+  const kind = (entity.kind || '').toLowerCase();
+  const name = (entity.name || '').toLowerCase();
+  const given = (entity.givenName || '').toLowerCase();
+  if (
+    id.includes('lojz') || id.includes('kamen') ||
+    id.includes('cilka') ||
+    id.includes('trpaslik') || id.includes('smudla') ||
+    kind.includes('lojz') || kind.includes('kamen') ||
+    kind.includes('cilka') ||
+    kind.includes('trpaslik') || kind.includes('smudla') ||
+    name.includes('lojzíček') || name.includes('cilka') || name.includes('šmudla') ||
+    given.includes('lojzíček') || given.includes('cilka') || given.includes('šmudla')
+  ) {
+    return 'small';
+  }
+  if (id.includes('krysa') || id.includes('piskota') || name.includes('piškota') || kind.includes('krysa')) return 'critter';
+  if (
+    id.includes('divocak') || id.includes('vlkodav') || id.includes('buldok') || id.includes('prase') ||
+    kind.includes('divocak') || kind.includes('vlkodav') || kind.includes('buldok') || kind.includes('prase') ||
+    name.includes('pes') || name.includes('vlk') || name.includes('kanec') || name.includes('pašík')
+  ) {
+    return 'beast';
+  }
+  return 'human';
+}
+
 function renderEntityOnCellHtml(entity, initiativeRank = 1, impact = null) {
   const givenName = entity.givenName || entity.name;
   const epithet = entity.epithet || '';
-  const bodyScale =
-    entity.bodyScale ||
-    (entity.flying
-      ? 'flyer'
-      : entity.entityType === 'hero' || entity.name?.includes('Venca') || entity.id?.includes('venca')
-      ? 'hero'
-      : entity.name?.includes('Lojzíček') || entity.id?.includes('lojz') || entity.id?.includes('kluk')
-      ? 'small'
-      : entity.isBoss
-      ? 'boss'
-      : 'human');
+  const bodyScale = getEntityBodyScale(entity);
   const heroClass = entity.entityType === 'hero' ? 'hero-sprite' : '';
-  const gait = gaitFor(entity);
+  const gait = gaitFor(entity, bodyScale);
   const spriteKey = entity.hp <= 0 && entity.entityType === 'hero' ? 'hero.dead' : entity.sprite;
   const spriteUrl = getAssetUrl(spriteKey, entity.name);
   const hpPercent = Math.max(0, Math.min(100, Math.round((entity.hp / entity.maxHp) * 100)));
@@ -744,14 +768,16 @@ export function refreshBoardOverlays(container, state, uiState = {}) {
   return true;
 }
 
-function gaitFor(entity) {
+function gaitFor(entity, bodyScale = null) {
+  if (!entity) return 'human';
+  const scale = bodyScale || getEntityBodyScale(entity);
   if (entity.entityType === 'hero') return 'hero';
-  if (entity.entityType === 'prop' || entity.bodyScale === 'prop') return 'prop';
-  if (entity.flying || entity.bodyScale === 'flyer') return 'flyer';
-  if (entity.bodyScale === 'critter') return 'critter';
-  if (entity.bodyScale === 'beast') return 'beast';
-  if (entity.bodyScale === 'small') return 'small';
-  if (entity.bodyScale === 'boss' || entity.isBoss) return 'boss';
+  if (entity.entityType === 'prop' || scale === 'prop') return 'prop';
+  if (entity.flying || scale === 'flyer') return 'flyer';
+  if (scale === 'critter') return 'critter';
+  if (scale === 'beast') return 'beast';
+  if (scale === 'small') return 'small';
+  if (scale === 'boss' || entity.isBoss) return 'boss';
   if (entity.kind === 'zombie_hynek' || entity.kind === 'kostlivec_fabian') return 'undead';
   return 'human';
 }

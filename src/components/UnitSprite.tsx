@@ -542,32 +542,47 @@ export const UnitSprite = forwardRef<UnitSpriteHandle, UnitSpriteProps>(
 
     const scaleMode =
       scale ||
-      (id.includes("venca") || !isEnemy
+      (id.includes("venca") || id.startsWith("hero") || !isEnemy
         ? "hero"
-        : id.includes("lojz") || id.includes("kamen")
+        : id.includes("lojz") ||
+          id.includes("kamen") ||
+          id.includes("cilka") ||
+          id.includes("trpaslik") ||
+          id.includes("smudla") ||
+          name?.toLowerCase().includes("lojzíček") ||
+          name?.toLowerCase().includes("cilka") ||
+          name?.toLowerCase().includes("šmudla")
         ? "small"
+        : id.includes("dagmar") || id.includes("sosak") || id.includes("drakula")
+        ? "boss"
+        : id.includes("vlkodav") || id.includes("buldok") || id.includes("divocak") || id.includes("prase")
+        ? "beast"
+        : id.includes("krysa") || id.includes("piskota")
+        ? "critter"
         : "human");
     const spriteHeightPx =
       scaleMode === "boss"
-        ? 98
+        ? 125
         : scaleMode === "hero"
         ? 110
         : scaleMode === "human"
-        ? 74
-        : scaleMode === "small"
-        ? 35
+        ? 85
         : scaleMode === "beast"
         ? 52
+        : scaleMode === "small"
+        ? 44
         : scaleMode === "critter"
-        ? 32
-        : 74;
+        ? 30
+        : 85;
     const shadowWidthPx =
       scaleMode === "boss"
-        ? 76
+        ? 80
         : scaleMode === "hero"
         ? 84
         : scaleMode === "human"
         ? 54
+        : scaleMode === "beast"
+        ? 48
         : scaleMode === "small"
         ? 26
         : 48;
