@@ -208,7 +208,36 @@ function simulatePreviewStep(state, tile, heroCell, heroFacing, isFirst, isLateS
   const bonus = computePreviewBonus(state, tile, slotIdx, simCtx);
   simCtx.deadIds ||= new Set();
 
-  if (tile.leapDistance) {
+  if (tile.stepBackward) {
+    const dest = heroCell - heroFacing * tile.stepBackward;
+    if (isValidCell(dest, state) && !getPreviewTargetAt(state, dest, simCtx)) {
+      newHeroCell = dest;
+    }
+    hits.push({
+      cell: newHeroCell,
+      dmg: 0,
+      isMove: true,
+      slotIndex: slotIdx,
+      tileName: tile.name,
+      effects: []
+    });
+  } else if (tile.id === 'domicile_inspection') {
+    const adjCell = heroCell + heroFacing;
+    const adjTarget = getPreviewTargetAt(state, adjCell, simCtx);
+    if (adjTarget && adjTarget.entityType === 'enemy') {
+      newHeroCell = adjCell;
+    }
+    if (isValidCell(adjCell, state)) {
+      hits.push({
+        cell: adjCell,
+        dmg: 0,
+        isMove: true,
+        slotIndex: slotIdx,
+        tileName: tile.name,
+        effects: []
+      });
+    }
+  } else if (tile.leapDistance) {
     const dest = previewLeapDest(state, heroCell, heroFacing, tile.leapDistance);
     newHeroCell = dest;
     hits.push({
@@ -272,6 +301,12 @@ function simulatePreviewStep(state, tile, heroCell, heroFacing, isFirst, isLateS
   }
   if (tile.selfFlipAfter) {
     newHeroFacing = -newHeroFacing;
+  }
+  if (tile.recoilBack) {
+    const recoilCell = newHeroCell - newHeroFacing * tile.recoilBack;
+    if (isValidCell(recoilCell, state) && !getPreviewTargetAt(state, recoilCell, simCtx)) {
+      newHeroCell = recoilCell;
+    }
   }
 
   return { newHeroCell, newHeroFacing, hits };

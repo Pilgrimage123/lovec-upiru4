@@ -22,6 +22,18 @@ interface TacticalUnit {
   attackDmg: number;
 }
 
+const HUNTER_DEMO_SKINS = [
+  { id: "venca", name: "Venca Česnekáč", spriteUrl: SPRITE_PRESETS.vencaHunter },
+  { id: "honza", name: "Hloupý Honza", spriteUrl: SPRITE_PRESETS.honzaHunter },
+  { id: "dragoun", name: "Rittmeister Jaromír", spriteUrl: SPRITE_PRESETS.dragounHunter },
+  { id: "zlodejka", name: "Káča Pavučina", spriteUrl: SPRITE_PRESETS.zlodejkaHunter },
+  { id: "ponocny", name: "Ponocný Bartoloměj", spriteUrl: SPRITE_PRESETS.ponocnyHunter },
+  { id: "silak", name: "Silák Gustav", spriteUrl: SPRITE_PRESETS.silakHunter },
+  { id: "anglicanka", name: "Lady Gwendolyn", spriteUrl: SPRITE_PRESETS.anglicankaHunter },
+  { id: "helsing", name: "Prof. van Helsing", spriteUrl: SPRITE_PRESETS.helsingHunter },
+  { id: "revident", name: "C. k. vrchní revident", spriteUrl: SPRITE_PRESETS.revidentHunter },
+] as const;
+
 const INITIAL_UNITS: TacticalUnit[] = [
   {
     id: "hero_venca_2d",
@@ -631,6 +643,42 @@ export function TacticalAnimationDemo({
                 <p className="text-xs text-stone-400">
                   Otestuj jednotlivé procedurální animace na vybrané jednotce.
                 </p>
+              </div>
+
+              {/* Hunter Skin Switcher */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-stone-300">
+                  Vzhled lovce v aréně (9 hrdinů):
+                </label>
+                <div className="grid grid-cols-3 gap-1">
+                  {HUNTER_DEMO_SKINS.map((skin) => {
+                    const heroUnit = units.find((u) => !u.isEnemy);
+                    const isCurrent = heroUnit?.spriteUrl === skin.spriteUrl;
+                    return (
+                      <button
+                        key={skin.id}
+                        type="button"
+                        onClick={() => {
+                          setUnits((prev) =>
+                            prev.map((u) =>
+                              !u.isEnemy
+                                ? { ...u, name: skin.name, spriteUrl: skin.spriteUrl }
+                                : u
+                            )
+                          );
+                        }}
+                        className={`truncate rounded border px-1.5 py-1 text-[10px] font-bold transition-colors ${
+                          isCurrent
+                            ? "border-amber-400 bg-amber-950/70 text-amber-200"
+                            : "border-stone-700 bg-stone-800/60 text-stone-300 hover:bg-stone-800"
+                        }`}
+                        title={skin.name}
+                      >
+                        {skin.name.split(" ")[0]}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* Unit Selector */}

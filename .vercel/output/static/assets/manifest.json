@@ -1,8 +1,20 @@
 {
   "hero.idle": {
-    "src": "assets/characters/venca_idle.png",
-    "w": 1108,
-    "h": 1044,
+    "src": "assets/aistudio/Venca__esnek_06bdb1af.png",
+    "w": 369,
+    "h": 546,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Venca Česnekáč",
+    "preload": true,
+    "present": true
+  },
+  "hero.venca": {
+    "src": "assets/aistudio/Venca__esnek_06bdb1af.png",
+    "w": 369,
+    "h": 546,
     "pivot": [
       0.5,
       1
@@ -12,9 +24,9 @@
     "present": true
   },
   "hero.attack": {
-    "src": "assets/characters/venca_attack.png",
-    "w": 1108,
-    "h": 1044,
+    "src": "assets/aistudio/Venca__esnek_06bdb1af.png",
+    "w": 369,
+    "h": 546,
     "pivot": [
       0.5,
       1
@@ -24,9 +36,9 @@
     "present": true
   },
   "hero.hurt": {
-    "src": "assets/characters/venca_hurt.png",
-    "w": 1108,
-    "h": 1044,
+    "src": "assets/aistudio/Venca__esnek_06bdb1af.png",
+    "w": 369,
+    "h": 546,
     "pivot": [
       0.5,
       1
@@ -43,33 +55,129 @@
       0.5,
       1
     ],
-    "label": "Venca (padlý)",
+    "label": "Padlý lovec",
+    "preload": true,
+    "present": true
+  },
+  "hero.honza": {
+    "src": "assets/aistudio/Vesel__Honza_s_rane_kem_na_cest__2d2284c3.png",
+    "w": 365,
+    "h": 546,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Hloupý Honza",
+    "preload": true,
+    "present": true
+  },
+  "hero.dragoun": {
+    "src": "assets/aistudio/dragoun_3c7cb780.png",
+    "w": 925,
+    "h": 1358,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Rittmeister Jaromír",
+    "preload": true,
+    "present": true
+  },
+  "hero.zlodejka": {
+    "src": "assets/aistudio/Zlatovlas__zlod_jka_s_d_kou_96361a6e.png",
+    "w": 898,
+    "h": 1352,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Káča Pavučina",
+    "preload": true,
+    "present": true
+  },
+  "hero.ponocny": {
+    "src": "assets/aistudio/ponocn__6449a1bd.png",
+    "w": 374,
+    "h": 563,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Ponocný Bartoloměj",
+    "preload": true,
+    "present": true
+  },
+  "hero.silak": {
+    "src": "assets/aistudio/Vintage_sil_k_s_kotvou_a_medail__86a24e4c.png",
+    "w": 466,
+    "h": 546,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Silák Gustav",
+    "preload": true,
+    "present": true
+  },
+  "hero.anglicanka": {
+    "src": "assets/aistudio/Barevn__viktori_nsk__lovkyn__s_de_tn_kem_e96488c5.png",
+    "w": 491,
+    "h": 527,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Lady Gwendolyn",
+    "preload": true,
+    "present": true
+  },
+  "hero.helsing": {
+    "src": "assets/aistudio/Karikatura_Van_Helsinga_s_rota_n__ku___4ad7e475.png",
+    "w": 517,
+    "h": 557,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "Profesor Gabriel van Helsing",
+    "preload": true,
+    "present": true
+  },
+  "hero.revident": {
+    "src": "assets/aistudio/Ornate_c_sa_sk__boty_star_ho___edn_ka_8f8df6f3.png",
+    "w": 925,
+    "h": 1300,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "label": "C. k. vrchní revident",
     "preload": true,
     "present": true
   },
   "enemy.praktikant": {
-    "src": "assets/enemies/praktikant.png",
-    "w": 512,
-    "h": 512,
+    "src": "assets/enemies/upiri_trpaslik.png",
+    "w": 379,
+    "h": 560,
     "pivot": [
       0.5,
       1
     ],
     "label": "Praktikant Ignác",
     "preload": true,
-    "present": false
+    "present": true
   },
   "enemy.urednik": {
-    "src": "assets/enemies/urednik.png",
-    "w": 512,
-    "h": 512,
+    "src": "assets/characters/venca_idle.png",
+    "w": 1108,
+    "h": 1044,
     "pivot": [
       0.5,
       1
     ],
     "label": "Kryptový písař Hubert",
     "preload": true,
-    "present": false
+    "present": true
   },
   "enemy.drab": {
     "src": "assets/enemies/drab.png",
@@ -372,16 +480,16 @@
     "present": true
   },
   "enemy.vratny_stit": {
-    "src": "assets/enemies/vratny_stit.png",
-    "w": 512,
-    "h": 512,
+    "src": "assets/enemies/sedlak_stit.png",
+    "w": 400,
+    "h": 586,
     "pivot": [
       0.5,
       1
     ],
     "label": "Vrátný Lojza",
     "preload": true,
-    "present": false
+    "present": true
   },
   "enemy.netopyr": {
     "src": "assets/enemies/netopyr.png",

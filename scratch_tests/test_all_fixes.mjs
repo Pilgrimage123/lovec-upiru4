@@ -12,6 +12,9 @@ import {
 } from '../src/game/engine/combat.js';
 import { simulateComboImpact } from '../src/game/engine/simulation.js';
 import { applyResonances } from '../src/game/engine/combo.js';
+import { ENCOUNTERS } from '../src/game/config/encounters.js';
+import { HERO_TILES, TILE_TAGS, getHeroTileDefinition } from '../src/game/config/tiles.js';
+import { computePlayerQueuePreview } from '../src/game/engine/threat.js';
 
 console.log('--- TEST 1: Enemy initial shield from Defense ---');
 {
@@ -103,6 +106,55 @@ console.log('\n--- TEST 5: Combo Resonance Determinism ---');
   console.log('✓ Combo Resonance uses deterministic RNG and correct glossary term');
 }
 
+console.log('\n--- TEST 6: All Encounters (including act1_boss & act2_boss) Initialize Cleanly ---');
+{
+  for (const encId of Object.keys(ENCOUNTERS)) {
+    const state = createBattleState({ hunterId: 'classic', encounterId: encId });
+    assert.ok(state.hero && state.hero.hp > 0, `Hero initialized in ${encId}`);
+    assert.ok(state.enemies.length > 0, `Enemies initialized in ${encId}`);
+  }
+  console.log(`✓ All ${Object.keys(ENCOUNTERS).length} encounters initialize without board invariant errors`);
+}
+
+console.log('\n--- TEST 7: All Hero Tiles Have Numeric DMG and Valid Tags ---');
+{
+  for (const tileId of Object.keys(HERO_TILES)) {
+    for (const lvl of [0, 1, 2]) {
+      const def = getHeroTileDefinition(tileId, lvl);
+      assert.strictEqual(typeof def.dmg, 'number', `Tile ${tileId} (lvl ${lvl}) must have numeric dmg`);
+      for (const tag of def.tags || []) {
+        assert.ok(TILE_TAGS[tag], `Tile ${tileId} tag '${tag}' must exist in TILE_TAGS`);
+      }
+    }
+  }
+  console.log(`✓ All ${Object.keys(HERO_TILES).length} hero tiles across all upgrade levels have valid numeric DMG and tags`);
+}
+
+console.log('\n--- TEST 8: Queue Preview Tracks RecoilBack and Domicile Inspection ---');
+{
+  const helsingState = createBattleState({ hunterId: 'helsing', encounterId: 'tutorial_1' });
+  helsingState.props = [];
+  helsingState.hero.cell = 2;
+  helsingState.hero.facing = 1;
+  const kickTile = helsingState.hand.find((t) => t.id === 'winch_reload_kick');
+  helsingState.queue = [kickTile.instanceId];
+  const preview = computePlayerQueuePreview(helsingState);
+  assert.strictEqual(preview.ghostCell, 1, 'After winch_reload_kick recoilBack, ghostCell should be 1');
+  assert.strictEqual(preview.heroMoved, true, 'heroMoved should be true after recoilBack');
+
+  const revState = createBattleState({ hunterId: 'revident', encounterId: 'tutorial_1' });
+  revState.props = [];
+  revState.hero.cell = 2;
+  revState.hero.facing = 1;
+  revState.enemies[0].cell = 3;
+  const inspTile = revState.hand.find((t) => t.id === 'domicile_inspection');
+  revState.queue = [inspTile.instanceId];
+  const revPreview = computePlayerQueuePreview(revState);
+  assert.strictEqual(revPreview.ghostCell, 3, 'After domicile_inspection swap with adjacent enemy, ghostCell should be 3');
+  console.log('✓ computePlayerQueuePreview accurately tracks recoilBack and domicile_inspection swap');
+}
+
 console.log('\n=============================');
 console.log('ALL FIX TESTS PASSED SUCCESSFULLY!');
 console.log('=============================');
+

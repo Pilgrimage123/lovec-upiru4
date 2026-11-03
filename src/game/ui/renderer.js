@@ -42,34 +42,64 @@ export function sleep(ms, speedMultiplier = 1) {
 
 const HUNTER_SPRITE_PRESETS = {
   venca: {
-    idle: ['/assets/characters/venca_idle.png'],
-    attack: ['/assets/characters/venca_attack.png'],
-    hurt: ['/assets/characters/venca_hurt.png'],
-    dead: ['/assets/characters/venca_dead.png']
+    idle: ['/assets/aistudio/Venca__esnek_06bdb1af.png'],
+    attack: ['/assets/aistudio/Venca__esnek_06bdb1af.png'],
+    hurt: ['/assets/aistudio/Venca__esnek_06bdb1af.png'],
+    dead: ['/assets/aistudio/Venca__esnek_06bdb1af.png']
   },
   classic: {
-    idle: ['/assets/characters/venca_idle.png'],
-    attack: ['/assets/characters/venca_attack.png'],
-    hurt: ['/assets/characters/venca_hurt.png'],
-    dead: ['/assets/characters/venca_dead.png']
+    idle: ['/assets/aistudio/Venca__esnek_06bdb1af.png'],
+    attack: ['/assets/aistudio/Venca__esnek_06bdb1af.png'],
+    hurt: ['/assets/aistudio/Venca__esnek_06bdb1af.png'],
+    dead: ['/assets/aistudio/Venca__esnek_06bdb1af.png']
   },
   honza: {
-    idle: ['/assets/enemies/sedlak_stit.png'],
-    attack: ['/assets/enemies/sedlak_stit.png'],
-    hurt: ['/assets/enemies/sedlak_stit.png'],
-    dead: ['/assets/characters/venca_dead.png']
+    idle: ['/assets/aistudio/Vesel__Honza_s_rane_kem_na_cest__2d2284c3.png'],
+    attack: ['/assets/aistudio/Vesel__Honza_s_rane_kem_na_cest__2d2284c3.png'],
+    hurt: ['/assets/aistudio/Vesel__Honza_s_rane_kem_na_cest__2d2284c3.png'],
+    dead: ['/assets/aistudio/Vesel__Honza_s_rane_kem_na_cest__2d2284c3.png']
   },
   dragoun: {
-    idle: ['/assets/enemies/halapartnik.png'],
-    attack: ['/assets/enemies/halapartnik.png'],
-    hurt: ['/assets/enemies/halapartnik.png'],
-    dead: ['/assets/characters/venca_dead.png']
+    idle: ['/assets/aistudio/dragoun_3c7cb780.png'],
+    attack: ['/assets/aistudio/dragoun_3c7cb780.png'],
+    hurt: ['/assets/aistudio/dragoun_3c7cb780.png'],
+    dead: ['/assets/aistudio/dragoun_3c7cb780.png']
   },
   zlodejka: {
-    idle: ['/assets/enemies/vrhac_nozu.png'],
-    attack: ['/assets/enemies/vrhac_nozu.png'],
-    hurt: ['/assets/enemies/vrhac_nozu.png'],
-    dead: ['/assets/characters/venca_dead.png']
+    idle: ['/assets/aistudio/Zlatovlas__zlod_jka_s_d_kou_96361a6e.png'],
+    attack: ['/assets/aistudio/Zlatovlas__zlod_jka_s_d_kou_96361a6e.png'],
+    hurt: ['/assets/aistudio/Zlatovlas__zlod_jka_s_d_kou_96361a6e.png'],
+    dead: ['/assets/aistudio/Zlatovlas__zlod_jka_s_d_kou_96361a6e.png']
+  },
+  ponocny: {
+    idle: ['/assets/aistudio/ponocn__6449a1bd.png'],
+    attack: ['/assets/aistudio/ponocn__6449a1bd.png'],
+    hurt: ['/assets/aistudio/ponocn__6449a1bd.png'],
+    dead: ['/assets/aistudio/ponocn__6449a1bd.png']
+  },
+  silak: {
+    idle: ['/assets/aistudio/Vintage_sil_k_s_kotvou_a_medail__86a24e4c.png'],
+    attack: ['/assets/aistudio/Vintage_sil_k_s_kotvou_a_medail__86a24e4c.png'],
+    hurt: ['/assets/aistudio/Vintage_sil_k_s_kotvou_a_medail__86a24e4c.png'],
+    dead: ['/assets/aistudio/Vintage_sil_k_s_kotvou_a_medail__86a24e4c.png']
+  },
+  anglicanka: {
+    idle: ['/assets/aistudio/Barevn__viktori_nsk__lovkyn__s_de_tn_kem_e96488c5.png'],
+    attack: ['/assets/aistudio/Barevn__viktori_nsk__lovkyn__s_de_tn_kem_e96488c5.png'],
+    hurt: ['/assets/aistudio/Barevn__viktori_nsk__lovkyn__s_de_tn_kem_e96488c5.png'],
+    dead: ['/assets/aistudio/Barevn__viktori_nsk__lovkyn__s_de_tn_kem_e96488c5.png']
+  },
+  helsing: {
+    idle: ['/assets/aistudio/Karikatura_Van_Helsinga_s_rota_n__ku___4ad7e475.png'],
+    attack: ['/assets/aistudio/Karikatura_Van_Helsinga_s_rota_n__ku___4ad7e475.png'],
+    hurt: ['/assets/aistudio/Karikatura_Van_Helsinga_s_rota_n__ku___4ad7e475.png'],
+    dead: ['/assets/aistudio/Karikatura_Van_Helsinga_s_rota_n__ku___4ad7e475.png']
+  },
+  revident: {
+    idle: ['/assets/aistudio/Ornate_c_sa_sk__boty_star_ho___edn_ka_8f8df6f3.png'],
+    attack: ['/assets/aistudio/Ornate_c_sa_sk__boty_star_ho___edn_ka_8f8df6f3.png'],
+    hurt: ['/assets/aistudio/Ornate_c_sa_sk__boty_star_ho___edn_ka_8f8df6f3.png'],
+    dead: ['/assets/aistudio/Ornate_c_sa_sk__boty_star_ho___edn_ka_8f8df6f3.png']
   }
 };
 
@@ -606,8 +636,11 @@ function renderEntityOnCellHtml(entity, initiativeRank = 1, impact = null) {
   const bodyScale = getEntityBodyScale(entity);
   const heroClass = entity.entityType === 'hero' ? 'hero-sprite' : '';
   const gait = gaitFor(entity, bodyScale);
-  const spriteKey = entity.hp <= 0 && entity.entityType === 'hero' ? 'hero.dead' : entity.sprite;
-  const spriteUrl = getAssetUrl(spriteKey, entity.name);
+  const spriteKey = entity.sprite;
+  const spriteUrl =
+    entity.entityType === 'hero'
+      ? (entity.hp <= 0 ? getHeroFrames('dead')[0] : getHeroFrames('idle')[0]) || getAssetUrl(spriteKey, entity.name)
+      : getAssetUrl(spriteKey, entity.name);
   const hpPercent = Math.max(0, Math.min(100, Math.round((entity.hp / entity.maxHp) * 100)));
 
   let previewLeft = 0;
@@ -934,6 +967,11 @@ function getProjectileIcon(ev) {
   if (ev.tileId === 'holy_syringe') return '💉';
   if (ev.tileId === 'silver_crucifix_beam') return '✝️';
   if (ev.tileId === 'rosary_slap') return '📿';
+  if (ev.tileId === 'funeral_hook') return '🪝';
+  if (ev.tileId === 'dragoon_pistol' || ev.tileId === 'rast_gasser_revolver') return '🔫';
+  if (ev.tileId === 'kettlebell_toss') return '💣';
+  if (ev.tileId === 'boiling_tea') return '🫖';
+  if (ev.tileId === 'repeating_crossbow' || ev.tileId === 'silver_bolt_salvo') return '🏹';
   if (ev.tileId === 'tax_stamp_shot') return '💮';
   if (ev.tileId === 'accountant_curse') return '📜';
   if (ev.tileId === 'bone_chuck') return '🦴';

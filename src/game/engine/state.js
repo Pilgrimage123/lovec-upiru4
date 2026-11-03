@@ -956,11 +956,11 @@ export function createBattleState(opts = {}) {
         : hunterId === 'ponocny'
         ? 'hero.ponocny'
         : hunterId === 'honza'
-        ? 'enemy.sedlak_stit'
+        ? 'hero.honza'
         : hunterId === 'dragoun'
-        ? 'enemy.halapartnik'
+        ? 'hero.dragoun'
         : hunterId === 'zlodejka'
-        ? 'enemy.vrhac_nozu'
+        ? 'hero.zlodejka'
         : 'hero.idle',
     maxHp: heroMaxHp,
     hp: heroHp,
@@ -1008,7 +1008,7 @@ export function createBattleState(opts = {}) {
   const props = [];
   if (enc.props) {
     for (const pSpec of enc.props) {
-      if (!occupiedCells.has(pSpec.cell)) {
+      if (pSpec.cell >= 0 && pSpec.cell < boardSize && !occupiedCells.has(pSpec.cell)) {
         props.push(spawnPropEntity(pSpec.type, pSpec.cell));
         occupiedCells.add(pSpec.cell);
       }

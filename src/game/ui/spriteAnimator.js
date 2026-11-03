@@ -490,7 +490,8 @@ export async function animateUnitDeath(container, targetId, isHero = false, anim
     );
   }
 
-  if (!isHero && typeof spriteImg.animate === 'function') {
+  const hasDedicatedDeadPose = isHero && spriteImg.getAttribute('src')?.includes('venca_dead');
+  if (!hasDedicatedDeadPose && typeof spriteImg.animate === 'function') {
     const { rotateDeg, flattenScale } = ANIMATION_CONFIG.death;
     spriteImg.animate(
       [
@@ -508,13 +509,13 @@ export async function animateUnitDeath(container, targetId, isHero = false, anim
         },
         {
           transform: `translateY(14px) rotate(${rotateDeg}deg) scale(${flattenScale.x}, ${flattenScale.y})`,
-          opacity: 0.72,
+          opacity: isHero ? 0.85 : 0.72,
           filter: 'brightness(0.9) sepia(1) hue-rotate(-50deg) saturate(5)',
           offset: 0.68
         },
         {
-          transform: `translateY(22px) rotate(${rotateDeg}deg) scale(${flattenScale.x * 0.9}, ${flattenScale.y * 0.65})`,
-          opacity: 0,
+          transform: `translateY(${isHero ? 16 : 22}px) rotate(${rotateDeg}deg) scale(${flattenScale.x * 0.9}, ${flattenScale.y * (isHero ? 0.85 : 0.65)})`,
+          opacity: isHero ? 0.75 : 0,
           filter: 'brightness(0.5) sepia(1) hue-rotate(-50deg) saturate(4)',
           offset: 1
         }

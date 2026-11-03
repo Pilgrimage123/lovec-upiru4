@@ -83,11 +83,12 @@ export function renderCellThreatAndPreviewHtml(cellIndex, cellThreat, queuePrevi
       `);
     }
 
-    // 5. Ghost of Venca if queued movement changes his cell
+    // 5. Ghost of active Hunter if queued movement changes their cell
     if (queuePreview.heroMoved && queuePreview.ghostCell === cellIndex && state.hero.cell !== cellIndex) {
+      const heroLabel = state.hero?.givenName || state.hero?.name || 'Lovec';
       parts.push(`
-        <div class="hero-ghost-marker" title="Sem se Venca přesune po odehrání fronty">
-          👻<span class="badge-verbose-text"> Venca</span> (${queuePreview.ghostFacing === 1 ? '▶' : '◀'})
+        <div class="hero-ghost-marker" title="Sem se ${heroLabel} přesune po odehrání fronty">
+          👻<span class="badge-verbose-text"> ${heroLabel}</span> (${queuePreview.ghostFacing === 1 ? '▶' : '◀'})
         </div>
       `);
     }

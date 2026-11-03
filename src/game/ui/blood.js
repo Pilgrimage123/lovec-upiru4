@@ -375,7 +375,8 @@ export function recordEntityHitBlood(state, opts = {}) {
     if ((fatal || amount >= 3) && typeof attackerCell === "number" && attackerCell !== cellIdx) {
       const dir = Math.sign(cellIdx - attackerCell);
       const nextCell = cellIdx + dir;
-      if (nextCell >= 0 && nextCell <= 6) {
+      const maxCell = (state?.boardSize || 7) - 1;
+      if (nextCell >= 0 && nextCell <= maxCell) {
         addCellStain(
           nextCell,
           createGroundStain(ichor, {

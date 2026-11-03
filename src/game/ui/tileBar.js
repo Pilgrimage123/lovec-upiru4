@@ -72,7 +72,7 @@ export function renderTileBar(container, state, callbacks = {}) {
           </div>
           <div class="tile-card-name" title="${tile.name}"><span>${tile.name}</span></div>
           <div class="tile-card-metrics">
-            <span class="tile-metric-dmg">⚔️ ${tile.dmg}</span>
+            <span class="tile-metric-dmg">⚔️ ${tile.dmg ?? 0}</span>
             <span class="tile-metric-range">📏 ${rangeText}</span>
           </div>
           <div class="tile-card-tags">${badges.slice(0, 2).join('')}</div>
@@ -182,6 +182,7 @@ function canHeroMoveDir(state, dir) {
 }
 
 function formatTileRangeLabel(tile) {
+  if (tile.id === 'domicile_inspection') return 'Prohození (1)';
   if (tile.stepBackward) return 'Úskok vzad';
   if (tile.leapDistance) return `Skok ${tile.leapDistance}`;
   if (tile.projectileRange) return `Střela 1–${tile.projectileRange}`;
@@ -205,7 +206,7 @@ export function buildTileTooltipHtml(tile) {
   return `
     <div class="tt-title">${tile.name}</div>
     <div class="tt-stat-row">
-      ⚔️ Základní DMG: <strong>${tile.dmg}</strong> · ⏳ Chladnutí: <strong>${tile.maxCooldown} ${czechTurns(tile.maxCooldown)}</strong>
+      ⚔️ Základní DMG: <strong>${tile.dmg ?? 0}</strong> · ⏳ Chladnutí: <strong>${tile.maxCooldown} ${czechTurns(tile.maxCooldown)}</strong>
       ${tile.quick ? ' · ⚡ <strong>Rychlovka (0 tahů)</strong>' : ''}
     </div>
     ${tile.tags?.length ? `<div class="tt-tags" style="font-size:0.85em; color:#d4af37; margin-bottom:4px;">${tile.tags.map(t => TILE_TAGS[t] ? `${TILE_TAGS[t].icon} ${TILE_TAGS[t].name}` : '').filter(Boolean).join(' · ')}</div>` : ''}

@@ -310,7 +310,7 @@ export function openPubModal(modalRoot, runState, onLeavePub, onUpdate) {
         const canReduce = !cdReducedInThisVisit && runState.gold >= cdCost && effCd > 1;
         return `
           <button type="button" class="btn-parchment btn-sm" data-reduce-cd-idx="${idx}" ${!canReduce ? 'disabled' : ''}>
-            ⏳ Zkrátit CD: ${def.name} (nyní CD ${effCd}) — ${cdCost} dukátů
+            ⏳ Zkrátit Chladnutí: ${def.name} (nyní Chladnutí ${effCd}) — ${cdCost} dukátů
           </button>
         `;
       })
@@ -677,7 +677,7 @@ export function openCastleArchiveModal(modalRoot, appState, onUpdate = null, onS
 
     const tilesBadgesHtml = loadout.deck.map((d) => {
       const def = getHeroTileDefinition(d.id, 0);
-      return `<span class="loadout-tile-pill" title="${def.description}"><strong>${def.name}</strong> (${def.dmg} DMG)</span>`;
+      return `<span class="loadout-tile-pill" title="${def.description}"><strong>${def.name}</strong> (${def.dmg ?? 0} DMG)</span>`;
     }).join(' ');
 
     let actionBtnHtml = '';
@@ -692,7 +692,11 @@ export function openCastleArchiveModal(modalRoot, appState, onUpdate = null, onS
     return `
       <div class="archive-loadout-card ${isSelected ? 'loadout-card-selected' : ''} ${!isUnlocked ? 'loadout-card-locked' : ''}">
         <div class="loadout-card-header">
-          <span class="loadout-card-icon">${loadout.icon}</span>
+          ${
+            loadout.portrait
+              ? `<img src="${loadout.portrait}" alt="${loadout.name}" style="width: 88px; height: 108px; object-fit: contain; object-position: bottom; border-radius: 10px; background: rgba(15, 10, 6, 0.75); border: 1px solid rgba(217, 119, 6, 0.45); padding: 4px; flex-shrink: 0;" />`
+              : `<span class="loadout-card-icon">${loadout.icon}</span>`
+          }
           <div>
             <h4 class="loadout-card-title">${loadout.name} <span class="badge-hp">❤️ ${loadout.maxHp || 20} HP</span> <span class="badge-defense" style="margin-left: 4px; padding: 1px 6px; border-radius: 4px; background: rgba(30, 64, 175, 0.4); border: 1px solid rgba(59, 130, 246, 0.5); font-size: 0.78rem; color: #bfdbfe;">🛡️ ${loadout.defense ?? 0} Obrana</span></h4>
             <div class="loadout-card-epithet">${loadout.epithet}</div>

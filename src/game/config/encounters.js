@@ -69,6 +69,7 @@ export const ENCOUNTERS = {
     name: 'Zrcadlový salón Arciknížete von Sosáka',
     backgroundTheme: 'noble_boudoir',
     isBoss: true,
+    boardSize: 9,
     heroCell: 1,
     heroFacing: 1,
     initialEnemies: [
@@ -82,7 +83,7 @@ export const ENCOUNTERS = {
     terrain: [{ type: 'spikes', cell: 4 }],
     reinforcements: [
       { turnDelay: 4, gateCell: 0, enemyId: 'netopyr' },
-      { turnDelay: 7, gateCell: 6, enemyId: 'kluk_kamen' }
+      { turnDelay: 7, gateCell: 8, enemyId: 'kluk_kamen' }
     ],
     goldReward: 45
   },
@@ -138,6 +139,7 @@ export const ENCOUNTERS = {
     name: 'Krajkový budoár Hraběnky Dagmar',
     backgroundTheme: 'noble_boudoir',
     isBoss: true,
+    boardSize: 9,
     heroCell: 2,
     heroFacing: 1,
     initialEnemies: [
@@ -153,7 +155,7 @@ export const ENCOUNTERS = {
       { type: 'spikes', cell: 1 }
     ],
     reinforcements: [
-      { turnDelay: 4, gateCell: 6, enemyId: 'ucetni_buffer' },
+      { turnDelay: 4, gateCell: 8, enemyId: 'ucetni_buffer' },
       { turnDelay: 6, gateCell: 0, enemyId: 'netopyr' }
     ],
     goldReward: 55

@@ -208,7 +208,7 @@ export function generateBattleRewards(run, isEliteOrBoss = false) {
       type: 'tile',
       tileId: pickedTileId,
       title: `Destička: ${def.name}`,
-      subtitle: `DMG ${def.dmg} · Chladnutí ${def.cooldown}`,
+      subtitle: `DMG ${def.dmg ?? 0} · Chladnutí ${def.cooldown}`,
       description: def.description
     });
   }
@@ -232,7 +232,7 @@ export function generateBattleRewards(run, isEliteOrBoss = false) {
     amount: goldAmt,
     title: `💰 Měšec hradního pokladu (+${goldAmt} dukátů)`,
     subtitle: 'Hotovost do hospody a dílny',
-    description: `Přidá ${goldAmt} poctivých dukátů do Vencova měšce.`
+    description: `Přidá ${goldAmt} poctivých dukátů do měšce výpravy.`
   });
 
   return choices;

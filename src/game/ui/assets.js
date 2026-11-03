@@ -3,6 +3,28 @@ const loadedAssets = new Map();
 const missingAssets = new Set();
 let manifest = {};
 
+const DIRECT_STATIC_ASSETS = {
+  "hero.idle": "/assets/aistudio/Venca__esnek_06bdb1af.png",
+  "hero.venca": "/assets/aistudio/Venca__esnek_06bdb1af.png",
+  "hero.attack": "/assets/aistudio/Venca__esnek_06bdb1af.png",
+  "hero.hurt": "/assets/aistudio/Venca__esnek_06bdb1af.png",
+  "hero.dead": "/assets/characters/venca_dead.png",
+  "hero.honza": "/assets/aistudio/Vesel__Honza_s_rane_kem_na_cest__2d2284c3.png",
+  "hero.dragoun": "/assets/aistudio/dragoun_3c7cb780.png",
+  "hero.zlodejka": "/assets/aistudio/Zlatovlas__zlod_jka_s_d_kou_96361a6e.png",
+  "hero.ponocny": "/assets/aistudio/ponocn__6449a1bd.png",
+  "hero.silak": "/assets/aistudio/Vintage_sil_k_s_kotvou_a_medail__86a24e4c.png",
+  "hero.anglicanka": "/assets/aistudio/Barevn__viktori_nsk__lovkyn__s_de_tn_kem_e96488c5.png",
+  "hero.helsing": "/assets/aistudio/Karikatura_Van_Helsinga_s_rota_n__ku___4ad7e475.png",
+  "hero.revident": "/assets/aistudio/Ornate_c_sa_sk__boty_star_ho___edn_ka_8f8df6f3.png",
+  "enemy.praktikant": "/assets/enemies/upiri_trpaslik.png",
+  "enemy.urednik": "/assets/characters/venca_idle.png",
+  "enemy.vratny_stit": "/assets/enemies/sedlak_stit.png",
+  "enemy.sedlak_stit": "/assets/enemies/sedlak_stit.png",
+  "enemy.halapartnik": "/assets/enemies/halapartnik.png",
+  "enemy.vrhac_nozu": "/assets/enemies/vrhac_nozu.png"
+};
+
 export function generateFallbackSvg(key, meta = {}) {
   const label = meta.label || key.split(".").pop();
   const category = key.split(".")[0];
@@ -288,6 +310,11 @@ export async function initAssets(onProgress = () => {}) {
 
 export function getAssetUrl(key, fallbackLabel = "") {
   if (loadedAssets.has(key)) return loadedAssets.get(key).src;
+  if (DIRECT_STATIC_ASSETS[key]) {
+    const src = DIRECT_STATIC_ASSETS[key];
+    loadedAssets.set(key, { key, src, isFallback: false });
+    return src;
+  }
   const fallback = generateFallbackSvg(key, { label: fallbackLabel || key });
   loadedAssets.set(key, { key, src: fallback, isFallback: true });
   return fallback;

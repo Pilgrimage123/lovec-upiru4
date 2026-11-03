@@ -103,8 +103,16 @@ export const FALLBACK_DATA_URIS = {
 };
 
 export const SPRITE_PRESETS = {
-  vencaHunter: "/assets/characters/venca_idle.png",
-  vencaAttack: "/assets/characters/venca_attack.png",
+  vencaHunter: "/assets/aistudio/Venca__esnek_06bdb1af.png",
+  vencaAttack: "/assets/aistudio/Venca__esnek_06bdb1af.png",
+  honzaHunter: "/assets/aistudio/Vesel__Honza_s_rane_kem_na_cest__2d2284c3.png",
+  dragounHunter: "/assets/aistudio/dragoun_3c7cb780.png",
+  zlodejkaHunter: "/assets/aistudio/Zlatovlas__zlod_jka_s_d_kou_96361a6e.png",
+  ponocnyHunter: "/assets/aistudio/ponocn__6449a1bd.png",
+  silakHunter: "/assets/aistudio/Vintage_sil_k_s_kotvou_a_medail__86a24e4c.png",
+  anglicankaHunter: "/assets/aistudio/Barevn__viktori_nsk__lovkyn__s_de_tn_kem_e96488c5.png",
+  helsingHunter: "/assets/aistudio/Karikatura_Van_Helsinga_s_rota_n__ku___4ad7e475.png",
+  revidentHunter: "/assets/aistudio/Ornate_c_sa_sk__boty_star_ho___edn_ka_8f8df6f3.png",
   enemyDrab: "/assets/enemies/drab.png",
   enemyVampireCilka: "/assets/enemies/upirka_cilka.png",
   enemySkeletonFabian: "/assets/enemies/kostlivec_fabian.png",

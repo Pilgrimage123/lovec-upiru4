@@ -3,7 +3,8 @@ export const TILE_TAGS = {
   garlic: { id: 'garlic', name: 'Česnek', icon: '🧄', color: '#84cc16' },
   holy: { id: 'holy', name: 'Svěcená', icon: '✝️', color: '#38bdf8' },
   brawl: { id: 'brawl', name: 'Hospoda', icon: '🍺', color: '#f59e0b' },
-  craft: { id: 'craft', name: 'Řemeslo', icon: '⚙️', color: '#a1a1aa' }
+  craft: { id: 'craft', name: 'Řemeslo', icon: '⚙️', color: '#a1a1aa' },
+  movement: { id: 'movement', name: 'Pohyb', icon: '🏃', color: '#10b981' }
 };
 
 export const HERO_TILES = {
@@ -1177,6 +1178,7 @@ export const HERO_TILES = {
     icon: 'tile.iron_flex',
     type: 'defend',
     tags: ['brawl'],
+    dmg: 0,
     cooldown: 3,
     quick: false,
     shieldAmount: 5,
@@ -1190,6 +1192,7 @@ export const HERO_TILES = {
       {
         level: 1,
         name: 'Železný hrudník+',
+        dmg: 0,
         cooldown: 3,
         shieldAmount: 7,
         selfEffect: { type: 'empower', amount: 1 },
@@ -1199,11 +1202,12 @@ export const HERO_TILES = {
       {
         level: 2,
         name: 'Bronzový titán++',
+        dmg: 0,
         cooldown: 2,
         shieldAmount: 8,
         selfEffect: { type: 'empower', amount: 2 },
         pattern: [],
-        description: 'CD 2! Získá +8 Štít a velké Zesílení (+4 DMG).'
+        description: 'Chladnutí 2! Získá +8 Štít a velké Zesílení (+4 DMG).'
       }
     ]
   },
@@ -1289,6 +1293,7 @@ export const HERO_TILES = {
     icon: 'tile.royal_etiquette',
     type: 'defend',
     tags: ['holy', 'craft'],
+    dmg: 0,
     cooldown: 3,
     quick: false,
     shieldAmount: 5,
@@ -1302,6 +1307,7 @@ export const HERO_TILES = {
       {
         level: 1,
         name: 'Viktoriánská důstojnost+',
+        dmg: 0,
         cooldown: 3,
         shieldAmount: 7,
         healAmount: 3,
@@ -1311,11 +1317,12 @@ export const HERO_TILES = {
       {
         level: 2,
         name: 'Čajové panství++',
+        dmg: 0,
         cooldown: 2,
         shieldAmount: 8,
         healAmount: 4,
         pattern: [],
-        description: 'CD 2! Získá +8 Štít a vyléčí si 4 HP.'
+        description: 'Chladnutí 2! Získá +8 Štít a vyléčí si 4 HP.'
       }
     ]
   },
@@ -1472,7 +1479,7 @@ export const HERO_TILES = {
     quick: false,
     pattern: [{ offset: 1, dmg: 2, effects: [] }],
     resonance: null,
-    description: '1 políčko před sebe za 2 DMG. Čistý úder. Pokud má cíl stav [OKOLKOVÁNO], sníží se cooldown této destičky o 1.',
+    description: '1 políčko před sebe za 2 DMG. Čistý úder. Pokud má cíl stav [OKOLKOVÁNO], sníží se Chladnutí této destičky o 1.',
     flavor: '„Vydáno c. k. zbrojním skladem ve Vídni. Každá tříska je řádně zainventarizována.“',
     starter: true,
     upgrades: [
@@ -1482,7 +1489,7 @@ export const HERO_TILES = {
         dmg: 3,
         cooldown: 2,
         pattern: [{ offset: 1, dmg: 3, effects: [] }],
-        description: '3 DMG na 1 pole. Pokud má cíl [OKOLKOVÁNO], sníží cooldown o 1.'
+        description: '3 DMG na 1 pole. Pokud má cíl [OKOLKOVÁNO], sníží Chladnutí o 1.'
       },
       {
         level: 2,
@@ -1490,7 +1497,7 @@ export const HERO_TILES = {
         dmg: 4,
         cooldown: 1,
         pattern: [{ offset: 1, dmg: 4, effects: [] }],
-        description: 'CD 1! 4 DMG na 1 pole. Pokud má cíl [OKOLKOVÁNO], sníží cooldown o 1.'
+        description: 'Chladnutí 1! 4 DMG na 1 pole. Pokud má cíl [OKOLKOVÁNO], sníží Chladnutí o 1.'
       }
     ]
   },
@@ -1526,7 +1533,7 @@ export const HERO_TILES = {
         cooldown: 2,
         delayEnemyCountdown: 1,
         pattern: [{ offset: 1, dmg: 3, effects: [{ type: 'push', distance: 2 }] }],
-        description: 'CD 2! 3 DMG, odrazí o 2 pole a odloží útok nepřítele o 1 tah.'
+        description: 'Chladnutí 2! 3 DMG, odrazí o 2 pole a odloží útok nepřítele o 1 tah.'
       }
     ]
   },
@@ -1549,7 +1556,7 @@ export const HERO_TILES = {
       { offset: 5, dmg: 2, projectile: true }
     ],
     resonance: null,
-    description: 'Střelba v přímé linii za 2 DMG. Cooldown 5 tahů (kvůli papírování s vyúčtováním stříbra), ale zpětný ráz posune revidenta o 1 políčko dozadu.',
+    description: 'Střelba v přímé linii za 2 DMG. Chladnutí 5 tahů (kvůli papírování s vyúčtováním stříbra), ale zpětný ráz posune revidenta o 1 políčko dozadu.',
     flavor: '„Osmiranný armádní revolver ráže 8 mm. Každou vystřelenou stříbrnou kulku musím písemně zdůvodnit.“',
     starter: true,
     upgrades: [
@@ -1567,7 +1574,7 @@ export const HERO_TILES = {
           { offset: 4, dmg: 3, projectile: true },
           { offset: 5, dmg: 3, projectile: true }
         ],
-        description: 'CD 4, 3 DMG v linii, zpětný ráz 1 pole vzad.'
+        description: 'Chladnutí 4, 3 DMG v linii, zpětný ráz 1 pole vzad.'
       },
       {
         level: 2,
@@ -1578,12 +1585,12 @@ export const HERO_TILES = {
         recoilBack: 1,
         pattern: [
           { offset: 1, dmg: 4, projectile: true },
-          { offset: 2, dmg: 3, projectile: true },
+          { offset: 2, dmg: 4, projectile: true },
           { offset: 3, dmg: 4, projectile: true },
           { offset: 4, dmg: 4, projectile: true },
           { offset: 5, dmg: 4, projectile: true }
         ],
-        description: 'CD 3! 4 DMG v linii, zpětný ráz 1 pole vzad.'
+        description: 'Chladnutí 3! 4 DMG v linii, zpětný ráz 1 pole vzad.'
       }
     ]
   },
@@ -1605,6 +1612,7 @@ export const HERO_TILES = {
       {
         level: 1,
         name: 'Kontrola domovského listu+',
+        dmg: 0,
         cooldown: 2,
         shieldAmount: 2,
         pattern: [],
@@ -1613,10 +1621,11 @@ export const HERO_TILES = {
       {
         level: 2,
         name: 'Zabavení domovského listu++',
+        dmg: 0,
         cooldown: 1,
         shieldAmount: 3,
         pattern: [],
-        description: 'CD 1! Prohodí místo, otočí zády, aplikuje [OKOLKOVÁNO] a získá +3 Štít.'
+        description: 'Chladnutí 1! Prohodí místo, otočí zády, aplikuje [OKOLKOVÁNO] a získá +3 Štít.'
       }
     ]
   }
