@@ -107,7 +107,7 @@ export const HUNTER_DIALOGUES = {
       'KAVALERIE C. K. DRAGOUNŮ NASTUPUJE!'
     ],
     threats: [
-      'Moje křesadlovka ještě nikdy neminula cíl v dosahu!',
+      'Můj armádní revolver ještě nikdy neminul cíl v dosahu!',
       'Dle vojenského práva vás čeká trest stětím na místě!',
       'Vojenský kryt vzor 1877 nepovolí ani před upířími spáry!'
     ],
@@ -131,7 +131,7 @@ export const HUNTER_DIALOGUES = {
     name: 'Káča Pavučina',
     icon: '🗡️',
     battle_cries: [
-      'CO NEUTEČE, TO ZKASÍRUJU A PROPISKU UKRADNU!',
+      'CO NEUTEČE, TO ZKASÍRUJU A ZLATÉ PERO UKRADNU!',
       'PRAŽSKÁ CHASA JDE VYBÍRAT ŠLECHTICKÉ KAPSY!',
       'POZOR NA ZÁDA, PÁNOVÉ Z HROBKY!'
     ],
@@ -223,7 +223,7 @@ export const HUNTER_DIALOGUES = {
   },
 
   helsing: {
-    name: 'Profesor Gabriel van Helsing',
+    name: 'Sir Arthur Featherstone',
     icon: '🏹',
     battle_cries: [
       'VĚDA A POSVÁTNÉ MECHANIKY VÍTĚZÍ NAD TEMNOTOU!',
@@ -256,7 +256,7 @@ export const HUNTER_DIALOGUES = {
   },
 
   revident: {
-    name: 'C. k. vrchní revident (Ignác Šiml)',
+    name: 'Revident Ignác Šiml',
     icon: '📑',
     battle_cries: [
       'JMÉNEM JEHO VELIČENSTVA CÍSAŘE PÁNA! KONTROLA ÚČTŮ!',
@@ -279,7 +279,7 @@ export const HUNTER_DIALOGUES = {
     ],
     quips: [
       'Zamítnuto! Odvolání se nepřipouští!',
-      'Tohle je daň z přidané hodnoty za použití stříbrné munice.',
+      'Tohle je přirážka k potravní dani za použití stříbrné munice.',
       'Paragraf osmnáct, odstavec čtyři: noční netvoři podléhají okamžité likvidaci!',
       'Váš domovský list byl právě vymazán z pozemkových knih.'
     ],
@@ -304,13 +304,13 @@ export const ENEMY_DIALOGUES = {
       'Pan hrabě mi slíbil zápočet, když vás vyřídím!'
     ],
     last_words: [
-      'Měl jsem radši... zůstat... v té bance...',
-      'Nezapomeňte mi... podepsat... zápočtový list...',
-      'Dohoda o provedení práce... končí...'
+      'Měl jsem radši... zůstat... u ševcovského řemesla...',
+      'Nezapomeňte mi... podepsat... tovaryšský list...',
+      'Čelední služba... končí...'
     ],
     quips: [
       'Auu, ten česnek mi leptá zubní sklovinu!',
-      'Tohle v pracovní smlouvě vůbec nebylo!'
+      'Tohle v čelední knížce vůbec nebylo!'
     ]
   },
 
@@ -476,25 +476,25 @@ export const ENEMY_DIALOGUES = {
   },
 
   boss_dracula: {
-    name: 'G. Ř. Drákula',
-    icon: '💼',
+    name: 'Hrabě Leopold von Nochtic',
+    icon: '👑',
     battle_cries: [
-      'PŘEDSTAVENSTVO TEMNOT ZAHÁJILO MIMOŘÁDNÉ ZASEDÁNÍ!',
+      'GUBERNIÁLNÍ DEKRET BYL PODEPSÁN! PANSKÁ ROBOTA ZAČÍNÁ!',
       'STO LET PIJU KREV KRÁLŮ, DNESKA VYPIJU VÁS!'
     ],
     threats: [
-      'Vaše okamžitá výpověď ze života byla schválena správní radou!',
-      'Tento hrad je akciová společnost zla a vy jste jen bídný náklad!',
-      'Zemřete bez odstupného a bez nároku na pohřeb!'
+      'Váš krevní desátek propadl ve prospěch panského dvora!',
+      'Tento hrad je dědičné panství zla a vy jste jen bídní poddaní!',
+      'Zemřete bez rozhřešení a bez nároku na křesťanský hrob!'
     ],
     last_words: [
-      'Akcie... krve... prudce... klesají... *aaaa*',
-      'Kdo... převezme... vedení... holdingu...?!',
-      'Moje... impérium... temnot... bankrotuje...'
+      'Moje... panství... se... hroutí... *aaaa*',
+      'Kdo... převezme... nochtické... dominium...?!',
+      'Můj... starobylý... rod... vymírá...'
     ],
     quips: [
-      'Optimalizace lidských zdrojů v praxi!',
-      'Krevní fúze dokončena!'
+      'Panská spravedlnost v plné síle!',
+      'Krevní desátek vybrán!'
     ]
   },
 

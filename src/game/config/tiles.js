@@ -4,10 +4,147 @@ export const TILE_TAGS = {
   holy: { id: 'holy', name: 'Svěcená', icon: '✝️', color: '#38bdf8' },
   brawl: { id: 'brawl', name: 'Hospoda', icon: '🍺', color: '#f59e0b' },
   craft: { id: 'craft', name: 'Řemeslo', icon: '⚙️', color: '#a1a1aa' },
-  movement: { id: 'movement', name: 'Pohyb', icon: '🏃', color: '#10b981' }
+  movement: { id: 'movement', name: 'Pohyb', icon: '🏃', color: '#10b981' },
+  sokol: { id: 'sokol', name: 'Sokol', icon: '🦅', color: '#e11d48' },
+  explosive: { id: 'explosive', name: 'Třaskavina', icon: '💣', color: '#ea580c' }
 };
 
 export const HERO_TILES = {
+  falcon_claw: {
+    id: 'falcon_claw',
+    name: 'Sokolí spár',
+    icon: 'tile.falcon_claw',
+    type: 'attack',
+    tags: ['sokol', 'brawl'],
+    dmg: 4,
+    cooldown: 2,
+    quick: false,
+    pattern: [
+      { offset: 1, dmg: 4, effects: [{ type: 'pull' }] },
+      { offset: 2, dmg: 4, effects: [{ type: 'pull' }] }
+    ],
+    resonance: null,
+    description: 'Dosah 1–2 pole dopředu: 4 DMG (+2 DMG, pokud je cíl člověk) a přitáhne cíl o 1 pole k lovci. Chladnutí 2.',
+    flavor: '„Pevný sokolský úchop vytáhne každého hříšníka na světlo boží!“',
+    starter: true,
+    upgrades: [
+      {
+        level: 1,
+        name: 'Ocelový sokolí spár+',
+        dmg: 5,
+        cooldown: 2,
+        pattern: [
+          { offset: 1, dmg: 5, effects: [{ type: 'pull' }] },
+          { offset: 2, dmg: 5, effects: [{ type: 'pull' }] }
+        ],
+        description: 'Dosah 1–2 pole: 5 DMG (+2 DMG proti lidem = 7 DMG) a přitáhne o 1 pole.'
+      },
+      {
+        level: 2,
+        name: 'Mistrovský sokolí spár++',
+        dmg: 6,
+        cooldown: 2,
+        pattern: [
+          { offset: 1, dmg: 6, effects: [{ type: 'pull' }, { type: 'bleed', amount: 2 }] },
+          { offset: 2, dmg: 6, effects: [{ type: 'pull' }, { type: 'bleed', amount: 2 }] }
+        ],
+        description: 'Dosah 1–2 pole: 6 DMG (+2 DMG proti lidem = 8 DMG), přitáhne o 1 pole a udělí Krvácení (2).'
+      }
+    ]
+  },
+  garlic_grenade: {
+    id: 'garlic_grenade',
+    name: 'Česnekový granát',
+    icon: 'tile.garlic_grenade',
+    type: 'ranged',
+    tags: ['garlic', 'explosive'],
+    dmg: 0,
+    cooldown: 3,
+    quick: false,
+    isLobbed: true,
+    lobDistance: 3,
+    canFinishVampires: true,
+    pattern: [],
+    resonance: null,
+    description: 'Přistane o 3 pole dál (zarazí se o zeď). V dosahu 1 od dopadu vytvoří Česnekový oblak (2 kola), který zasažené zmate (❓). Kdo v něm začíná tah, utrpí 1 DMG (upíři 2 DMG). Může dorazit upíra! Chladnutí 3.',
+    flavor: '„Domácí česneková třaskavina v pivní lahvi. Upíři po ní lapají po dechu.“',
+    starter: true,
+    upgrades: [
+      {
+        level: 1,
+        name: 'Těžký česnekový granát+',
+        dmg: 0,
+        cooldown: 3,
+        isLobbed: true,
+        lobDistance: 3,
+        canFinishVampires: true,
+        cloudDuration: 3,
+        description: 'Česnekový oblak má prodloužené trvání na 3 kola a okamžitě zmate zasažené (❓).'
+      },
+      {
+        level: 2,
+        name: 'Tříštivý česnekový granát++',
+        dmg: 2,
+        cooldown: 2,
+        isLobbed: true,
+        lobDistance: 3,
+        canFinishVampires: true,
+        cloudDuration: 3,
+        description: 'Chladnutí 2, přímý výbuch za 2 DMG, oblak na 3 kola se Zmatením. Doráží upíry!'
+      }
+    ]
+  },
+  skok_pres_kozu: {
+    id: 'skok_pres_kozu',
+    name: 'Skok přes kozu',
+    icon: 'tile.skok_pres_kozu',
+    type: 'move',
+    tags: ['sokol', 'brawl', 'garlic'],
+    dmg: 0,
+    cooldown: 2,
+    quick: false,
+    leapDistance: 2,
+    leaveGarlicCloudRadius1: true,
+    cloudDuration: 2,
+    pattern: [{ offset: 2, dmg: 0, isMoveTarget: true, effects: [] }],
+    resonance: {
+      nextTileCdReduction: 1,
+      description: 'Rezonance: další destička ve frontě má po odehrání CD −1.'
+    },
+    description: 'Sokolský přeskok o 2 pole vpřed (přeskočí překážku i nepřítele na poli 1, nepříteli se nic nestane). Na výchozím poli a v okolí (±1 pole) zanechá Česnekový oblak (2 kola, 1 DMG za tah, upíři 2 DMG, bez zmatení). Chladnutí 2.',
+    flavor: '„Pevný odraz z podlahy a ladný let! Sokolský tělocvik v praxi!“',
+    starter: true,
+    upgrades: [
+      {
+        level: 1,
+        name: 'Sokolský skok přes kozu+',
+        dmg: 0,
+        cooldown: 2,
+        leapDistance: 2,
+        leaveGarlicCloudRadius1: true,
+        cloudDuration: 2,
+        resonance: {
+          nextTileCdReduction: 2,
+          description: 'Rezonance: další destička ve frontě má CD −2.'
+        },
+        description: 'Přeskok o 2 pole vpřed, 3-polový Česnekový oblak a Rezonance sníží CD další destičky o 2.'
+      },
+      {
+        level: 2,
+        name: 'Mistrovský skok s obratem++',
+        dmg: 0,
+        cooldown: 1,
+        leapDistance: 2,
+        leaveGarlicCloudRadius1: true,
+        cloudDuration: 3,
+        resonance: {
+          nextTileCdReduction: 2,
+          description: 'Rezonance: další destička ve frontě má CD −2.'
+        },
+        description: 'Chladnutí 1: ladný sokolský skok přes 2 pole a Česnekový oblak na 3 kola.'
+      }
+    ]
+  },
   oak_stake: {
     id: 'oak_stake',
     name: 'Dubový kolík',
@@ -126,6 +263,7 @@ export const HERO_TILES = {
   },
   belly_vault: {
     id: 'belly_vault',
+    aliasOf: 'skok_pres_kozu',
     name: 'Hospodský přemet přes pupík',
     icon: 'tile.belly_vault',
     type: 'move',
@@ -272,7 +410,7 @@ export const HERO_TILES = {
     pattern: [{ offset: 1, dmg: 0, effects: [{ type: 'push', distance: 1 }] }],
     resonance: null,
     description: 'Dá lovci Štít (vykryje 2 body zranění) a odstrčí nepřítele přímo před ním o 1 pole.',
-    flavor: '„Litinová klasika z roku 1924. Ani zuby hraběte skrz to neprojdou.“',
+    flavor: '„Litinová klasika z roku 1889. Ani zuby hraběte skrz to neprojdou.“',
     starter: false,
     upgrades: [
       {
@@ -394,7 +532,7 @@ export const HERO_TILES = {
     ],
     resonance: null,
     description: 'Zasáhne 2 pole vpřed za 2 DMG: na 1. poli vyrazí z podlahy Naostřené kůly a na 2. poli cíl odhodí o 1 pole.',
-    flavor: '„Tady soudruzi památkáři šetřili na hřebíkách!“',
+    flavor: '„Tady c. k. stavební hejtmanství šetřilo na kovaných hřebech!“',
     starter: false,
     upgrades: [
       {
@@ -761,7 +899,7 @@ export const HERO_TILES = {
   },
   dragoon_pistol: {
     id: 'dragoon_pistol',
-    name: 'Jezdecká křesadlová bambitka',
+    name: 'Armádní revolver Gasser M1870',
     icon: 'tile.dragoon_pistol',
     type: 'ranged',
     tags: ['craft'],
@@ -777,12 +915,12 @@ export const HERO_TILES = {
     ],
     resonance: null,
     description: 'Výstřel olověné kule na dosah až 4 pole: 4 DMG prvnímu cíli a Omráčení (1).',
-    flavor: '„Jedna rána, jedna díra v upírovi a zvonění v uších až do rána.“',
+    flavor: '„Rakouský armádní revolver ráže 11 mm. Spolehlivá kavaleristická rána.“',
     starter: true,
     upgrades: [
       {
         level: 1,
-        name: 'Dvojhlavňová bambitka+',
+        name: 'Vyladěný revolver Gasser+',
         dmg: 6,
         cooldown: 4,
         projectileRange: 4,
@@ -796,7 +934,7 @@ export const HERO_TILES = {
       },
       {
         level: 2,
-        name: 'Tříhlavňová karabina++',
+        name: 'Důstojnický revolver Gasser++',
         dmg: 8,
         cooldown: 3,
         projectileRange: 5,

@@ -1023,9 +1023,9 @@ export const ENEMIES = {
   },
   upiri_trpaslik: {
     id: 'upiri_trpaslik',
-    name: 'Upíří trpaslík Šmudla',
+    name: 'Upíří skřítek Šmudla',
     givenName: 'Šmudla',
-    epithet: 'Trpaslík',
+    epithet: 'Skřítek',
     bodyScale: 'small',
     sprite: 'enemy.upiri_trpaslik',
     archetype: 'fodder',
@@ -1034,7 +1034,7 @@ export const ENEMIES = {
     flying: false,
     frontShield: false,
     actionPool: ['gnome_rake', 'night_bite'],
-    flavor: '„Noční čepice je rodinné stříbro. Drápy taky.“'
+    flavor: '„Špičatá zámecká čapka je rodinné stříbro. Drápy taky.“'
   },
   rytir_prizrak: {
     id: 'rytir_prizrak',
@@ -1053,9 +1053,9 @@ export const ENEMIES = {
   },
   zombie_hynek: {
     id: 'zombie_hynek',
-    name: 'Oživlý nebožtík Hynek',
+    name: 'Umrlec Hynek',
     givenName: 'Hynek',
-    epithet: 'Nebožtík',
+    epithet: 'Umrlec',
     bodyScale: 'human',
     sprite: 'enemy.zombie_hynek',
     archetype: 'brute',
@@ -1064,7 +1064,7 @@ export const ENEMIES = {
     flying: false,
     frontShield: false,
     actionPool: ['grave_clutch', 'dead_shove'],
-    flavor: '„Rakev jsem zaplatil. Vstávat se neplatí.“'
+    flavor: '„Za hrob jsem zaplatil. Z rubáše vstávat se v c. k. řádu neplatí.“'
   },
   kostlivec_fabian: {
     id: 'kostlivec_fabian',
@@ -1184,9 +1184,9 @@ export const ENEMIES = {
   },
   boss_drakula: {
     id: 'boss_drakula',
-    name: 'Hrabě Drákula, Pán temnot',
-    givenName: 'Drákula',
-    epithet: 'Pán temnot',
+    name: 'Hrabě Leopold von Nochtic',
+    givenName: 'Leopold',
+    epithet: 'C. k. tajný rada & veleupír',
     bodyScale: 'boss',
     sprite: 'boss.drakula_generalni_reditel',
     archetype: 'boss',
@@ -1200,7 +1200,7 @@ export const ENEMIES = {
     lordSynergy: true,
     enrageTile: 'boss_sosak_summon',
     actionPool: ['boss_dracula_strike', 'boss_dracula_curse', 'boss_sosak_summon'],
-    flavor: '„Tato noc patří nám, smrtelníku! Tvá krev napojí hradní kryptu!“'
+    flavor: '„Tato noc patří staré šlechtě, chasníku! Tvá krev obohatí archivní ročník 1899!“'
   }
 };
 
@@ -1237,7 +1237,17 @@ export function getEntityIchorType(kind, entityType, name = '') {
   if (GREEN_ICHOR_KINDS.has(kind)) return 'green';
   if (BLUE_ICHOR_KINDS.has(kind)) return 'blue';
   const text = `${kind || ''} ${name || ''}`.toLowerCase();
-  if (/upír|upir|vamp|netop|drák|drakula|sosák|sosak|dagmar/.test(text)) return 'blue';
-  if (/sliz|morov|zombie|mutant|plísn|plisn|breber|kostliv|krys|felčar|felcar|nebožt|nebozt/.test(text)) return 'green';
+  if (/upír|upir|vamp|netop|drák|drakula|nochtic|sosák|sosak|dagmar/.test(text)) return 'blue';
+  if (/sliz|morov|zombie|umrl|mutant|plísn|plisn|breber|kostliv|krys|felčar|felcar|nebožt|nebozt/.test(text)) return 'green';
   return 'red';
+}
+
+export function isVampireEntity(entity) {
+  if (!entity || entity.entityType === 'hero' || entity.entityType === 'prop') return false;
+  return entity.ichor === 'blue' || getEntityIchorType(entity.kind, entity.entityType, entity.name) === 'blue';
+}
+
+export function isHumanEntity(entity) {
+  if (!entity || entity.entityType === 'hero' || entity.entityType === 'prop') return false;
+  return entity.ichor === 'red' || getEntityIchorType(entity.kind, entity.entityType, entity.name) === 'red';
 }

@@ -600,6 +600,7 @@ export function getEntityBodyScale(entity) {
   if (!entity) return 'human';
   if (entity.bodyScale) return entity.bodyScale;
   if (entity.entityType === 'hero' || entity.id?.startsWith('hero') || entity.hunterId) return 'hero';
+  if (entity.kind === 'komornik') return 'human';
   if (entity.entityType === 'prop' || entity.id?.startsWith('barrel') || entity.id?.startsWith('prop')) return 'prop';
   if (entity.flying) return 'flyer';
   if (entity.isBoss || entity.archetype === 'boss') return 'boss';
@@ -672,7 +673,11 @@ function renderEntityOnCellHtml(entity, initiativeRank = 1, impact = null) {
     entity.entityType === 'enemy' ? renderEnemyIntentStripHtml(entity, initiativeRank) : '';
 
   const facingArrow =
-    entity.entityType === 'prop'
+    entity.kind === 'komornik'
+      ? (entity.facing === 1
+          ? '<span class="facing-indicator facing-right" title="Komorník čelí vpravo">▶</span>'
+          : '<span class="facing-indicator facing-left" title="Komorník čelí vlevo">◀</span>')
+      : entity.entityType === 'prop'
       ? '🛢️'
       : entity.facing === 1
       ? '<span class="facing-indicator facing-right" title="Směr pohledu: Vpravo">▶</span>'
@@ -680,7 +685,7 @@ function renderEntityOnCellHtml(entity, initiativeRank = 1, impact = null) {
 
   // CRITICAL RULE: transform: scaleX(facing) ONLY on .sprite-flip-wrapper!
   // HP bar, numbers, initiative, intent icons, and queue slots NEVER mirror!
-  const scaleXVal = entity.entityType === 'prop' ? 1 : entity.facing === -1 ? -1 : 1;
+  const scaleXVal = (entity.entityType === 'prop' && entity.kind !== 'komornik') ? 1 : entity.facing === -1 ? -1 : 1;
 
   return `
     <div class="entity-container entity-${entity.entityType}"

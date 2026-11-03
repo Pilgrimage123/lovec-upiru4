@@ -52,7 +52,7 @@ export const NIGHT_CURSES = [
     shortName: 'Kletba V',
     icon: '👑',
     fangMultiplier: 2.5,
-    description: 'Hrabě Drákula má o 25 % více životů a začíná boj s posílením úderů.'
+    description: 'Hrabě Leopold von Nochtic má o 25 % více životů a začíná boj s posílením úderů.'
   }
 ];
 

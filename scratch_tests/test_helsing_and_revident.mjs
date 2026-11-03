@@ -17,11 +17,11 @@ console.log('--- Testing Helsing & Revident Implementation ---');
 {
   const hCry = getHunterDialogue('helsing', 'battle_cries');
   assert.ok(hCry.text.length > 0, 'Helsing should have battle cry');
-  assert.equal(hCry.speaker, 'Profesor Gabriel van Helsing');
+  assert.equal(hCry.speaker, 'Sir Arthur Featherstone');
 
   const rCry = getHunterDialogue('revident', 'battle_cries');
   assert.ok(rCry.text.length > 0, 'Revident should have battle cry');
-  assert.equal(rCry.speaker, 'C. k. vrchní revident (Ignác Šiml)');
+  assert.equal(rCry.speaker, 'Revident Ignác Šiml');
 
   const rQuip = getHunterDialogue('revident', 'quips');
   assert.ok(rQuip.text.length > 0, 'Revident should have quip');
@@ -100,8 +100,8 @@ console.log('--- Testing Helsing & Revident Implementation ---');
 {
   const state = createBattleState({ hunterId: 'revident' });
   state.props = [];
-  assert.equal(state.hero.maxHp, 4, 'Revident should have exactly 4 HP');
-  assert.equal(state.hero.hp, 4, 'Revident should have 4 HP');
+  assert.equal(state.hero.maxHp, 16, 'Revident should have exactly 16 HP');
+  assert.equal(state.hero.hp, 16, 'Revident should have 16 HP');
   assert.equal(state.hero.defense, 2, 'Revident should have 2 defense');
   assert.equal(state.hero.statuses.shield, 2, 'Revident starts with 2 shield from dossier');
 
@@ -114,7 +114,7 @@ console.log('--- Testing Helsing & Revident Implementation ---');
     'rast_gasser_revolver',
     'domicile_inspection'
   ]);
-  console.log('✓ Revident HP (4), Defense (2), and 4 Starter Tiles verified');
+  console.log('✓ Revident HP (16), Defense (2), and 4 Starter Tiles verified');
 
   // Test Úřední předvolání (Signature Action):
   // When revident turns facing enemy at distance exactly 2:

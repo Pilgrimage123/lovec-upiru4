@@ -237,6 +237,21 @@ function simulatePreviewStep(state, tile, heroCell, heroFacing, isFirst, isLateS
         effects: []
       });
     }
+  } else if (tile.isLobbed) {
+    const rawTarget = heroCell + heroFacing * (tile.lobDistance || 3);
+    const impact = Math.max(0, Math.min(state.boardSize - 1, rawTarget));
+    for (const c of [impact - 1, impact, impact + 1]) {
+      if (isValidCell(c, state)) {
+        hits.push({
+          cell: c,
+          dmg: tile.dmg || 0,
+          isMove: false,
+          slotIndex: slotIdx,
+          tileName: tile.name,
+          effects: [{ type: 'confusion' }, { type: 'garlic_cloud' }]
+        });
+      }
+    }
   } else if (tile.leapDistance) {
     const dest = previewLeapDest(state, heroCell, heroFacing, tile.leapDistance);
     newHeroCell = dest;

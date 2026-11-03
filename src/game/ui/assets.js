@@ -17,6 +17,8 @@ const DIRECT_STATIC_ASSETS = {
   "hero.anglicanka": "/assets/aistudio/Barevn__viktori_nsk__lovkyn__s_de_tn_kem_e96488c5.png",
   "hero.helsing": "/assets/aistudio/Karikatura_Van_Helsinga_s_rota_n__ku___4ad7e475.png",
   "hero.revident": "/assets/aistudio/Ornate_c_sa_sk__boty_star_ho___edn_ka_8f8df6f3.png",
+  "prop.komornik": "/assets/aistudio/komornik_tea_c6a99182.png",
+  "ally.komornik": "/assets/aistudio/komornik_tea_c6a99182.png",
   "enemy.praktikant": "/assets/enemies/upiri_trpaslik.png",
   "enemy.urednik": "/assets/characters/venca_idle.png",
   "enemy.vratny_stit": "/assets/enemies/sedlak_stit.png",
@@ -159,6 +161,10 @@ function generateTerrainSvg(key, label) {
 function generateIconSvg(key, label) {
   const icons = {
     "tile.oak_stake": "🪵",
+    "tile.falcon_claw": "🦅",
+    "tile.garlic_grenade": "💣",
+    "tile.skok_pres_kozu": "🤸",
+    "status.torpor": "💤",
     "tile.garlic_belch": "🧄",
     "tile.holy_syringe": "💦",
     "tile.halberd_sweep": "🔱",

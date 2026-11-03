@@ -73,7 +73,7 @@ function getNodeTitle(type) {
 function getActBossTitle(act) {
   if (act === 1) return 'Arcikníže von Sosák';
   if (act === 2) return 'Hraběnka Dagmar';
-  return 'Hrabě Drákula, Pán temnot';
+  return 'Hrabě Leopold von Nochtic';
 }
 
 export function generateActMap(run, act) {

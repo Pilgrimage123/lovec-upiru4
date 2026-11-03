@@ -4,9 +4,9 @@ export const STATUSES = {
     id: 'confusion',
     name: 'Zmatení',
     icon: 'status.confusion',
-    badge: '🌀',
+    badge: '❓',
     color: '#9b59b6',
-    description: 'Při příštím kroku se postava zamotá a vykročí náhodným směrem (pokud je volno).'
+    description: 'Postava má nad hlavou otazník ❓ a jeden tah nic nedělá. Na konci tahu otazník zmizí.'
   },
   stun: {
     id: 'stun',
@@ -47,5 +47,13 @@ export const STATUSES = {
     badge: '📑',
     color: '#d97706',
     description: 'Příští útok do tohoto cíle způsobí +1 poškození (daňová přirážka).'
+  },
+  torpor: {
+    id: 'torpor',
+    name: 'Ochromení',
+    icon: 'status.torpor',
+    badge: '💤',
+    color: '#64748b',
+    description: 'Upír leží bezvládně na zemi. Za 2 kola opět vstane s polovinou životů, pokud ho lovec nedorazí kolíkem.'
   }
 };

@@ -1,0 +1,3 @@
+# 4. Původní rakousko-uherské české zasazení a sjednocení soupisky lovců
+
+Kompletně odstraňujeme generické postavy Drákuly a van Helsinga a nahrazujeme je původním rakousko-uherským příběhem, kde je ústředním padouchem Hrabě Leopold von Nochtic a anglickým lovcem trofejí Sir Arthur Featherstone. Zároveň sjednocujeme celou soupisku devíti lovců do formátu `[Titul/Povolání] [Křestní jméno] [Příjmení]` (se zkrácenou formou `[Titul/Povolání] [Jméno]`), opravujeme podstřelené statistiky Revidenta na 16 HP a posilujeme kontrast siluet všech postav pomocí oboustranných světelných kontur proti tmavému pozadí.

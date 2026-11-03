@@ -1,0 +1,3 @@
+# 7. Historická autenticita 19. století a odstranění anachronismů
+
+Odstraňujeme z herních textů a bestiáře anachronismy 20. století (rok 1924 u kanálového poklopu posunut na 1889, soudruzi památkáři nahrazeni c. k. stavebním hejtmanstvím, moderní propiska, DPP a DPH nahrazeny zlatým perem, čelední knížkou a potravním akcízem). Korporátní manažerský žargon Hraběte von Nochtic nahrazujeme arogancí c. k. tajného rady a feudálního vykořisťovatele, střelnou zbraň dragouna modernizujeme na dobový armádní revolver Gasser M1870 (místo o sto let starší křesadlovky) a v bestiáři převádíme anglosaskou „zombie“ na autentického slovanského Umrlce a upířího trpaslíka na zámeckého skřítka, aby herní parodie plně ctila rámec habsburských Čech konce 19. století.

@@ -4,6 +4,19 @@ Veškeré významné změny v projektu Lovec upírů jsou zaznamenávány v tomt
 
 Formát vychází z [Keep a Changelog](https://keepachangelog.com/cs/1.0.0/).
 
+## [1.6.0] - 2026-11-03
+
+### Změněno (Changed)
+- **Historická autenticita 19. století a odstranění anachronismů (ADR 0007)**:
+  - *Kanálový poklop*: Letopočet vzniku litinového poklopu posunut z anachronického roku 1924 na dobový rok **1889** (období rozmachu pražských vodáren a c. k. sléváren).
+  - *Oprava hřebíků*: Odstraněna narážka na „soudruhy památkáře“ u destičky *Dupnutí na prkno*, nahrazena dobovým „c. k. stavebním hejtmanstvím“.
+  - *Šlechtická despocie místo korporace*: Hrabě Leopold von Nochtic zbaven manažersko-korporátního žargonu (holding, akcie, fúze, odstupné, lidské zdroje) a převeden do polohy arogantního c. k. tajného rady a feudálního vykořisťovatele (guberniální dekrety, panská robota, krevní desátek, nochtické dominium).
+  - *Odstranění modernismů z hlášek*: Zlodějka Káča krade „zlaté pero“ namísto propisky; Upír-praktikant má tovaryšský list a čelední knížku namísto DPP a pracovní smlouvy; Revident Šiml účtuje přirážku k potravní dani (akcízu) namísto DPH.
+  - *Výzbroj c. k. dragouna*: Zastaralá křesadlovka Rittmeistera Jaromíra nahrazena dobově věrným **Armádním revolverem Gasser M1870** ráže 11 mm (včetně vylepšení *Vyladěný revolver Gasser+* a *Důstojnický revolver Gasser++*).
+  - *Vyčištění seedů a textů*: Relikt `DRACULA-007` nahrazen seedem `NOCHTIC-1899` a zástupný text `HRAD-1905` v nastavení opraven na `HRAD-1899`.
+  - *Slovanský folklór v bestiáři*: Oživlý nebožtík Hynek přejmenován na autentického **Umrlce Hynka**; upíří trpaslík upraven na **Upířího skřítka Šmudlu**.
+  - *Dokumentace domény*: Vytvořen architektonický záznam [ADR 0007](docs/adr/0007-historicka-autenticita-a-odstraneni-anachronismu.md) a do [GLOSSARY.md](GLOSSARY.md) zapsány kánonické termíny *Umrlec*, *Hrabě Leopold von Nochtic* a *Armádní revolver Gasser*.
+
 ## [1.5.0] - 2026-11-03
 
 ### Přidáno (Added)

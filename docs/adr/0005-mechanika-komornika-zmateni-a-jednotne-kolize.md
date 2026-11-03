@@ -1,0 +1,3 @@
+# 5. Schopnost komorníka Lady Gwendolyn, pravidlo zmatení a jednotné kolizní zranění
+
+Měníme Krok do nepřítele Lady Gwendolyn na manévr „Čas na čaj, milady!“, který při volném poli za nepřítelem vyvolá nesmrtelného komorníka vykrývajícího veškeré zranění po dobu 2 kol a odkopne nepřítele o 1 + 2 pole se stavem Zmatení. Zároveň sjednocujeme obecná pravidla: stav Zmatení nově způsobuje úplné vynechání jednoho tahu (s vizuálním otazníkem ❓ nad hlavou) a jakékoliv Odstrčení způsobuje přesně 1 DMG za každé políčko, o které se entita kvůli překážce, zdi či jiné postavě již nemohla posunout (oběma zúčastněným stranám).

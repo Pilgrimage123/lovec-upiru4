@@ -23,7 +23,12 @@ import {
   checkArmingCondition,
   refreshSingleEnemyIntent,
   spawnEnemyEntity,
-  getSortedEnemiesByInitiative
+  getSortedEnemiesByInitiative,
+  genEntityId,
+  isVampireEntity,
+  isHumanEntity,
+  canDamageFinishVampires,
+  resolveEntityDeath
 } from './state.js';
 import { applyResonances } from './combo.js';
 import { getHunterDialogue } from '../config/dialogues.js';
@@ -93,11 +98,17 @@ export function resolveEnemyStepOrIntentAction(state, enemy, action, events) {
     let dir = action.dir;
     if (hasStatus(enemy, 'confusion')) {
       consumeStatus(enemy, 'confusion', 1);
-      dir = state.rng.nextFloat() < 0.5 ? -1 : 1;
+      events.push({
+        type: 'enemy_confusion_skipped',
+        enemyId: enemy.id,
+        enemyName: enemy.name,
+        cell: enemy.cell
+      });
       events.push({
         type: 'log',
-        text: `🌀 Zmatený ${enemy.name} vrávorá náhodným směrem!`
+        text: `❓ ${enemy.name} má nad hlavou otazník, zmateně stojí a vynechává tah!`
       });
+      return;
     }
     const targetCell = enemy.cell + dir;
     const blockReason = getEnemyStepBlockReason(state, enemy, targetCell);
@@ -542,6 +553,18 @@ export function resolveEnemyPhase(state, events = []) {
         type: 'log',
         text: `🔔 ${enemy.name} je omráčený a vynechává akci!`
       });
+    } else if (hasStatus(enemy, 'confusion')) {
+      consumeStatus(enemy, 'confusion', 1);
+      events.push({
+        type: 'enemy_confusion_skipped',
+        enemyId: enemy.id,
+        enemyName: enemy.name,
+        cell: enemy.cell
+      });
+      events.push({
+        type: 'log',
+        text: `❓ ${enemy.name} má nad hlavou otazník, zmateně stojí a vynechává tah!`
+      });
     } else {
       if (!enemy.nextAction && enemy.queueState !== 'ARMED_RED') {
         planEnemyNextAction(state, enemy);
@@ -633,7 +656,15 @@ export function resolveHeroHitOnTarget(
       text: `🗡️ Zákeřný bod ze zálohy do zad postavy ${target.name} (${patternStep.backstabDmg} DMG)!`
     });
   }
-  const totalDmg = Math.max(0, baseDmg + bonusInfo.dmgBonus);
+  let humanBonus = 0;
+  if (tile.id === 'falcon_claw' && isHumanEntity(target)) {
+    humanBonus = 2;
+    events.push({
+      type: 'log',
+      text: `🦅 Sokolí spár! Cíl (${target.name}) je člověk – kritická slabina za +2 DMG!`
+    });
+  }
+  const totalDmg = Math.max(0, baseDmg + bonusInfo.dmgBonus + humanBonus);
   const targetHadOkolkovano = Boolean(target.statuses?.okolkovano > 0);
   let blockType = null;
   if (totalDmg > 0) {
@@ -810,10 +841,53 @@ export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events 
     }
   }
 
-  if (tile.leapDistance) {
+  if (tile.isLobbed) {
+    const hName = hero.givenName || hero.name;
+    const lobDist = tile.lobDistance || 3;
+    const rawTarget = hero.cell + hero.facing * lobDist;
+    const impactCell = Math.max(0, Math.min(state.boardSize - 1, rawTarget));
+
+    events.push({
+      type: 'lobbed_projectile_vfx',
+      from: hero.cell,
+      to: impactCell,
+      facing: hero.facing,
+      tileId: tile.id
+    });
+    events.push({
+      type: 'log',
+      text: `💣 ${tile.name}: ${hName} mrštil granát obloukem na pole ${impactCell + 1}!`
+    });
+
+    const radiusCells = [impactCell - 1, impactCell, impactCell + 1].filter((c) => isValidCell(c, state));
+    for (const c of radiusCells) {
+      if (state.terrain[c]?.type !== 'pit') {
+        state.terrain[c] = { type: 'garlic_cloud', duration: tile.cloudDuration || 2 };
+        events.push({ type: 'terrain_spawn', terrainType: 'garlic_cloud', cell: c });
+      }
+      const ent = getEntityAt(state, c);
+      if (ent && ent.id !== hero.id) {
+        addStatus(ent, 'confusion', 1, events);
+        if (ent.isTorpid) {
+          dealDamage(state, ent, 2, { reason: 'garlic_grenade', isFinisher: true, canFinishVampires: true }, events);
+        }
+      }
+    }
+  } else if (tile.leapDistance) {
     const fromCell = hero.cell;
     const hName = hero.givenName || hero.name;
-    if (tile.leaveGarlicCloud) {
+    if (tile.leaveGarlicCloudRadius1 || tile.id === 'skok_pres_kozu' || tile.id === 'belly_vault') {
+      for (const c of [fromCell - 1, fromCell, fromCell + 1]) {
+        if (isValidCell(c, state) && state.terrain[c]?.type !== 'pit') {
+          state.terrain[c] = { type: 'garlic_cloud', duration: tile.cloudDuration || 2 };
+          events.push({ type: 'terrain_spawn', terrainType: 'garlic_cloud', cell: c });
+        }
+      }
+      events.push({
+        type: 'log',
+        text: `🧄 ${hName} provedl ladný skok a na výchozím poli zanechal široký Česnekový oblak!`
+      });
+    } else if (tile.leaveGarlicCloud) {
       if (state.terrain[fromCell]?.type !== 'pit') {
         state.terrain[fromCell] = { type: 'garlic_cloud', duration: 2 };
       }
@@ -1095,7 +1169,7 @@ export function checkBattleEnd(state, events = []) {
     events.push({ type: 'battle_lost' });
     return 'lost';
   }
-  const anyLivingEnemies = state.enemies.some((e) => e.hp > 0);
+  const anyLivingEnemies = state.enemies.some((e) => e.hp > 0 || e.isTorpid);
   const anyPendingReinforcements = state.reinforcements.some((r) => !r.spawned);
   if (!anyLivingEnemies && !anyPendingReinforcements) {
     state.status = 'won';
@@ -1117,6 +1191,23 @@ export function consumeHeroStunIfPresent(state) {
       { type: 'hero_stun_skipped', targetId: hero.id, cell: hero.cell },
       { type: 'log', text: `🔔 ${hero.givenName || hero.name} je omráčený a vynechává akci!` }
     ]
+  };
+}
+
+export function consumeHeroConfusionIfPresent(state) {
+  const hero = state?.hero;
+  if (!hero || hero.hp <= 0 || !(hero.statuses?.confusion > 0)) return null;
+  hero.statuses.confusion -= 1;
+  if (hero.statuses.confusion <= 0) delete hero.statuses.confusion;
+  const events = [
+    { type: 'hero_confusion_skipped', targetId: hero.id, cell: hero.cell },
+    { type: 'log', text: `❓ ${hero.givenName || hero.name} má nad hlavou otazník, zmateně stojí a vynechává tah!` }
+  ];
+  advanceTurnAfterPlayerAction(state, events);
+  return {
+    ok: true,
+    confused: true,
+    events
   };
 }
 
@@ -1180,6 +1271,26 @@ export function advanceTurnAfterPlayerAction(state, events = [], extraCdReductio
     }
   }
 
+  // Tick Butler lifespan
+  for (let i = state.props.length - 1; i >= 0; i--) {
+    const p = state.props[i];
+    if (p.kind === 'komornik' && typeof p.durationRounds === 'number') {
+      p.durationRounds -= 1;
+      if (p.durationRounds <= 0) {
+        events.push({
+          type: 'komornik_expire',
+          cell: p.cell,
+          id: p.id
+        });
+        events.push({
+          type: 'log',
+          text: `☕ Komorník Archibald se uctivě uklání: „Váš čaj byl podán, milady.“ a v obláčku prachu mizí.`
+        });
+        state.props.splice(i, 1);
+      }
+    }
+  }
+
   for (let i = 0; i < state.terrain.length; i++) {
     const terr = state.terrain[i];
     if (terr && typeof terr.duration === 'number') {
@@ -1193,12 +1304,47 @@ export function advanceTurnAfterPlayerAction(state, events = [], extraCdReductio
             dealDamage(state, enemy, 2, { reason: 'holy_water_puddle', type: 'holy' }, events);
           }
         }
+      } else if (terr.type === 'garlic_cloud') {
+        for (const enemy of state.enemies) {
+          if ((enemy.hp > 0 || enemy.isTorpid) && enemy.cell === i) {
+            const isVamp = isVampireEntity(enemy);
+            const dmg = isVamp ? 2 : 1;
+            events.push({
+              type: 'log',
+              text: `🧄 ${enemy.name} stojí v česnekovém oblaku (${dmg} DMG${isVamp ? ' – upír trpí dvojnásob!' : ''})!`
+            });
+            dealDamage(state, enemy, dmg, { reason: 'garlic_cloud', isFinisher: true, canFinishVampires: true }, events);
+          }
+        }
       }
       terr.duration -= 1;
       if (terr.duration <= 0) {
         const expiredType = terr.type;
         state.terrain[i] = { type: 'none' };
         events.push({ type: 'terrain_expire', terrainType: expiredType, cell: i });
+      }
+    }
+  }
+
+  for (const enemy of state.enemies) {
+    if (enemy.isTorpid) {
+      enemy.torporTurnsLeft = (enemy.torporTurnsLeft || 2) - 1;
+      if (enemy.statuses?.torpor) enemy.statuses.torpor = enemy.torporTurnsLeft;
+      if (enemy.torporTurnsLeft <= 0) {
+        enemy.isTorpid = false;
+        delete enemy.statuses?.torpor;
+        enemy.hp = Math.max(1, Math.floor(enemy.maxHp / 2));
+        events.push({
+          type: 'vampire_revive',
+          targetId: enemy.id,
+          targetName: enemy.name,
+          cell: enemy.cell,
+          hp: enemy.hp
+        });
+        events.push({
+          type: 'log',
+          text: `🩸 ${enemy.name} se zvedá ze země a s vyceněnými tesáky opět povstává do boje s ${enemy.hp} HP!`
+        });
       }
     }
   }
@@ -1308,14 +1454,72 @@ export function resolveHeroBump(state, hero, enemy, dir, targetCell, hunterId, e
       text: `🏋️ Cirkusový přehoz! Silák Gustav popadl ${enemy.name} za opasek, praštil s ním o dlažbu za 3 DMG a odmrštil ho o 2 pole!`
     });
   } else if (hunterId === 'anglicanka') {
-    hero.bumpCooldown = 2;
-    dealDamage(state, enemy, 2, { reason: 'anglicanka_bump', attackerId: hero.id }, events);
-    enemy.facing = dir;
-    events.push({ type: 'turn', entityId: enemy.id, facing: enemy.facing });
+    hero.bumpCooldown = 3;
+    const butlerCell = targetCell; // The cell where enemy stood (hero.cell + dir)
+    const initialStepCell = butlerCell + dir; // Cell directly behind enemy
+
+    // 1. Posune nepřítele o 1 dozadu
+    const oldEnemyCell = enemy.cell;
+    enemy.cell = initialStepCell;
+    events.push({ type: 'move', entityId: enemy.id, from: oldEnemyCell, to: initialStepCell, facing: enemy.facing });
+    triggerCellTerrainOnEnter(state, enemy, initialStepCell, events);
+
+    // 2. V obláčku prachu se zhmotní komorník
+    const butler = {
+      id: genEntityId('komornik'),
+      kind: 'komornik',
+      entityType: 'prop',
+      name: 'Komorník Archibald',
+      givenName: 'Archibald',
+      epithet: 'Čas na čaj, milady!',
+      bodyScale: 'human',
+      sprite: 'prop.komornik',
+      maxHp: 999,
+      hp: 999,
+      cell: butlerCell,
+      facing: dir,
+      flying: false,
+      isImmortal: true,
+      durationRounds: 2,
+      destructible: false,
+      statuses: {}
+    };
+    state.props.push(butler);
+    events.push({
+      type: 'komornik_spawn',
+      cell: butlerCell,
+      id: butler.id,
+      facing: dir
+    });
     events.push({
       type: 'log',
-      text: `🫖 Klepnutí slunečníkem! Lady Gwendolyn klepla ${enemy.name} stříbrnou špicí přes prsty za 2 DMG a otočila ho zády: „Zády k dámě se sice nestojí, ale aspoň nekoušete!“`
+      text: `☕ Čas na čaj, milady! V obláčku prachu se zhmotnil komorník Archibald, nabídl šálek čaje a okovanou botou rázně vykopl ${enemy.name} vzad!`
     });
+
+    // 3. Pak ho odsune ještě o dvě políčka
+    let blockerInPath = null;
+    for (let dist = 1; dist <= 2; dist++) {
+      const c = initialStepCell + dir * dist;
+      const b = getEntityAt(state, c);
+      if (b) {
+        blockerInPath = b;
+        break;
+      }
+    }
+
+    pushEntity(state, enemy, dir, 2, events);
+
+    // 4. Nepřítel i ten, do kterého vrazil, je zmatený (❓)
+    if (enemy.hp > 0) {
+      addStatus(enemy, 'confusion', 1, events);
+    }
+    if (blockerInPath && blockerInPath.hp > 0 && blockerInPath.id !== enemy.id && blockerInPath.id !== butler.id) {
+      addStatus(blockerInPath, 'confusion', 1, events);
+      events.push({
+        type: 'log',
+        text: `❓ Srážka způsobila šok! ${blockerInPath.name} má nad hlavou otazník a je zmatený!`
+      });
+    }
   } else if (hunterId === 'helsing') {
     hero.bumpCooldown = 2;
     dealDamage(state, enemy, 2, { reason: 'helsing_bump', attackerId: hero.id }, events);
@@ -1324,7 +1528,7 @@ export function resolveHeroBump(state, hero, enemy, dir, targetCell, hunterId, e
     }
     events.push({
       type: 'log',
-      text: `🏹 Úder pažbou kuše! Profesor Gabriel van Helsing udeřil ${enemy.name} okovanou pažbou za 2 DMG a odhodil ho!`
+      text: `🏹 Úder pažbou kuše! Sir Arthur Featherstone udeřil ${enemy.name} okovanou pažbou za 2 DMG a odhodil ho!`
     });
   } else if (hunterId === 'revident') {
     hero.bumpCooldown = 2;
@@ -1357,20 +1561,13 @@ export function stepHero(state, direction) {
   if (state.status !== 'playing' || state.hero.hp <= 0) return { ok: false, events };
   const stunRes = consumeHeroStunIfPresent(state);
   if (stunRes) return stunRes;
+  const confRes = consumeHeroConfusionIfPresent(state);
+  if (confRes) return confRes;
 
   let dir = Math.sign(direction);
   if (!dir) return { ok: false, events };
   const hero = state.hero;
   const hName = hero.givenName || hero.name || 'Venca';
-  const confused = hasStatus(hero, 'confusion');
-  if (confused) {
-    dir = state.rng.nextFloat() < 0.5 ? -1 : 1;
-    consumeStatus(hero, 'confusion', 1);
-    events.push({
-      type: 'log',
-      text: `🌀 ${hName} má v hlavě motolici a vykročil náhodným směrem!`
-    });
-  }
 
   const targetCell = hero.cell + dir;
   if (!isValidCell(targetCell, state)) {
@@ -1393,6 +1590,30 @@ export function stepHero(state, direction) {
     events.push({ type: 'log', text: `👣 ${hName} popošel na pole ${targetCell + 1}.` });
     triggerCellTerrainOnEnter(state, hero, targetCell, events);
   } else if (occupant.entityType === 'enemy') {
+    if (occupant.isTorpid) {
+      events.push({
+        type: 'hero_stake_finish',
+        heroId: hero.id,
+        targetId: occupant.id,
+        cell: targetCell
+      });
+      events.push({
+        type: 'log',
+        text: `🪵 ${hName} přistoupil k ochromenému ${occupant.name} a zarazil mu kolík přímo do srdce!`
+      });
+      occupant.isTorpid = false;
+      delete occupant.statuses?.torpor;
+      occupant.hp = 0;
+      resolveEntityDeath(state, occupant, { reason: 'stake_finish', isFinisher: true }, events);
+
+      const from = hero.cell;
+      hero.cell = targetCell;
+      events.push({ type: 'move', entityId: hero.id, from, to: targetCell, facing: hero.facing });
+      events.push({ type: 'log', text: `👣 ${hName} zaujal pole ${targetCell + 1}.` });
+      triggerCellTerrainOnEnter(state, hero, targetCell, events);
+      assertBoardInvariants(state);
+      return { ok: true, events };
+    }
     if ((hero.bumpCooldown || 0) > 0) {
       events.push({
         type: 'invalid_action',
@@ -1401,6 +1622,20 @@ export function stepHero(state, direction) {
       return { ok: false, events };
     }
     const hunterId = hero.hunterId || hero.kind || 'venca';
+    if (hunterId === 'anglicanka') {
+      const spaceBehind = occupant.cell + dir;
+      if (!isValidCell(spaceBehind, state) || getEntityAt(state, spaceBehind)) {
+        events.push({
+          type: 'invalid_action',
+          reason: 'Schopnost „Čas na čaj, milady!“ nelze použít – za nepřítelem není volné místo!'
+        });
+        events.push({
+          type: 'log',
+          text: `🫖 Za nepřítelem ${occupant.name} není volné místo! Komorník nemůže vstoupit na scénu.`
+        });
+        return { ok: false, events };
+      }
+    }
     resolveHeroBump(state, hero, occupant, dir, targetCell, hunterId, events);
   } else if (confused) {
     events.push({
@@ -1797,7 +2032,7 @@ export function resolveHunterCombo3Bonus(state, hero, events) {
   } else if (hunterId === 'helsing') {
     events.push({
       type: 'log',
-      text: '🏹 Kruhový rotační rozptyl! Profesor Gabriel van Helsing roztočil multishot mechanismus a zasáhl nepřátele stříbrnou salvou!'
+      text: '🏹 Kruhový rotační rozptyl! Sir Arthur Featherstone roztočil multishot mechanismus a zasáhl nepřátele stříbrnou salvou!'
     });
     for (const e of state.enemies) {
       if (e.hp > 0) {
@@ -1809,7 +2044,7 @@ export function resolveHunterCombo3Bonus(state, hero, events) {
     addStatus(hero, 'shield', 3, events);
     events.push({
       type: 'log',
-      text: '📑 Finanční exekuce! C. k. vrchní revident Ignác Šiml získal +3 Štít a zahájil daňovou kontrolu všech nočních monster!'
+      text: '📑 Finanční exekuce! Revident Ignác Šiml získal +3 Štít a zahájil daňovou kontrolu všech nočních monster!'
     });
     for (const e of state.enemies) {
       if (e.hp > 0) {

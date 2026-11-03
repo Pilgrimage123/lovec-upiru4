@@ -30,7 +30,7 @@ const HUNTER_DEMO_SKINS = [
   { id: "ponocny", name: "Ponocný Bartoloměj", spriteUrl: SPRITE_PRESETS.ponocnyHunter },
   { id: "silak", name: "Silák Gustav", spriteUrl: SPRITE_PRESETS.silakHunter },
   { id: "anglicanka", name: "Lady Gwendolyn", spriteUrl: SPRITE_PRESETS.anglicankaHunter },
-  { id: "helsing", name: "Prof. van Helsing", spriteUrl: SPRITE_PRESETS.helsingHunter },
+  { id: "helsing", name: "Sir Arthur Featherstone", spriteUrl: SPRITE_PRESETS.helsingHunter },
   { id: "revident", name: "C. k. vrchní revident", spriteUrl: SPRITE_PRESETS.revidentHunter },
 ] as const;
 

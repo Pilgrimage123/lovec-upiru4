@@ -536,7 +536,7 @@ export const UnitSprite = forwardRef<UnitSpriteHandle, UnitSpriteProps>(
         ? "brightness(0) invert(1) drop-shadow(0 0 12px rgba(255,255,255,0.95))"
         : flashMode === "red"
         ? "brightness(1.8) sepia(1) hue-rotate(-50deg) saturate(7) drop-shadow(0 0 12px rgba(220,38,38,0.95))"
-        : "drop-shadow(0 4px 6px rgba(0,0,0,0.65))";
+        : "drop-shadow(0 0 2px rgba(255,255,255,0.75)) drop-shadow(0 4px 6px rgba(0,0,0,0.85))";
 
     const hpPercent = Math.max(0, Math.min(100, Math.round((hp / Math.max(1, maxHp)) * 100)));
 
@@ -553,7 +553,7 @@ export const UnitSprite = forwardRef<UnitSpriteHandle, UnitSpriteProps>(
           name?.toLowerCase().includes("cilka") ||
           name?.toLowerCase().includes("šmudla")
         ? "small"
-        : id.includes("dagmar") || id.includes("sosak") || id.includes("drakula")
+        : id.includes("dagmar") || id.includes("sosak") || id.includes("drakula") || id.includes("nochtic") || id.includes("nochtic")
         ? "boss"
         : id.includes("vlkodav") || id.includes("buldok") || id.includes("divocak") || id.includes("prase")
         ? "beast"

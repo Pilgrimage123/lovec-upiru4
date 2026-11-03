@@ -5,10 +5,10 @@ export const STRINGS = {
   acts: {
     1: 'Akt I: Zatuchlé předhradí a hřbitov',
     2: 'Akt II: Černá kuchyně a zbrojnice',
-    3: 'Akt III: Zrcadlový trůnní sál Hraběte Drákuly'
+    3: 'Akt III: Zrcadlový trůnní sál Hraběte von Nochtic'
   },
   friendlyFireQuotes: [
-    '„Hrabě Drákula by zaplakal – upír právě prokousl krk vlastnímu nočnímu bratru!“',
+    '„Hrabě Leopold von Nochtic by zaplakal – upír právě prokousl krk vlastnímu nočnímu bratru!“',
     '„Tohle se v kryptě nenosí! Upír napálil kumpána přímo mezi lopatky!“',
     '„Přátelská výpomoc po upířsku: jeden špičák do vlastních řad!“',
     '„Kdo jinému jámu kopá, sám do ní upířího druha shodí!“',

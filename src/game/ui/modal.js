@@ -168,7 +168,7 @@ export function openSettingsModal(modalRoot, settings, metaStats, callbacks = {}
           <div class="setting-row-col">
             <label for="inp-custom-seed"><strong>Spustit novou výpravu s vlastním seedem:</strong></label>
             <div class="seed-input-group">
-              <input type="text" id="inp-custom-seed" class="parchment-input" value="${settings.currentSeed || 'VENCA-1899'}" placeholder="Např. HRAD-1905" />
+              <input type="text" id="inp-custom-seed" class="parchment-input" value="${settings.currentSeed || 'VENCA-1899'}" placeholder="Např. HRAD-1899" />
               <button type="button" class="btn-parchment" id="btn-start-seed">🎲 Spustit seed</button>
               <button type="button" class="btn-parchment" id="btn-random-seed">🔀 Náhodný běh</button>
             </div>
@@ -608,7 +608,7 @@ export function openRunEndModal(modalRoot, runState, isVictory, callbacks = {}) 
           <p class="modal-lead">
             ${
               isVictory
-                ? `Pán temnot hrabě Drákula dostal přímo do svého černého srdce! Hrad je vyčištěn a ${hunterName} míří na zaslouženou dvanáctku!`
+                ? `Veleupír hrabě Leopold von Nochtic dostal přímo do svého černého srdce! Hrad je vyčištěn a ${hunterName} míří na zaslouženou dvanáctku!`
                 : `Temné upíří hordy tentokrát lovce (${hunterName}) udolaly. Ale moravský česnek ještě neřekl poslední slovo!`
             }
           </p>
@@ -719,7 +719,7 @@ export function openCastleArchiveModal(modalRoot, appState, onUpdate = null, onS
   }).join('');
 
   const cursesCardsHtml = (maxCurse === 0)
-    ? `<div class="curse-locked-hint">🔒 Kletby noci se odemknou po tvém prvním vítězství nad Hrabětem Drákulou v aktu 3!</div>`
+    ? `<div class="curse-locked-hint">🔒 Kletby noci se odemknou po tvém prvním vítězství nad Hrabětem von Nochtic v aktu 3!</div>`
     : `<div class="archive-curses-grid">` +
       NIGHT_CURSES.map((curse) => {
         const isUnlocked = curse.level <= maxCurse;
@@ -750,7 +750,7 @@ export function openCastleArchiveModal(modalRoot, appState, onUpdate = null, onS
 
   const hallOfFame = meta.hallOfFame || [];
   const hallOfFameHtml = hallOfFame.length === 0
-    ? `<div class="curse-locked-hint">Zatím žádný zápis v Síni slávy. Pokoř Hraběte Drákulu v aktu 3 a zapiš svůj triumf!</div>`
+    ? `<div class="curse-locked-hint">Zatím žádný zápis v Síni slávy. Pokoř Hraběte von Nochtic v aktu 3 a zapiš svůj triumf!</div>`
     : `<div class="hall-of-fame-table-wrap">
         <table class="hall-of-fame-table">
           <thead>

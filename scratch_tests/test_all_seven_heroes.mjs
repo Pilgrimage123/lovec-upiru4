@@ -77,7 +77,7 @@ assert.strictEqual(ladyState.hand[0].id, 'silver_parasol');
 assert.strictEqual(ladyState.hand[1].id, 'boiling_tea');
 assert.strictEqual(ladyState.hand[2].id, 'royal_etiquette');
 
-// Bump test: Klepnutí slunečníkem (2 DMG, turn enemy facing)
+// Bump test: Čas na čaj, milady! (Komorník spawns, enemy pushed 1+2, confused)
 ladyState.hero.cell = 2;
 ladyState.hero.facing = 1;
 const ladyEnemy = {
@@ -91,11 +91,15 @@ const ladyEnemy = {
   entityType: 'enemy'
 };
 ladyState.enemies = [ladyEnemy];
+ladyState.props = [];
 const ladyBumpEvents = [];
 resolveHeroBump(ladyState, ladyState.hero, ladyEnemy, 1, ladyEnemy.cell, 'anglicanka', ladyBumpEvents);
-assert.strictEqual(ladyEnemy.hp, 8, 'Dealt 2 DMG');
-assert.strictEqual(ladyEnemy.facing, 1, 'Turned facing away from lady');
-console.log('  ✓ Klepnutí slunečníkem: 2 DMG, otočil nepřítele zády k dámě');
+assert.strictEqual(ladyEnemy.cell, 6, 'Enemy pushed to cell 6');
+assert.strictEqual(ladyEnemy.statuses.confusion, 1, 'Enemy confused');
+const spawnedButler = ladyState.props.find(p => p.kind === 'komornik');
+assert.ok(spawnedButler, 'Butler spawned');
+assert.strictEqual(spawnedButler.cell, 3, 'Butler spawned at cell 3');
+console.log('  ✓ Čas na čaj, milady!: Komorník na cell 3, nepřítel odsunut na cell 6 a zmaten');
 
 // 3-Combo test: Čaj o páté (+4 HP, +4 Shield, 3 DMG + bleed to all in line)
 ladyState.hero.hp = 10;
@@ -103,7 +107,7 @@ const ladyComboEvents = [];
 resolveHunterCombo3Bonus(ladyState, ladyState.hero, ladyComboEvents);
 assert.strictEqual(ladyState.hero.hp, 14, 'Healed 4 HP');
 assert(ladyState.hero.statuses.shield >= 4, 'Gained +4 Shield');
-assert.strictEqual(ladyEnemy.hp, 5, 'Dummy took 3 DMG (8 - 3 = 5)');
+assert.strictEqual(ladyEnemy.hp, 7, 'Dummy took 3 DMG (10 - 3 = 7)');
 assert(ladyEnemy.statuses.bleed > 0, 'Applied Bleed 2');
 console.log('  ✓ Čaj o páté: +4 HP, +4 Shield, 3 DMG + Bleed all in line of sight');
 

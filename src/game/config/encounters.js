@@ -212,7 +212,7 @@ export const ENCOUNTERS = {
   act3_boss: {
     id: 'act3_boss',
     act: 3,
-    name: 'Trůnní sál Hraběte Drákuly',
+    name: 'Trůnní sál Hraběte von Nochtic',
     backgroundTheme: 'vampire_throne_crypt',
     isBoss: true,
     heroCell: 2,

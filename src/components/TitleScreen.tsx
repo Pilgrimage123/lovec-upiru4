@@ -66,8 +66,8 @@ interface HunterDeed {
 const HUNTERS_DATA: Record<string, HunterDeed> = {
   classic: {
     id: "classic",
-    shortName: "Venca",
-    name: "Venca Česnekáč",
+    shortName: "Štamgast Venca",
+    name: "Štamgast Venca Česnek",
     epithet: "Dub a česnek",
     role: "Hospodský lidový bijec",
     tag: "Vyvážený taktik · Odhazování & Dým",
@@ -87,15 +87,15 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     comboDesc:
       "3-kombo: Získá +4 Štít a omámí okolní upíry (Zmatení — vrávorají náhodným směrem).",
     deck: [
-      { id: "oak_stake", upgradeLevel: 0 },
-      { id: "garlic_belch", upgradeLevel: 0 },
-      { id: "holy_syringe", upgradeLevel: 0 },
+      { id: "falcon_claw", upgradeLevel: 0 },
+      { id: "garlic_grenade", upgradeLevel: 0 },
+      { id: "skok_pres_kozu", upgradeLevel: 0 },
     ],
   },
   honza: {
     id: "honza",
-    shortName: "Honza",
-    name: "Hloupý Honza",
+    shortName: "Chasník Honza",
+    name: "Chasník Honza Buchta",
     epithet: "Selský silák",
     role: "Selská síla & husitský cep",
     tag: "Drtivá síla · Kolize & Beraní průraz",
@@ -122,8 +122,8 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
   },
   dragoun: {
     id: "dragoun",
-    shortName: "Dragoun",
-    name: "Rittmeister Jaromír",
+    shortName: "Rittmeister Jaromír",
+    name: "Rittmeister Jaromír Vraný",
     epithet: "Vysloužilý c. k. dragoun",
     role: "Císařský kavalerista",
     tag: "Vysoké zdraví (24 HP) · Kartáčová salva & Pevný kryt",
@@ -135,7 +135,7 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     heraldicBorder: "border-blue-400",
     portraitUrl: HUNTER_PORTRAITS.dragoun,
     quote: "„Dle c. k. polního řádu § 14 se na noční havěť tasí šavle bez úředního vyzvání!“",
-    signatureWeapon: "Důstojnická šavle vzor 1877 & Křesadlová bambitka",
+    signatureWeapon: "Důstojnická šavle vzor 1877 & Armádní revolver Gasser",
     bumpName: "Úder těžkým jílcem",
     bumpDesc:
       "Krok do nepřítele: Praští ho mosazným jílcem za 2 DMG, odhodí ho a na 1 tah omráčí (Chladnutí 3).",
@@ -150,8 +150,8 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
   },
   zlodejka: {
     id: "zlodejka",
-    shortName: "Zlodějka",
-    name: "Káča Pavučina",
+    shortName: "Kapsářka Káča",
+    name: "Kapsářka Káča Pavučina",
     epithet: "Úskočná zlodějka",
     role: "Pražská stínová akrobatka",
     tag: "Vysoké riziko (14 HP) · Zničujících 8 DMG do zad",
@@ -178,8 +178,8 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
   },
   ponocny: {
     id: "ponocny",
-    shortName: "Ponocný",
-    name: "Ponocný Bartoloměj",
+    shortName: "Ponocný Bartoloměj",
+    name: "Ponocný Bartoloměj Klika",
     epithet: "Strážce půlnoční hodiny",
     role: "Noční hlídka & těžká halapartna",
     tag: "Silný & Pomalý (26 HP) · Dvoupolíčkový dosah halapartny",
@@ -206,8 +206,8 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
   },
   silak: {
     id: "silak",
-    shortName: "Silák",
-    name: "Silák Gustav",
+    shortName: "Silák Gustav",
+    name: "Silák Gustav Železný",
     epithet: "Cirkusový lamač podkov",
     role: "Cirkusová síla & litinová břemena",
     tag: "Vysoká síla (22 HP) · Vrhání závaží · Přehoz",
@@ -234,8 +234,8 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
   },
   anglicanka: {
     id: "anglicanka",
-    shortName: "Lady Gwen",
-    name: "Lady Gwendolyn",
+    shortName: "Lady Gwendolyn",
+    name: "Lady Gwendolyn Sterling",
     epithet: "Viktoriánská dáma & lovkyně",
     role: "Britská etiketa & stříbrný slunečník",
     tag: "Vysoká Obrana (2) · Horký Earl Grey · Bodnutí ze zálohy",
@@ -248,9 +248,9 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     portraitUrl: HUNTER_PORTRAITS.anglicanka,
     quote: "„Upíři jsou nanejvýš nevychovaná stvoření. Čaj o páté ignorují docela!“",
     signatureWeapon: "Stříbrem kovaný slunečník & Porcelánová konvice",
-    bumpName: "Klepnutí slunečníkem",
+    bumpName: "Čas na čaj, milady!",
     bumpDesc:
-      "Krok do nepřítele: Klepne nevychovaného upíra přes prsty za 2 DMG a otočí ho zády k sobě (Chladnutí 2)!",
+      "Krok do nepřítele: V obláčku prachu se na místě nepřítele zhmotní komorník (nesmrtelný živý štít na 2 kola), posune nepřítele o 1 pole vzad a pak jej odkopne o další 2 pole. Nepřítel i cíl srážky získají Zmatení (❓). Nelze použít bez volného pole za nepřítelem (Chladnutí 3).",
     comboName: "Čaj o páté",
     comboDesc:
       "3-kombo: Vychutná si doušek čaje (+4 HP, +4 Štít) a vařící čaj opaří všechny nepřátele v linii za 3 DMG.",
@@ -262,10 +262,10 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
   },
   helsing: {
     id: "helsing",
-    shortName: "Helsing",
-    name: "Profesor Gabriel van Helsing",
-    epithet: "Vědecký okultista",
-    role: "Mechanická věda & rotační multishot",
+    shortName: "Sir Arthur",
+    name: "Sir Arthur Featherstone",
+    epithet: "Britský lovec trofejí",
+    role: "Britská lovecká expedice & rotační kuše",
     tag: "Dálkový útok (18 HP) · Rotační opakovací kuše · Balistická salva",
     beerBadge: "Oktogonální ležák 14°",
     maxHp: 18,
@@ -274,7 +274,7 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     heraldicColor: "from-stone-950 via-zinc-900 to-amber-950",
     heraldicBorder: "border-stone-400",
     portraitUrl: HUNTER_PORTRAITS.helsing,
-    quote: "„Kde selhává modlitba, tam nastupuje pružinová ocel a dvacet stříbrných šipek za minutu.“",
+    quote: "„Tito čeští vampýři jsou poněkud pomalejší než bengálský tygr, ale zuby mají úctyhodné!“",
     signatureWeapon: "Gatlingova rotační kuše vz. 1888 & Rumpálový napínák",
     bumpName: "Úder pažbou kuše",
     bumpDesc:
@@ -290,13 +290,13 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
   },
   revident: {
     id: "revident",
-    shortName: "Revident",
-    name: "C. k. vrchní revident (Ignác Šiml)",
+    shortName: "Revident Šiml",
+    name: "Revident Ignác Šiml",
     epithet: "Císařský daňový exekutor",
     role: "Úřední předvolání & razítka",
-    tag: "Střední výdrž (4 HP, 2 Obrana) · Úřední předvolání · Stav [OKOLKOVÁNO]",
+    tag: "Vysoká odolnost (16 HP, 2 Obrana) · Úřední předvolání · Stav [OKOLKOVÁNO]",
     beerBadge: "Erární ležák 11°",
-    maxHp: 4,
+    maxHp: 16,
     defense: 2,
     icon: "📑",
     heraldicColor: "from-yellow-950 via-stone-900 to-amber-950",
@@ -320,7 +320,7 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
 };
 
 const THEMATIC_FOLK_SEEDS = [
-  "HELSING-1888",
+  "ARTHUR-1888",
   "REVIDENT-1884",
   "CIRKUS-1899",
   "EARL-GREY-1899",
@@ -335,7 +335,7 @@ const THEMATIC_FOLK_SEEDS = [
   "BUCHTA-666",
   "SLIVOVICE-1848",
   "KORBEL-99",
-  "DRACULA-007",
+  "NOCHTIC-1899",
   "ROZMARNICE-13",
   "CERNY-KRIZ-1899",
 ];
@@ -455,7 +455,7 @@ export function TitleScreen({
 
           <p className="text-[11px] sm:text-xs text-amber-100 font-serif font-medium italic max-w-3xl leading-snug mt-0.5">
             „Pivo točené ze svěceného sudu · Česnek ze Znojma · Kůly z dubového jádra ·
-            Rázné vyčištění Drákulova hradu léta Páně 1899!“
+            Rázné vyčištění sídla Hraběte von Nochtic léta Páně 1899!“
           </p>
         </div>
       </header>
@@ -530,7 +530,7 @@ export function TitleScreen({
                     <img
                       src={hunter.portraitUrl}
                       alt={hunter.name}
-                      className={`h-full w-auto max-w-full object-contain object-bottom drop-shadow-[0_4px_8px_rgba(0,0,0,0.85)] transition-transform duration-150 ${
+                      className={`h-full w-auto max-w-full object-contain object-bottom drop-shadow-[0_0_2px_rgba(255,255,255,0.7)] drop-shadow-[0_0_2px_rgba(255,255,255,0.7)] drop-shadow-[0_4px_8px_rgba(0,0,0,0.85)] transition-transform duration-150 ${
                         isSelected ? "scale-110" : "group-hover:scale-105 opacity-90 group-hover:opacity-100"
                       }`}
                     />
@@ -617,7 +617,7 @@ export function TitleScreen({
                 <img
                   src={activeHunter.portraitUrl}
                   alt={activeHunter.name}
-                  className="relative z-10 h-full w-auto max-w-full object-contain object-bottom drop-shadow-[0_12px_24px_rgba(0,0,0,0.98)] transition-transform duration-200"
+                  className="relative z-10 h-full w-auto max-w-full object-contain object-bottom drop-shadow-[0_0_3px_rgba(255,255,255,0.75)] drop-shadow-[0_0_3px_rgba(255,255,255,0.75)] drop-shadow-[0_12px_24px_rgba(0,0,0,0.98)] transition-transform duration-200"
                   onError={() => {
                     setFailedImages((prev) => ({
                       ...prev,
@@ -736,7 +736,7 @@ export function TitleScreen({
               </div>
             </div>
 
-            {/* EXPEDIČNÍ STANICE SE SEEDEM A VELKÝM TLAČÍTKEM VYRAZIT NA DRÁKULU */}
+            {/* EXPEDIČNÍ STANICE SE SEEDEM A VELKÝM TLAČÍTKEM VYRAZIT NA NOCHTICE */}
             <div className="p-3 sm:p-4 rounded-2xl border-2 border-[#542106] bg-gradient-to-r from-[#1c1009] via-[#24130b] to-[#1c1009] shadow-2xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
               {/* Zadání seedu */}
               <div className="flex flex-col gap-1">
@@ -780,7 +780,7 @@ export function TitleScreen({
                 className="group px-6 sm:px-8 py-3 rounded-xl border-2 border-amber-300 bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 active:scale-[0.98] text-stone-950 font-serif font-black text-base sm:text-lg tracking-wider shadow-[0_0_28px_rgba(245,158,11,0.65)] flex items-center justify-center gap-2.5 cursor-pointer transition-all duration-150 shrink-0"
               >
                 <Swords className="w-5 h-5 text-stone-950 group-hover:rotate-12 transition-transform shrink-0" />
-                <span>VYRAZIT NA DRÁKULU</span>
+                <span>VYRAZIT NA NOCHTICE</span>
                 <span className="text-[11px] font-mono font-black text-stone-900 bg-amber-200 px-2 py-0.5 rounded border border-amber-500">
                   ENTER
                 </span>
