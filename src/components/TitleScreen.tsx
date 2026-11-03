@@ -50,6 +50,9 @@ interface HunterDeed {
   beerBadge: string;
   maxHp: number;
   defense: number;
+  fury: number;
+  armor?: number;
+  backstabBonus?: number;
   icon: string;
   heraldicColor: string;
   heraldicBorder: string;
@@ -67,25 +70,26 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
   classic: {
     id: "classic",
     shortName: "Štamgast Venca",
-    name: "Štamgast Venca Česnek",
-    epithet: "Dub a česnek",
-    role: "Hospodský lidový bijec",
-    tag: "Vyvážený taktik · Odhazování & Dým",
-    beerBadge: "Paličák 12°",
+    name: "Sokol Venca Česnek",
+    epithet: "Sokolský cvičenec a pěstitel česneku",
+    role: "Vlastenecký sokol & pěstitel česneku",
+    tag: "Sokolský tělocvik · Česneková třaskavina & Přitažení",
+    beerBadge: "Sokolský paličák",
     maxHp: 20,
     defense: 1,
-    icon: "🧄",
+    fury: 10,
+    icon: "🦅",
     heraldicColor: "from-emerald-950 via-stone-900 to-amber-950",
     heraldicBorder: "border-emerald-500",
     portraitUrl: HUNTER_PORTRAITS.classic,
-    quote: "„Kdo se bojí upíra, ať do krku česnek vráží a stříkačku maže!“",
-    signatureWeapon: "Dubový kolík & Svěcená hasičská stříkačka",
-    bumpName: "Česnekové žduchnutí",
+    quote: "„Tužme se, bratři! V zdravém těle zdravý duch a poctivý moravský česnek!“",
+    signatureWeapon: "Sokolská cvičební tyč & Moravský paličák",
+    bumpName: "Sokolský náraz",
     bumpDesc:
-      "Krok do nepřítele: Odhodí cíl o 1 pole a zanechá Česnekový oblak (Chladnutí 3). V dýmu je otočení čelem vzad ZDARMA!",
-    comboName: "Česneková aura",
+      "Krok do nepřítele: Vypne hruď, udělí 1 DMG, odhodí cíl o 1 pole a zanechá Česnekový oblak (Chladnutí 3). V dýmu je otočení ZDARMA!",
+    comboName: "Sokolská prostná",
     comboDesc:
-      "3-kombo: Získá +4 Štít a omámí okolní upíry (Zmatení — vrávorají náhodným směrem).",
+      "3-kombo: Získá +4 Štít a všem nepřátelům v dosahu 1–2 pole před sebou i za sebou udělí 3 DMG a Zmatení (❓).",
     deck: [
       { id: "falcon_claw", upgradeLevel: 0 },
       { id: "garlic_grenade", upgradeLevel: 0 },
@@ -102,6 +106,8 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     beerBadge: "Selský ležák",
     maxHp: 20,
     defense: 0,
+    fury: 15,
+    armor: 1,
     icon: "🥖",
     heraldicColor: "from-amber-950 via-stone-900 to-yellow-950",
     heraldicBorder: "border-amber-500",
@@ -130,6 +136,7 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     beerBadge: "C. k. speciál",
     maxHp: 24,
     defense: 2,
+    fury: 10,
     icon: "⚔️",
     heraldicColor: "from-blue-950 via-stone-900 to-slate-950",
     heraldicBorder: "border-blue-400",
@@ -158,6 +165,8 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     beerBadge: "Noční ležák",
     maxHp: 14,
     defense: 2,
+    fury: 10,
+    backstabBonus: 100,
     icon: "🗡️",
     heraldicColor: "from-purple-950 via-stone-900 to-rose-950",
     heraldicBorder: "border-purple-400",
@@ -186,6 +195,7 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     beerBadge: "Půlnoční ležák 13°",
     maxHp: 26,
     defense: 2,
+    fury: 5,
     icon: "🏮",
     heraldicColor: "from-indigo-950 via-stone-900 to-slate-950",
     heraldicBorder: "border-indigo-400",
@@ -214,6 +224,8 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     beerBadge: "Cirkusový ležák",
     maxHp: 22,
     defense: 1,
+    fury: 15,
+    armor: 1,
     icon: "🏋️",
     heraldicColor: "from-red-950 via-stone-900 to-amber-950",
     heraldicBorder: "border-red-500",
@@ -242,6 +254,7 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     beerBadge: "Imperial Stout 18°",
     maxHp: 18,
     defense: 2,
+    fury: 5,
     icon: "🫖",
     heraldicColor: "from-slate-950 via-stone-900 to-emerald-950",
     heraldicBorder: "border-slate-400",
@@ -270,6 +283,7 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     beerBadge: "Oktogonální ležák 14°",
     maxHp: 18,
     defense: 1,
+    fury: 10,
     icon: "🏹",
     heraldicColor: "from-stone-950 via-zinc-900 to-amber-950",
     heraldicBorder: "border-stone-400",
@@ -298,6 +312,7 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     beerBadge: "Erární ležák 11°",
     maxHp: 16,
     defense: 2,
+    fury: 5,
     icon: "📑",
     heraldicColor: "from-yellow-950 via-stone-900 to-amber-950",
     heraldicBorder: "border-amber-600",
@@ -550,6 +565,14 @@ export function TitleScreen({
                     <span className="text-red-300">{hunter.maxHp} HP</span>
                     <span className="text-stone-500">·</span>
                     <span className="text-blue-300">🛡️{hunter.defense}</span>
+                    {hunter.armor && hunter.armor > 0 ? (
+                      <>
+                        <span className="text-stone-500">·</span>
+                        <span className="text-emerald-400">🦺{hunter.armor}</span>
+                      </>
+                    ) : null}
+                    <span className="text-stone-500">·</span>
+                    <span className="text-amber-400">💢{hunter.fury}%</span>
                   </div>
                 </button>
               );
@@ -589,7 +612,7 @@ export function TitleScreen({
               </div>
 
               {/* Velké stat pills */}
-              <div className="flex items-center gap-2 mt-2">
+              <div className="flex items-center gap-2 mt-2 flex-wrap">
                 <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-red-600 bg-red-950 text-red-100 text-xs font-black shadow-md">
                   <Heart className="w-3.5 h-3.5 fill-red-500 text-red-300" />
                   <span>{activeHunter.maxHp} Životů (HP)</span>
@@ -601,6 +624,28 @@ export function TitleScreen({
                   <Shield className="w-3.5 h-3.5 fill-blue-500 text-blue-300" />
                   <span>{activeHunter.defense} Základní obrana</span>
                 </div>
+                <div
+                  className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-orange-600 bg-orange-950 text-orange-100 text-xs font-black shadow-md"
+                  title={`Bojové rozlícení +${activeHunter.fury} %: na začátku každého tahu kumuluje bonus ke všemu zranění v boji`}
+                >
+                  <span>💢 +{activeHunter.fury} % Rozlícení</span>
+                </div>
+                {activeHunter.armor && activeHunter.armor > 0 ? (
+                  <div
+                    className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-emerald-600 bg-emerald-950 text-emerald-100 text-xs font-black shadow-md"
+                    title={`Brnění ${activeHunter.armor}: ztlumí každé pronikající fyzické zranění (po proražení štítu) o ${activeHunter.armor}`}
+                  >
+                    <span>🦺 {activeHunter.armor} Brnění</span>
+                  </div>
+                ) : null}
+                {activeHunter.backstabBonus && activeHunter.backstabBonus > 50 ? (
+                  <div
+                    className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-purple-600 bg-purple-950 text-purple-100 text-xs font-black shadow-md"
+                    title={`Mistrovský Zákeřný úder +${activeHunter.backstabBonus} %: úder do zad nebo na zmateného nepřítele uděluje dvojnásobné zranění`}
+                  >
+                    <span>🗡️ +{activeHunter.backstabBonus} % Zákeřný úder</span>
+                  </div>
+                ) : null}
               </div>
             </div>
 

@@ -43,6 +43,12 @@ export function renderTileBar(container, state, callbacks = {}) {
         }
       }
 
+      const heroFury = state.hero?.currentFury || 0;
+      const furyBonus = heroFury > 0 && (tile.dmg || 0) > 0 ? Math.round((tile.dmg || 0) * (heroFury / 100)) : 0;
+      const dmgHtml = furyBonus > 0
+        ? `⚔️ ${tile.dmg} <span style="color:#2ecc71; font-weight:bold;">(+${furyBonus})</span>`
+        : `⚔️ ${tile.dmg ?? 0}`;
+
       return `
         <button type="button"
                 class="player-tile-card ${onCd ? 'tile-on-cooldown' : ''} ${inQ ? 'tile-in-queue' : ''}"
@@ -72,7 +78,7 @@ export function renderTileBar(container, state, callbacks = {}) {
           </div>
           <div class="tile-card-name" title="${tile.name}"><span>${tile.name}</span></div>
           <div class="tile-card-metrics">
-            <span class="tile-metric-dmg">⚔️ ${tile.dmg ?? 0}</span>
+            <span class="tile-metric-dmg">${dmgHtml}</span>
             <span class="tile-metric-range">📏 ${rangeText}</span>
           </div>
           <div class="tile-card-tags">${badges.slice(0, 2).join('')}</div>
@@ -157,7 +163,7 @@ export function renderTileBar(container, state, callbacks = {}) {
     btn.addEventListener('mouseenter', (ev) => {
       if (!isHoverCapable) return;
       callbacks.onHoverTile?.(instanceId);
-      showTooltip(buildTileTooltipHtml(tile), ev.clientX, ev.clientY);
+      showTooltip(buildTileTooltipHtml(tile, state?.hero), ev.clientX, ev.clientY);
     });
 
     btn.addEventListener('mouseleave', () => {
@@ -202,11 +208,13 @@ function formatTileRangeLabel(tile) {
   return `Pole ${offsets.map((o) => (o > 0 ? `+${o}` : `${o}`)).join(', ')}`;
 }
 
-export function buildTileTooltipHtml(tile) {
+export function buildTileTooltipHtml(tile, hero = null) {
+  const heroFury = hero?.currentFury || 0;
+  const furyBonus = heroFury > 0 && (tile.dmg || 0) > 0 ? Math.round((tile.dmg || 0) * (heroFury / 100)) : 0;
   return `
     <div class="tt-title">${tile.name}</div>
     <div class="tt-stat-row">
-      ⚔️ Základní DMG: <strong>${tile.dmg ?? 0}</strong> · ⏳ Chladnutí: <strong>${tile.maxCooldown} ${czechTurns(tile.maxCooldown)}</strong>
+      ⚔️ Základní DMG: <strong>${tile.dmg ?? 0}</strong>${furyBonus > 0 ? ` <span style="color:#2ecc71; font-weight:bold;">(+${furyBonus} Bojové rozlícení)</span>` : ''} · ⏳ Chladnutí: <strong>${tile.maxCooldown} ${czechTurns(tile.maxCooldown)}</strong>
       ${tile.quick ? ' · ⚡ <strong>Rychlovka (0 tahů)</strong>' : ''}
     </div>
     ${tile.tags?.length ? `<div class="tt-tags" style="font-size:0.85em; color:#d4af37; margin-bottom:4px;">${tile.tags.map(t => TILE_TAGS[t] ? `${TILE_TAGS[t].icon} ${TILE_TAGS[t].name}` : '').filter(Boolean).join(' · ')}</div>` : ''}

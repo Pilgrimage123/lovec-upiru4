@@ -41,31 +41,35 @@ export const HUNTER_DIALOGUES = {
   },
 
   classic: {
-    name: 'Venca Česnekáč',
-    icon: '🧄',
+    name: 'Sokol Venca',
+    icon: '🦅',
     battle_cries: [
-      'NA NĚ, S ČESNEKEM A BOŽÍM POŽEHNÁNÍM!',
-      'ČESNEK DO KRKU, STŘÍKAČKU DO ZÁMECKÝCH VRAT!',
-      'DNESKA TEČE SVĚCENÁ VODA PROUDEM!'
+      'TUŽME SE, BRATŘI! V ZDRAVÉM TĚLE ZDRAVÝ ČESNEK!',
+      'ZA VLAST A MORAVSKÝ PALIČÁK! NA NĚ!',
+      'PAŽE TUŽ, VLASTI SLUŽ, UPÍRY SUŠ!',
+      'NI ZISK, NI SLÁVU – ALE KOLÍK DO KAŽDÉHO UPÍRA!'
     ],
     threats: [
-      'Mám v kapse kilo moravského paličáku a nebojím se ho sežrat!',
-      'Cvakni zubama ještě jednou a vyrazím ti je dubovým kolíkem!',
-      'Dýchnu na tebe a shoří ti i netopýří křídla!'
+      'Pozor na sokolský odraz, potvoro z krypty!',
+      'Takovou nekázeň v sokolovně netrpíme!',
+      'Přetáhnu tě sokolskou tyčí, až se ti tesáky srovnají!',
+      'Čichni si k poctivému moravskému paličáku!'
     ],
     last_words: [
-      'Dopijte... za mě... tu... roztočenou dvanáctku...',
-      'Česnek... byl... málo... propečený...',
-      'Stříkačka... bez vody... krypta vyhrála...'
+      'Sokole... braň... úrodu... česneku...',
+      'Prapor... sokolský... nepouštějte...',
+      'Cvičenci... ustupte... v řadách...',
+      'Za vlast... za tělocvik... a česneková pole...'
     ],
     quips: [
-      'Upír zdrhá, smrdí mu to až na Malou Stranu!',
-      'Topinka s česnekem vyřeší i hraběte!',
-      'Dubový kolík drží líp než zámecký pant!'
+      'Pevný postoj, rovná záda a palička česneku v kapse. Základ úspěchu!',
+      'Ranní rozcvička hotova, teď sklidíme upíry!',
+      'Kdo neskáče přes kozu, ten je upír! Hej, hej, hej!',
+      'Sokolská disciplína platí i pro noční netvory!'
     ],
     combo_cries: [
-      'ČESNEKOVÁ SMRŠŤ! TADY NEPOMŮŽE ANI RAKEV!',
-      'VYPÁLIT KRYPTU SVĚCENÝM OLEJEM!'
+      'SOKOLSKÁ PROSTNÁ! VRCHOLNÁ SESTAVA SMETLA KRYPTU!',
+      'TUŽME SE! SOKOLSKÁ SÍLA NEZNÁ PŘEKÁŽEK!'
     ]
   },
 

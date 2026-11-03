@@ -1718,3 +1718,31 @@
   color: #1e3a8a;
   font-weight: 800;
 }
+
+.hud-armor {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: #10b981;
+  font-weight: 800;
+}
+
+.entity-armor-pill {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  background: linear-gradient(135deg, #065f46, #059669);
+  color: #ecfdf5;
+  font-size: 0.72rem;
+  font-weight: 900;
+  padding: 0 5px;
+  border-radius: 9999px;
+  border: 1px solid #6ee7b7;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  line-height: 1.3;
+}

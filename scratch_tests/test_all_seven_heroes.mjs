@@ -41,8 +41,8 @@ const dummyEnemy = {
   id: 'dummy_1',
   name: 'Upír',
   cell: 3,
-  hp: 10,
-  maxHp: 10,
+  hp: 12,
+  maxHp: 12,
   facing: -1,
   statuses: {},
   entityType: 'enemy'
@@ -50,16 +50,16 @@ const dummyEnemy = {
 silakState.enemies = [dummyEnemy];
 const bumpEvents = [];
 resolveHeroBump(silakState, silakState.hero, dummyEnemy, 1, dummyEnemy.cell, 'silak', bumpEvents);
-assert.strictEqual(dummyEnemy.hp, 7, 'Dealt 3 DMG');
+assert.strictEqual(dummyEnemy.hp, 9, 'Dealt 3 DMG');
 assert.strictEqual(dummyEnemy.cell, 5, 'Pushed 2 tiles away (3 + 2 = 5)');
 assert(bumpEvents.some(e => e.type === 'comic_bubble'), 'Emitted comic bubble');
 console.log('  ✓ Cirkusový přehoz: 3 DMG, Push 2, comic bubble emitted');
 
-// 3-Combo test: Litinové finále (+5 Shield, 6 DMG line-of-sight + stun)
+// 3-Combo test: Litinové finále (+5 Shield, 6 DMG (+1 z Rozlícení 15%) = 7 DMG line-of-sight + stun)
 const comboEvents = [];
 resolveHunterCombo3Bonus(silakState, silakState.hero, comboEvents);
 assert(silakState.hero.statuses.shield >= 5, 'Gained +5 Shield');
-assert.strictEqual(dummyEnemy.hp, 1, 'Dummy took 6 DMG (7 - 6 = 1)');
+assert.strictEqual(dummyEnemy.hp, 2, 'Dummy took 7 DMG with Rozlícení (9 - 7 = 2)');
 assert(dummyEnemy.statuses.stun > 0, 'Dummy is stunned');
 assert(comboEvents.some(e => e.type === 'comic_bubble' && e.variant === 'battle_cry'), 'Emitted 3-combo shout bubble');
 console.log('  ✓ Litinové finále: +5 Shield, 6 DMG line of sight, Stun 1, shout bubble');

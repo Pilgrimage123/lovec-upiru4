@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { createRng } from './rng.js';
 import { getHeroTileDefinition } from '../config/tiles.js';
+import { STARTING_LOADOUTS } from '../config/loadouts.js';
 import { ENEMY_TILES, ENEMIES, getEntityIchorType, isVampireEntity, isHumanEntity } from '../config/enemies.js';
 export { isVampireEntity, isHumanEntity };
 import { PROPS, TERRAIN_PRESETS } from '../config/terrain.js';
@@ -387,6 +388,32 @@ export function dealDamage(state, target, rawAmount, opts = {}, events = []) {
     if (dmg <= 0) return 0;
   }
 
+  const armor = target.armor || 0;
+  if (
+    armor > 0 &&
+    dmg > 0 &&
+    opts.reason !== 'bleed' &&
+    opts.reason !== 'garlic_cloud' &&
+    opts.reason !== 'pit' &&
+    opts.reason !== 'holy_water_puddle'
+  ) {
+    const absorbedArmor = Math.min(armor, dmg);
+    dmg -= absorbedArmor;
+    events.push({
+      type: 'armor_absorbed',
+      targetId: target.id,
+      cell: target.cell,
+      absorbed: absorbedArmor,
+      remainingDmg: dmg,
+      text: `${target.name} ztlumil ${absorbedArmor} DMG brněním!`
+    });
+    events.push({
+      type: 'log',
+      text: `🦺 Brnění postavy ${target.name} ztlumilo ${absorbedArmor} DMG z průrazu!`
+    });
+    if (dmg <= 0) return 0;
+  }
+
   target.hp = Math.max(0, target.hp - dmg);
   events.push({
     type: 'damage',
@@ -531,47 +558,57 @@ export function shouldApplySecondaryEffect(blockType, effectType) {
   return blockType !== 'front' || effectType === 'push' || effectType === 'flip_target';
 }
 
-export function pushEntity(state, target, direction, distance, events = []) {
+export function pushEntity(state, target, direction, distance, events = [], opts = {}) {
   if (!target || target.hp <= 0 || distance <= 0 || !direction) return;
   const dir = Math.sign(direction);
   let actualMoved = 0;
+  const pusher = opts.pusher || null;
+  const pusherFury = typeof opts.pusherFury === 'number' ? opts.pusherFury : (pusher?.currentFury || 0);
 
   for (let step = 0; step < distance && target.hp > 0; step++) {
     const nextCell = target.cell + dir;
     if (!isValidCell(nextCell, state)) {
       const unmoved = distance - actualMoved;
+      const furyBonus = pusherFury > 0 ? Math.round(unmoved * (pusherFury / 100)) : 0;
+      const collisionDmg = unmoved + furyBonus;
       events.push({
         type: 'collision_wall',
         targetId: target.id,
         cell: target.cell,
         direction: dir,
-        damage: unmoved
+        damage: collisionDmg,
+        baseDamage: unmoved,
+        furyBonus
       });
       events.push({
         type: 'log',
-        text: `🧱 ${target.name} narazil do hradní zdi (${unmoved} DMG za neprojitá pole)!`
+        text: `🧱 ${target.name} narazil do hradní zdi (${collisionDmg} DMG za neprojitá pole${furyBonus > 0 ? ` – vč. +${furyBonus} z Rozlícení` : ''})!`
       });
-      dealDamage(state, target, unmoved, { reason: 'wall_collision' }, events);
+      dealDamage(state, target, collisionDmg, { reason: 'wall_collision', attackerId: pusher?.id }, events);
       break;
     }
 
     const blocker = getEntityAt(state, nextCell);
     if (blocker) {
       const unmoved = distance - actualMoved;
+      const furyBonus = pusherFury > 0 ? Math.round(unmoved * (pusherFury / 100)) : 0;
+      const collisionDmg = unmoved + furyBonus;
       if (blocker.entityType === 'prop' && blocker.kind === 'barrel') {
         events.push({
           type: 'collision_barrel',
           targetId: target.id,
           barrelId: blocker.id,
           cell: nextCell,
-          damage: unmoved
+          damage: collisionDmg,
+          baseDamage: unmoved,
+          furyBonus
         });
         events.push({
           type: 'log',
-          text: `🛢️ ${target.name} vletěl do sudu se zelím (oba ${unmoved} DMG za neprojitá pole)! Sud praská!`
+          text: `🛢️ ${target.name} vletěl do sudu se zelím (oba ${collisionDmg} DMG za neprojitá pole${furyBonus > 0 ? ` – vč. +${furyBonus} z Rozlícení` : ''})! Sud praská!`
         });
-        dealDamage(state, blocker, unmoved, { reason: 'barrel_smash' }, events);
-        dealDamage(state, target, unmoved, { reason: 'barrel_smash' }, events);
+        dealDamage(state, blocker, collisionDmg, { reason: 'barrel_smash', attackerId: pusher?.id }, events);
+        dealDamage(state, target, collisionDmg, { reason: 'barrel_smash', attackerId: pusher?.id }, events);
         if (target.hp > 0) addStatus(target, 'confusion', 1, events);
         if (blocker.hp <= 0 && target.hp > 0 && !getEntityAt(state, nextCell)) {
           const from = target.cell;
@@ -589,14 +626,16 @@ export function pushEntity(state, target, direction, distance, events = []) {
           targetId: target.id,
           fontId: blocker.id,
           cell: nextCell,
-          damage: unmoved
+          damage: collisionDmg,
+          baseDamage: unmoved,
+          furyBonus
         });
         events.push({
           type: 'log',
-          text: `💦 ${target.name} narazil do kropenky (oba ${unmoved} DMG za neprojitá pole)!`
+          text: `💦 ${target.name} narazil do kropenky (oba ${collisionDmg} DMG za neprojitá pole${furyBonus > 0 ? ` – vč. +${furyBonus} z Rozlícení` : ''})!`
         });
-        dealDamage(state, blocker, unmoved, { reason: 'font_smash' }, events);
-        dealDamage(state, target, unmoved, { reason: 'font_smash' }, events);
+        dealDamage(state, blocker, collisionDmg, { reason: 'font_smash', attackerId: pusher?.id }, events);
+        dealDamage(state, target, collisionDmg, { reason: 'font_smash', attackerId: pusher?.id }, events);
         if (blocker.hp <= 0 && target.hp > 0 && !getEntityAt(state, nextCell)) {
           const from = target.cell;
           target.cell = nextCell;
@@ -612,15 +651,17 @@ export function pushEntity(state, target, direction, distance, events = []) {
         pushedId: target.id,
         blockerId: blocker.id,
         cell: nextCell,
-        damage: unmoved
+        damage: collisionDmg,
+        baseDamage: unmoved,
+        furyBonus
       });
       const quote = STRINGS.collisionQuotes[0];
       events.push({
         type: 'log',
-        text: `💥 Srážka! ${target.name} vrazil do postavy ${blocker.name} (oba ${unmoved} DMG za neprojitá pole)! ${quote}`
+        text: `💥 Srážka! ${target.name} vrazil do postavy ${blocker.name} (oba ${collisionDmg} DMG za neprojitá pole${furyBonus > 0 ? ` – vč. +${furyBonus} z Rozlícení` : ''})! ${quote}`
       });
-      dealDamage(state, target, unmoved, { reason: 'entity_collision' }, events);
-      dealDamage(state, blocker, unmoved, { reason: 'entity_collision' }, events);
+      dealDamage(state, target, collisionDmg, { reason: 'entity_collision', attackerId: pusher?.id }, events);
+      dealDamage(state, blocker, collisionDmg, { reason: 'entity_collision', attackerId: pusher?.id }, events);
       break;
     }
 
@@ -839,6 +880,28 @@ export function spawnEnemyEntity(enemyId, cell, facing = -1) {
     maxHp: def.maxHp,
     hp: def.maxHp,
     defense: def.defense || 0,
+    armor: typeof def.armor === 'number' ? def.armor : 0,
+    fury:
+      typeof def.fury === 'number'
+        ? def.fury
+        : def.isBoss
+        ? 25
+        : def.isElite || def.archetype === 'brute'
+        ? 25
+        : def.archetype === 'fodder' || def.archetype === 'ranged' || def.archetype === 'support'
+        ? 5
+        : 10,
+    currentFury:
+      typeof def.fury === 'number'
+        ? def.fury
+        : def.isBoss
+        ? 25
+        : def.isElite || def.archetype === 'brute'
+        ? 25
+        : def.archetype === 'fodder' || def.archetype === 'ranged' || def.archetype === 'support'
+        ? 5
+        : 10,
+    backstabBonus: typeof def.backstabBonus === 'number' ? def.backstabBonus : 50,
     cell,
     facing,
     flying: Boolean(def.flying),
@@ -1002,8 +1065,8 @@ export function createBattleState(opts = {}) {
     honza: { name: 'Chasník Honza Buchta', givenName: 'Honza', epithet: 'Selský chasník' },
     dragoun: { name: 'Rittmeister Jaromír Vraný', givenName: 'Jaromír', epithet: 'Vysloužilý dragoun' },
     zlodejka: { name: 'Kapsářka Káča Pavučina', givenName: 'Káča', epithet: 'Úskočná zlodějka' },
-    venca: { name: 'Štamgast Venca Česnek', givenName: 'Venca', epithet: 'Hospodský štamgast' },
-    classic: { name: 'Štamgast Venca Česnek', givenName: 'Venca', epithet: 'Hospodský štamgast' }
+    venca: { name: 'Sokol Venca Česnek', givenName: 'Venca', epithet: 'Sokolský cvičenec a pěstitel česneku' },
+    classic: { name: 'Sokol Venca Česnek', givenName: 'Venca', epithet: 'Sokolský cvičenec a pěstitel česneku' }
   };
   const hInfo = hunterMeta[hunterId] || hunterMeta.venca;
 
@@ -1044,6 +1107,22 @@ export function createBattleState(opts = {}) {
         : hunterId === 'helsing' || hunterId === 'silak' || hunterId === 'classic' || hunterId === 'venca'
         ? 1
         : 0,
+    fury:
+      typeof opts.fury === 'number'
+        ? opts.fury
+        : STARTING_LOADOUTS[hunterId]?.fury ?? 10,
+    currentFury:
+      typeof opts.fury === 'number'
+        ? opts.fury
+        : STARTING_LOADOUTS[hunterId]?.fury ?? 10,
+    backstabBonus:
+      typeof opts.backstabBonus === 'number'
+        ? opts.backstabBonus
+        : STARTING_LOADOUTS[hunterId]?.backstabBonus ?? 50,
+    armor:
+      typeof opts.armor === 'number'
+        ? opts.armor
+        : STARTING_LOADOUTS[hunterId]?.armor ?? 0,
     cell: enc.heroCell ?? 2,
     facing: enc.heroFacing ?? 1,
     flying: false,

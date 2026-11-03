@@ -188,6 +188,7 @@ console.log('--- Testing Helsing & Revident Implementation ---');
   state.hero.cell = 1;
   state.hero.facing = 1;
   enemy.cell = 2;
+  enemy.facing = -1;
   delete enemy.statuses.okolkovano;
   enemy.hp = 10;
   resolveHeroBump(state, state.hero, enemy, 1, 2, 'revident', []);

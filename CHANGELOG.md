@@ -4,6 +4,48 @@ Veškeré významné změny v projektu Lovec upírů jsou zaznamenávány v tomt
 
 Formát vychází z [Keep a Changelog](https://keepachangelog.com/cs/1.0.0/).
 
+## [1.7.0] - 2026-11-03
+
+### Přidáno (Added)
+- **Mechanika Bojové rozlícení (ADR 0008)**:
+  - Každé kolo si každá postava na bojišti kumuluje procentuální bonus ke všemu zranění v boji (+X % za kolo podle své přirozenosti a temperamentu).
+  - Distribuce rozlícení:
+    - Podpůrné, střelecké a slabší jednotky (`fodder`, `ranged`, `support`): +5 % za kolo.
+    - Běžní bojovníci a standardní lovci (Venca, Arthur, Ignác, Jaromír, Káča, Bartoloměj, Gwendolyn): +10 % za kolo.
+    - Chasník Honza a Silák Gustav: +15 % za kolo (horkokrevní siláci).
+    - Bossové (Sosák, Dagmar, Drákula), elity a brutové: +25 % za kolo.
+  - Vzorec výpočtu poškození: `Math.round(baseDamage * (1 + currentFury / 100))` (hodnota 0,5 se zaokrouhluje nahoru).
+  - Vztah k odhození a srážkám: Kinetická síla srážky o zeď či o jinou jednotku přejímá bonus rozlícení od odstrkujícího útočníka (zraněni jsou odstrčený i sekundární blokátor, útočník je chráněn).
+  - UI zobrazení: Indikátor `🔥/💢 +X% Rozlícení` v HUDu lovce, na kartě v Síni lovců i na taktické desce.
+
+- **Mechanika Zákeřný úder (ADR 0009)**:
+  - Útok zasazený do zad protivníka (útočník i cíl se dívají stejným směrem, nebo útočník stojí za zády cíle) nebo na zmateného nepřítele (`confusion` / ❓) uděluje o **+50 % vyšší zranění**.
+  - Mistrovský bonus pro Kapsářku Káču: Káča má jako rodilá zlodějka bonus **+100 % zranění** (dvojnásobné poškození).
+  - Obě podmínky (záda i zmatení) se nesčítají multiplikativně – aplikuje se platný vyšší bonus jednou.
+  - Platí obousměrně pro lovce i nepřátele.
+  - UI zobrazení: Odznak `🗡️ +100 % Zákeřný úder` v kartě hrdiny, záznamy v bojovém deníku.
+
+- **Mechanika Brnění a vrstvená ochrana (ADR 0010)**:
+  - Pasivní redukce průrazového fyzického zranění.
+  - Kánonické pořadí vrstvené obrany: **Útok ➔ Štít (aktivní krytí) ➔ Brnění (pasivní redukce tělem/pláty) ➔ Zdraví (HP)**.
+  - Tlumí přímé údery, komba i nárazy do hradní zdi. Dokáže redukovat poškození až na 0 DMG.
+  - Bypassy: Stavové efekty jako Krvácení (`bleed`) a environmentální/chemické vlivy (`garlic_cloud`, `pit`, `holy_water_puddle`) procházejí skrze Brnění bez redukce.
+  - Sekundární efekty: Odhození (`push`), otočení (`flip`) a ochromení (`stun`) projdou i při redukci fyzického zranění na 0 DMG.
+  - Distribuce:
+    - Lovci: Silák Gustav (`armor: 1`), Chasník Honza (`armor: 1` jako vyvážení za 0 Obrany), Rittmeister Jaromír Vraný (`armor: 0` – látkový stejnokroj bez kyrysu), ostatní lovci `armor: 0`.
+    - Nepřátelé: `armor: 2` pro `rytir_prizrak`, `drevo`, `prase_mutant`, `divocak`, `elite_drab`; `armor: 1` pro `drab`, `kyjovec`, `sedlak_stit`, `upirske_prase`, `boss_drakula`, `boss_dagmar`.
+  - UI zobrazení: Smaragdový odznak `🦺X` na HP baru, plovoucí komiksový nápis `🦺 -X BRNĚNÍ`, štítek v HUD i na úvodní obrazovce.
+
+- **Architektonické záznamy (ADR) a glosář**:
+  - [ADR 0008](docs/adr/0008-mechanika-bojoveho-rozliceni.md): Mechanika Bojového rozlícení.
+  - [ADR 0009](docs/adr/0009-mechanika-zakerneho-uderu.md): Mechanika Zákeřného úderu.
+  - [ADR 0010](docs/adr/0010-mechanika-brneni-a-vrstvena-ochrana.md): Mechanika Brnění a vrstvená ochrana.
+  - Aktualizován doménový slovník [GLOSSARY.md](GLOSSARY.md) o pojmy *Bojové rozlícení*, *Zákeřný úder*, *Brnění* a zpřesněn pojem *Obrana*.
+
+- **Automatizované testy (scratch_tests)**:
+  - Přidány testovací sady `test_bojove_rozliceni.mjs`, `test_zakerne_udery.mjs`, `test_brneni.mjs`.
+  - Všech 13 testovacích sad v `scratch_tests/` plně prochází se 100% úspěšností.
+
 ## [1.6.0] - 2026-11-03
 
 ### Změněno (Changed)

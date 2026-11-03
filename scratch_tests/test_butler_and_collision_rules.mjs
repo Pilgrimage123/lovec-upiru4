@@ -61,8 +61,10 @@ console.log('--- TEST 2: Universal Push & Collision Formula (1 DMG per unmoved t
   const e2 = stateD.enemies[1];
   e1.cell = 2;
   e1.hp = 10;
+  e1.armor = 0;
   e2.cell = 3;
   e2.hp = 10;
+  e2.armor = 0;
   pushEntity(stateD, e1, 1, 2, []);
   assert.equal(e1.hp, 8, 'Pushed entity takes 2 DMG (unmoved = 2)');
   assert.equal(e2.hp, 8, 'Blocker entity takes 2 DMG (unmoved = 2)');
@@ -160,6 +162,7 @@ console.log('--- TEST 5: Collision with secondary entity applies Confusion to bo
   const enemy2 = state.enemies[1];
   enemy2.cell = 4; // cell 3 is free (allows initial step), but cell 4 has enemy2!
   enemy2.hp = 15;
+  enemy2.armor = 0;
 
   const bumpRes = stepHero(state, 1);
   assert.equal(bumpRes.ok, true, 'Bump succeeds because cell 3 is free');

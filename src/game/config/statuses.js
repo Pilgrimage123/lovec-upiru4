@@ -48,6 +48,14 @@ export const STATUSES = {
     color: '#d97706',
     description: 'Příští útok do tohoto cíle způsobí +1 poškození (daňová přirážka).'
   },
+  rozliceni: {
+    id: 'rozliceni',
+    name: 'Bojové rozlícení',
+    icon: 'status.rozliceni',
+    badge: '💢',
+    color: '#e74c3c',
+    description: 'Postupně gradující bojový hněv a horká krev. Zvyšuje veškeré udělené zranění.'
+  },
   torpor: {
     id: 'torpor',
     name: 'Ochromení',

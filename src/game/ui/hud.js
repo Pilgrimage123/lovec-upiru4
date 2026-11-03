@@ -56,6 +56,7 @@ export function renderHud(container, runState, battleState, callbacks = {}) {
   const isMapView = Boolean(callbacks.isMapScreen);
   const canToggleBattle = Boolean(isMapView && battleState && battleState.status === 'playing');
   const heroDef = battleState?.hero?.defense ?? runState?.defense ?? 1;
+  const heroArmor = battleState?.hero?.armor ?? runState?.armor ?? 0;
   const heroDisplayName = battleState?.hero?.name || runState?.hunterName || 'Venca Česnekáč';
 
   container.innerHTML = `
@@ -77,7 +78,17 @@ export function renderHud(container, runState, battleState, callbacks = {}) {
           <span class="hud-separator">·</span>
           <div class="hud-defense" title="Obrana lovce (${heroDef}): na začátku každého kola získá ${heroDef} Štítu">
             🛡️ <strong>${battleState?.hero?.statuses?.shield ? `${battleState.hero.statuses.shield} Štít` : `${heroDef} Obrana`}</strong>
-          </div>${maneuverHtml}
+          </div>${maneuverHtml}${heroArmor > 0 ? `
+            <span class="hud-separator">·</span>
+            <div class="hud-armor" title="Brnění lovce (${heroArmor}): snižuje každé pronikající fyzické zranění (po proražení štítu) o ${heroArmor}">
+              🦺 <strong>${heroArmor} Brnění</strong>
+            </div>
+          ` : ''}${(battleState?.hero?.currentFury || 0) > 0 ? `
+            <span class="hud-separator">·</span>
+            <div class="hud-fury" title="Bojové rozlícení lovce (+${battleState.hero.currentFury} %): Zvyšuje veškeré poškození v boji (+${battleState.hero.fury || 10} % za kolo)">
+              💢 <strong>+${battleState.hero.currentFury} %</strong><span class="hud-unit-suffix"> Rozlícení</span>
+            </div>
+          ` : ''}
           <span class="hud-separator">·</span>
           <div class="hud-gold" title="Hradní dukáty na útratu v hospodě a dílně">
             💰 <strong>${runState.gold}</strong><span class="hud-unit-suffix"> dukátů</span>

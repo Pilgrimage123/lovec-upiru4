@@ -24,7 +24,7 @@ import { STARTING_LOADOUTS } from '../src/game/config/loadouts.js';
 console.log('--- TEST 1: Venca Starting Loadout & Tile Definitions ---');
 {
   const vencaLoadout = STARTING_LOADOUTS.classic;
-  assert.equal(vencaLoadout.name, 'Štamgast Venca Česnek');
+  assert.equal(vencaLoadout.name, 'Sokol Venca Česnek');
   const deckIds = vencaLoadout.deck.map((d) => d.id);
   assert.deepEqual(deckIds, ['falcon_claw', 'garlic_grenade', 'skok_pres_kozu']);
 

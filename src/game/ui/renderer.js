@@ -660,14 +660,25 @@ function renderEntityOnCellHtml(entity, initiativeRank = 1, impact = null) {
     }
   }
 
-  const statusesHtml = Object.entries(entity.statuses || {})
-    .filter(([, val]) => val > 0)
-    .map(([statusId, val]) => {
-      const st = STATUSES[statusId];
-      if (!st) return '';
-      return `<span class="status-chip" title="${st.name}: ${st.description}">${st.badge}${val > 1 ? val : ''}</span>`;
-    })
-    .join('');
+  const furyChip = (entity.currentFury || 0) > 0
+    ? `<span class="status-chip status-chip-fury" style="background:rgba(231,76,60,0.85); color:#fff; font-weight:bold;" title="Bojové rozlícení (+${entity.currentFury} %): Každé kolo kumuluje +${entity.fury || 10} % ke všemu zranění v boji.">💢+${entity.currentFury}%</span>`
+    : '';
+
+  const armorChip = (entity.armor || 0) > 0
+    ? `<span class="status-chip status-chip-armor" style="background:rgba(16,185,129,0.85); color:#fff; font-weight:bold;" title="Brnění (${entity.armor}): Snižuje každé pronikající fyzické zranění (po proražení štítu) o ${entity.armor}.">🦺${entity.armor}</span>`
+    : '';
+
+  const statusesHtml = [
+    ...Object.entries(entity.statuses || {})
+      .filter(([, val]) => val > 0)
+      .map(([statusId, val]) => {
+        const st = STATUSES[statusId];
+        if (!st) return '';
+        return `<span class="status-chip" title="${st.name}: ${st.description}">${st.badge}${val > 1 ? val : ''}</span>`;
+      }),
+    armorChip,
+    furyChip
+  ].filter(Boolean).join('');
 
   const intentStripHtml =
     entity.entityType === 'enemy' ? renderEnemyIntentStripHtml(entity, initiativeRank) : '';
@@ -705,11 +716,12 @@ function renderEntityOnCellHtml(entity, initiativeRank = 1, impact = null) {
             ${entity.facing === 1 && entity.entityType !== 'prop' ? facingArrow : ''}
           </div>
         </div>
-        <div class="entity-hp-bar-outer" title="Zdraví: ${entity.hp}/${entity.maxHp} HP${(entity.statuses?.shield || 0) > 0 ? ` · Štít: ${entity.statuses.shield}` : ''}">
+        <div class="entity-hp-bar-outer" title="Zdraví: ${entity.hp}/${entity.maxHp} HP${(entity.statuses?.shield || 0) > 0 ? ` · Štít: ${entity.statuses.shield}` : ''}${(entity.armor || 0) > 0 ? ` · Brnění: ${entity.armor}` : ''}">
           <div class="entity-hp-bar-inner hp-${entity.entityType}" style="width: ${hpPercent}%"></div>
           <div class="entity-hp-bar-preview" style="left: ${previewLeft}%; width: ${previewWidth}%;"></div>
           <span class="entity-hp-text">${impact && impact.dmgTaken > 0 ? `${Math.max(0, entity.hp - impact.dmgTaken)}/${entity.maxHp}` : `${entity.hp}/${entity.maxHp}`}${previewSkullHtml}</span>
           ${(entity.statuses?.shield || 0) > 0 ? `<span class="entity-shield-pill" title="Aktivní Štít: ${entity.statuses.shield}">🛡️${entity.statuses.shield}</span>` : ''}
+          ${(entity.armor || 0) > 0 ? `<span class="entity-armor-pill" title="Pasivní brnění: ztlumí každé pronikající fyzické zranění o ${entity.armor}">🦺${entity.armor}</span>` : ''}
         </div>
       </div>
 
@@ -1249,6 +1261,12 @@ export async function playEngineEvents(container, events, animSpeed = 1, state =
         SFX.collision();
         spawnFloatingBadgeOnCell(container, ev.cell, '🛡️ VYKRYTO!', 'float-info');
         await sleep(160, animSpeed);
+        break;
+
+      case 'armor_absorbed':
+        SFX.collision();
+        spawnFloatingBadgeOnCell(container, ev.cell, `🦺 -${ev.absorbed} BRNĚNÍ`, 'float-info');
+        await sleep(140, animSpeed);
         break;
 
       case 'collision_wall':

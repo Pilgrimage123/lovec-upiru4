@@ -53,12 +53,16 @@ Bojová hybnost získaná při usmrcení nepřítele kombem, která okamžitě z
 _Avoid_: Momentum, Druhý dech, Reset, Tempo
 
 **Obrana**:
-Trvalá vlastnost postavy vyjadřující schopnost aktivního krytí a úhybů, která na začátku každého kola vygeneruje stejné množství Štítu.
-_Avoid_: Brnění, Armor, Defenziva
+Trvalá vlastnost postavy vyjadřující schopnost aktivního krytí, šermu a úhybů, která na začátku každého kola vygeneruje stejné množství dočasného Štítu.
+_Avoid_: Defenziva, Blok
 
 **Štít**:
-Dočasná vrstva ochrany pohlcující zranění bod po bodu před zásahem do zdraví, která na konci kola zcela vyprchá.
+Dočasná vrstva ochrany vygenerovaná Obranou či destičkami, která pohlcuje příchozí zranění jako první vrstva obrany před zásahem do těla a na konci kola zcela vyprchá.
 _Avoid_: Blok, Absorpce, Bariéra
+
+**Brnění**:
+Trvalá fyzická vlastnost postavy (silný oděv, pláty, masivní vrstva svalů či tuku), která pasivně snižuje zranění z fyzických úderů prorážejících skrze Štít až na nulu. Periodické stavy (Krvácení) a plyny Brnění ignorují.
+_Avoid_: Armor, Damage Reduction, Odolnost
 
 **Ochromený upír**:
 Stav upíra, kterému klesly životy na nulu. Upír neleží mrtvý, nýbrž leží nehybně na svém poli po dobu 2 kol (blokuje průchod), načež vstane s polovinou životů. Lze jej definitivně zničit pouze doražením kolíkem nebo dorážecí zbraní.
@@ -83,6 +87,31 @@ _Avoid_: Drákula, CEO, Ředitel holdingu, Generální ředitel
 **Armádní revolver Gasser**:
 Těžký služební revolver c. k. dragounů ráže 11 mm zavedený do výzbroje rakousko-uherského jezdectva v roce 1870.
 _Avoid_: Křesadlovka, Bambitka, Křesadlová bambitka
+
+**Sokol Venca Česnek**:
+Hrdý vlastenecký cvičenec jednoty Sokol, atlet a nadšený pěstitel moravského paličáku. Bojuje sokolským tělocvikem, nářadím a česnekovými třaskavinami.
+_Avoid_: Štamgast Venca, Opilec, Hospodský rváč
+
+**Sokolský náraz**:
+Vencův Krok do nepřítele: vypne hruď, vrazí do nepřítele (1 DMG), odhodí ho o 1 pole a na cílovém poli zanechá Česnekový oblak na 2 kola.
+_Avoid_: Česnekové žduchnutí, Pupík, Bump
+
+**Sokolská prostná**:
+Vencovo zakončovací 3-kombo: předvede bezchybnou sokolskou sestavu s tyčí zcela bez česneku, získá +4 Štít a všem nepřátelům na vzdálenost 1–2 pole před sebou i za sebou udělí 3 DMG a Zmatení (❓).
+_Avoid_: Česneková aura, Pivní dech, Slet
+
+**Bojové rozlícení**:
+Trvalá bojová vlastnost postavy vyjadřující její temperament a kumulující se procentuální bonus ke zranění, který narůstá na začátku každého kola dané postavy a přetrvává po celý souboj. Posiluje přímé útoky destičkami, manévry (Krok do nepřítele) a kinetické poškození ze srážky při Odstrčení.
+_Avoid_: Rage, Fury, Zuřivost, Berserk, Enrage
+
+**Polní furiant**:
+Bojový archetyp či postava s extrémně vysokým Bojovým rozlícením (např. 25–35 % za kolo), která se v boji chová cholericky, vzdorovitě a rychle nekontrolovatelně nabírá na drtivé síle.
+_Avoid_: Berserker, Barbarian, Šílenec, Zuřivec
+
+**Zákeřný úder**:
+Bojový úder vedený zezadu do zad protivníka nebo proti cíli pod vlivem Zmatení (❓), který uděluje o 50 % vyšší poškození (Kapsářka Káča má díky své profesi mistrovský bonus +100 %). Platí oboustranně pro lovce i nepřátele.
+_Avoid_: Backstab, Sneak Attack, Útok ze zálohy, Bodnutí do zad
+
 
 
 

@@ -44,7 +44,14 @@ export function computeHeroTileBonus(state, tile, slotIdx) {
   if (hasStatus(state.hero, 'empower') && (tile.dmg > 0 || dmgBonus > 0)) {
     dmgBonus += getStatusStacks(state.hero, 'empower');
   }
-  return { dmgBonus };
+  let furyBonus = 0;
+  const heroFury = state.hero?.currentFury || 0;
+  const baseDamage = tile.dmg ?? (tile.pattern && tile.pattern[0]?.dmg) ?? 0;
+  if (heroFury > 0 && (baseDamage > 0 || tile.type === 'attack')) {
+    furyBonus = Math.round(baseDamage * (heroFury / 100));
+    dmgBonus += furyBonus;
+  }
+  return { dmgBonus, furyBonus };
 }
 
 export function checkSvunkBonus(state, comboLength, events = []) {
@@ -172,9 +179,17 @@ export function resolveEnemyHitOnTarget(
     state.enemies.some((e) => e.hp > 0 && e.lordSynergy && e.id !== enemy.id)
       ? 1
       : 0;
+  const baseDmg = patternStep.dmg || 0;
+  const enemyFury = enemy.currentFury || 0;
+  const furyBonus = enemyFury > 0 && baseDmg > 0 ? Math.round(baseDmg * (enemyFury / 100)) : 0;
+  const isFromBehind = target.facing === enemy.facing;
+  const isConfused = Boolean(target.statuses?.confusion > 0);
+  const isSneakAttack = isFromBehind || isConfused;
+  const sneakBonusPct = isSneakAttack ? (enemy.backstabBonus || 50) : 0;
+  const sneakDmg = isSneakAttack && baseDmg > 0 ? Math.round(baseDmg * (sneakBonusPct / 100)) : 0;
   const totalDmg = Math.max(
     0,
-    (patternStep.dmg || 0) + empowerBonus - garlicPenalty + keyringBonus + lordBonus
+    baseDmg + furyBonus + sneakDmg + empowerBonus - garlicPenalty + keyringBonus + lordBonus
   );
 
   let blockType = null;
@@ -221,9 +236,10 @@ export function resolveEnemyHitOnTarget(
         text: `🧛‍♂️💥 FRIENDLY FIRE! ${enemy.name} zasáhl vlastního kumpána (${target.name})! ${quote}`
       });
     } else {
+      const sneakText = isSneakAttack ? ` [🗡️ Zákeřný úder ${isFromBehind ? 'do zad' : 'v omámení'} +${sneakBonusPct}%]` : '';
       events.push({
         type: 'log',
-        text: `⚔️ ${enemy.name} zasáhl cíl ${target.name} akcí „${tileDef.name}“ (${dealt} DMG)!`
+        text: `⚔️ ${enemy.name} zasáhl cíl ${target.name} akcí „${tileDef.name}“ (${dealt} DMG)${sneakText}!`
       });
     }
   }
@@ -233,7 +249,7 @@ export function resolveEnemyHitOnTarget(
     if (target.hp <= 0) break;
     if (shouldApplySecondaryEffect(blockType, eff.type)) {
       if (eff.type === 'push') {
-        pushEntity(state, target, pushDir, eff.distance || 1, events);
+        pushEntity(state, target, pushDir, eff.distance || 1, events, { pusher: enemy });
       } else if (eff.type === 'bleed') {
         addStatus(target, 'bleed', eff.amount || 2, events);
       } else if (eff.type === 'confusion') {
@@ -646,15 +662,35 @@ export function resolveHeroHitOnTarget(
 ) {
   const hero = state.hero;
   const pushDir = Math.sign(target.cell - hero.cell) || hero.facing;
-  const isBackstab = Boolean(
-    patternStep.backstabDmg && target.entityType === 'enemy' && target.facing === hero.facing
-  );
-  const baseDmg = isBackstab ? patternStep.backstabDmg : patternStep.dmg || 0;
-  if (isBackstab) {
-    events.push({
-      type: 'log',
-      text: `🗡️ Zákeřný bod ze zálohy do zad postavy ${target.name} (${patternStep.backstabDmg} DMG)!`
-    });
+  const isFromBehind = target.entityType === 'enemy' && target.facing === hero.facing;
+  const isConfused = target.entityType === 'enemy' && Boolean(target.statuses?.confusion > 0);
+  const isSneakAttack = isFromBehind || isConfused;
+  const isBackstab = isSneakAttack;
+
+  const rawBaseDmg = patternStep.dmg || 0;
+  let baseDmg = rawBaseDmg;
+  let sneakBonusDmg = 0;
+
+  if (isSneakAttack) {
+    if (patternStep.backstabDmg) {
+      baseDmg = patternStep.backstabDmg;
+      events.push({
+        type: 'log',
+        text: `🗡️ Zákeřný bod ze zálohy do postavy ${target.name} (${patternStep.backstabDmg} DMG)!`
+      });
+    } else {
+      const sneakPct = hero.backstabBonus || 50;
+      sneakBonusDmg = Math.round(rawBaseDmg * (sneakPct / 100));
+      const reasonText = isConfused && isFromBehind
+        ? 'do zad zmateného cíle (❓)'
+        : isConfused
+        ? 'do zmateného cíle (❓)'
+        : 'do zad';
+      events.push({
+        type: 'log',
+        text: `🗡️ Zákeřný úder ${reasonText} (${target.name}) za +${sneakBonusDmg} DMG (+${sneakPct} %)!`
+      });
+    }
   }
   let humanBonus = 0;
   if (tile.id === 'falcon_claw' && isHumanEntity(target)) {
@@ -664,7 +700,7 @@ export function resolveHeroHitOnTarget(
       text: `🦅 Sokolí spár! Cíl (${target.name}) je člověk – kritická slabina za +2 DMG!`
     });
   }
-  const totalDmg = Math.max(0, baseDmg + bonusInfo.dmgBonus + humanBonus);
+  const totalDmg = Math.max(0, baseDmg + sneakBonusDmg + bonusInfo.dmgBonus + humanBonus);
   const targetHadOkolkovano = Boolean(target.statuses?.okolkovano > 0);
   let blockType = null;
   if (totalDmg > 0) {
@@ -712,7 +748,7 @@ export function resolveHeroHitOnTarget(
       switch (eff.type) {
         case 'push': {
           const bonusPush = state.comboResonanceBonusPush || 0;
-          pushEntity(state, target, pushDir, (eff.distance || 1) + bonusPush, events);
+          pushEntity(state, target, pushDir, (eff.distance || 1) + bonusPush, events, { pusher: hero });
           break;
         }
         case 'dispel_empower':
@@ -1271,6 +1307,26 @@ export function advanceTurnAfterPlayerAction(state, events = [], extraCdReductio
     }
   }
 
+  // 3. Next round begins: All actors accumulate their Bojové rozlícení
+  for (const ent of actors) {
+    if (ent.hp > 0 && (ent.fury || 0) > 0) {
+      ent.currentFury = (ent.currentFury || 0) + ent.fury;
+      events.push({
+        type: 'fury_accumulated',
+        targetId: ent.id,
+        cell: ent.cell,
+        furyAdded: ent.fury,
+        currentFury: ent.currentFury
+      });
+      if (ent.entityType === 'hero') {
+        events.push({
+          type: 'log',
+          text: `💢 Bojové rozlícení! ${ent.name} se rozlítil o +${ent.fury} % (celkem +${ent.currentFury} % v boji)!`
+        });
+      }
+    }
+  }
+
   // Tick Butler lifespan
   for (let i = state.props.length - 1; i >= 0; i--) {
     const p = state.props[i];
@@ -1378,11 +1434,20 @@ export function resolveHeroBump(state, hero, enemy, dir, targetCell, hunterId, e
       durationMs: 2500
     });
   }
+  const heroFury = hero.currentFury || 0;
+  const isFromBehind = enemy.facing === hero.facing;
+  const isConfused = Boolean(enemy.statuses?.confusion > 0);
+  const isSneak = isFromBehind || isConfused;
+  const sneakPct = isSneak ? (hero.backstabBonus || 50) : 0;
+  const totalBonusPct = heroFury + sneakPct;
+  const getBumpDmg = (base) => base + (totalBonusPct > 0 ? Math.round(base * (totalBonusPct / 100)) : 0);
+
   if (hunterId === 'honza') {
     hero.bumpCooldown = 3;
-    dealDamage(state, enemy, 2, { reason: 'honza_bump', attackerId: hero.id }, events);
+    const dmg = getBumpDmg(2);
+    dealDamage(state, enemy, dmg, { reason: 'honza_bump', attackerId: hero.id }, events);
     if (enemy.hp > 0) {
-      pushEntity(state, enemy, dir, 1, events);
+      pushEntity(state, enemy, dir, 1, events, { pusher: hero });
     }
     const vacated = !getEntityAt(state, targetCell);
     if (vacated && hero.hp > 0) {
@@ -1394,19 +1459,20 @@ export function resolveHeroBump(state, hero, enemy, dir, targetCell, hunterId, e
     events.push({
       type: 'log',
       text: vacated
-        ? `🔨 Selský beran! Honza vrazil do ${enemy.name} plnou vahou (2 DMG), odhodil ho a obsadil jeho pole!`
-        : `🔨 Selský beran! Honza vrazil do ${enemy.name} plnou vahou (2 DMG) a přimáčkl ho k překážce!`
+        ? `🔨 Selský beran! Honza vrazil do ${enemy.name} plnou vahou (${dmg} DMG), odhodil ho a obsadil jeho pole!`
+        : `🔨 Selský beran! Honza vrazil do ${enemy.name} plnou vahou (${dmg} DMG) a přimáčkl ho k překážce!`
     });
   } else if (hunterId === 'dragoun') {
     hero.bumpCooldown = 3;
-    dealDamage(state, enemy, 2, { reason: 'dragoon_bump', attackerId: hero.id }, events);
+    const dmg = getBumpDmg(2);
+    dealDamage(state, enemy, dmg, { reason: 'dragoon_bump', attackerId: hero.id }, events);
     if (enemy.hp > 0) {
-      pushEntity(state, enemy, dir, 1, events);
+      pushEntity(state, enemy, dir, 1, events, { pusher: hero });
       addStatus(enemy, 'stun', 1, events);
     }
     events.push({
       type: 'log',
-      text: `⚔️ Úder těžkým jílcem! Rittmeister Jaromír udeřil ${enemy.name} mosazným jílcem (2 DMG), odhodil ho a omráčil!`
+      text: `⚔️ Úder těžkým jílcem! Rittmeister Jaromír udeřil ${enemy.name} mosazným jílcem (${dmg} DMG), odhodil ho a omráčil!`
     });
   } else if (hunterId === 'zlodejka') {
     hero.bumpCooldown = 2;
@@ -1434,24 +1500,26 @@ export function resolveHeroBump(state, hero, enemy, dir, targetCell, hunterId, e
     });
   } else if (hunterId === 'ponocny') {
     hero.bumpCooldown = 4;
-    dealDamage(state, enemy, 3, { reason: 'ponocny_bump', attackerId: hero.id }, events);
+    const dmg = getBumpDmg(3);
+    dealDamage(state, enemy, dmg, { reason: 'ponocny_bump', attackerId: hero.id }, events);
     if (enemy.hp > 0) {
-      pushEntity(state, enemy, dir, 1, events);
+      pushEntity(state, enemy, dir, 1, events, { pusher: hero });
       addStatus(enemy, 'stun', 1, events);
     }
     events.push({
       type: 'log',
-      text: `🏮 Zarazení ratištěm! Ponocný Bartoloměj zarazil kované ratiště halapartny do ${enemy.name} (3 DMG), odhodil ho a omráčil!`
+      text: `🏮 Zarazení ratištěm! Ponocný Bartoloměj zarazil kované ratiště halapartny do ${enemy.name} (${dmg} DMG), odhodil ho a omráčil!`
     });
   } else if (hunterId === 'silak') {
     hero.bumpCooldown = 3;
-    dealDamage(state, enemy, 3, { reason: 'silak_bump', attackerId: hero.id }, events);
+    const dmg = getBumpDmg(3);
+    dealDamage(state, enemy, dmg, { reason: 'silak_bump', attackerId: hero.id }, events);
     if (enemy.hp > 0) {
-      pushEntity(state, enemy, dir, 2, events);
+      pushEntity(state, enemy, dir, 2, events, { pusher: hero });
     }
     events.push({
       type: 'log',
-      text: `🏋️ Cirkusový přehoz! Silák Gustav popadl ${enemy.name} za opasek, praštil s ním o dlažbu za 3 DMG a odmrštil ho o 2 pole!`
+      text: `🏋️ Cirkusový přehoz! Silák Gustav popadl ${enemy.name} za opasek, praštil s ním o dlažbu za ${dmg} DMG a odmrštil ho o 2 pole!`
     });
   } else if (hunterId === 'anglicanka') {
     hero.bumpCooldown = 3;
@@ -1507,7 +1575,7 @@ export function resolveHeroBump(state, hero, enemy, dir, targetCell, hunterId, e
       }
     }
 
-    pushEntity(state, enemy, dir, 2, events);
+    pushEntity(state, enemy, dir, 2, events, { pusher: hero });
 
     // 4. Nepřítel i ten, do kterého vrazil, je zmatený (❓)
     if (enemy.hp > 0) {
@@ -1522,28 +1590,34 @@ export function resolveHeroBump(state, hero, enemy, dir, targetCell, hunterId, e
     }
   } else if (hunterId === 'helsing') {
     hero.bumpCooldown = 2;
-    dealDamage(state, enemy, 2, { reason: 'helsing_bump', attackerId: hero.id }, events);
+    const dmg = getBumpDmg(2);
+    dealDamage(state, enemy, dmg, { reason: 'helsing_bump', attackerId: hero.id }, events);
     if (enemy.hp > 0) {
-      pushEntity(state, enemy, dir, 1, events);
+      pushEntity(state, enemy, dir, 1, events, { pusher: hero });
     }
     events.push({
       type: 'log',
-      text: `🏹 Úder pažbou kuše! Sir Arthur Featherstone udeřil ${enemy.name} okovanou pažbou za 2 DMG a odhodil ho!`
+      text: `🏹 Úder pažbou kuše! Sir Arthur Featherstone udeřil ${enemy.name} okovanou pažbou za ${dmg} DMG a odhodil ho!`
     });
   } else if (hunterId === 'revident') {
     hero.bumpCooldown = 2;
-    dealDamage(state, enemy, 1, { reason: 'revident_bump', attackerId: hero.id }, events);
+    const dmg = getBumpDmg(1);
+    dealDamage(state, enemy, dmg, { reason: 'revident_bump', attackerId: hero.id }, events);
     if (enemy.hp > 0) {
-      pushEntity(state, enemy, dir, 1, events);
+      pushEntity(state, enemy, dir, 1, events, { pusher: hero });
       addStatus(enemy, 'okolkovano', 1, events);
     }
     events.push({
       type: 'log',
-      text: `📑 Třísknutí deskami spisů! C. k. vrchní revident Ignác Šiml vrazil do ${enemy.name} fasciklem (1 DMG), odhodil ho a orazítkoval [OKOLKOVÁNO]!`
+      text: `📑 Třísknutí deskami spisů! C. k. vrchní revident Ignác Šiml vrazil do ${enemy.name} fasciklem (${dmg} DMG), odhodil ho a orazítkoval [OKOLKOVÁNO]!`
     });
   } else {
     hero.bumpCooldown = 3;
-    pushEntity(state, enemy, dir, 1, events);
+    const dmg = getBumpDmg(1);
+    dealDamage(state, enemy, dmg, { reason: 'venca_bump', attackerId: hero.id }, events);
+    if (enemy.hp > 0) {
+      pushEntity(state, enemy, dir, 1, events, { pusher: hero });
+    }
     const cloudCell = enemy.hp > 0 ? enemy.cell : targetCell;
     if (state.terrain[cloudCell]?.type !== 'pit') {
       state.terrain[cloudCell] = { type: 'garlic_cloud', duration: 2 };
@@ -1551,7 +1625,7 @@ export function resolveHeroBump(state, hero, enemy, dir, targetCell, hunterId, e
     events.push({ type: 'terrain_spawn', terrainType: 'garlic_cloud', cell: cloudCell });
     events.push({
       type: 'log',
-      text: `🧄 Česnekové žduchnutí! Venca vrazil do ${enemy.name} česnekovým pupkem, odhodil ho a zamořil jeho pole česnekem!`
+      text: `🦅 Sokolský náraz! Venca vrazil do ${enemy.name} vypnutou hrudí (1 DMG), odhodil ho a zanechal Česnekový oblak!`
     });
   }
 }
@@ -1923,6 +1997,8 @@ export function executeSingleQueueSlot(
 
 export function resolveHunterCombo3Bonus(state, hero, events) {
   const hunterId = hero.hunterId || hero.kind || 'venca';
+  const heroFury = hero?.currentFury || 0;
+  const getComboDmg = (base) => base + (heroFury > 0 ? Math.round(base * (heroFury / 100)) : 0);
   events.push({ type: 'hunter_combo3', hunterId, heroId: hero.id });
   const comboShout = getHunterDialogue(hunterId, 'combo_cries');
   if (comboShout?.text) {
@@ -1939,23 +2015,25 @@ export function resolveHunterCombo3Bonus(state, hero, events) {
   }
   if (hunterId === 'honza') {
     addStatus(hero, 'shield', 6, events);
+    const dmg = getComboDmg(4);
     events.push({
       type: 'log',
-      text: '💪 Selský hněv! Honza získal +6 Štít a mocnou rázovou vlnou zasáhl okolí za 4 DMG!'
+      text: `💪 Selský hněv! Honza získal +6 Štít a mocnou rázovou vlnou zasáhl okolí za ${dmg} DMG!`
     });
     for (const e of state.enemies) {
       if (e.hp > 0 && Math.abs(e.cell - hero.cell) <= 1) {
-        dealDamage(state, e, 4, { reason: 'honza_combo3', attackerId: hero.id }, events);
+        dealDamage(state, e, dmg, { reason: 'honza_combo3', attackerId: hero.id }, events);
       }
     }
   } else if (hunterId === 'dragoun') {
+    const dmg = getComboDmg(4);
     events.push({
       type: 'log',
-      text: '💥 Kavaleristická salva! Rittmeister Jaromír vypálil kartáčovou salvu a zkrátil Chladnutí destiček!'
+      text: `💥 Kavaleristická salva! Rittmeister Jaromír vypálil kartáčovou salvu (${dmg} DMG) a zkrátil Chladnutí destiček!`
     });
     for (const e of state.enemies) {
       if (e.hp > 0 && Math.sign(e.cell - hero.cell) === hero.facing) {
-        dealDamage(state, e, 4, { reason: 'dragoon_combo3', attackerId: hero.id }, events);
+        dealDamage(state, e, dmg, { reason: 'dragoon_combo3', attackerId: hero.id }, events);
       }
     }
     for (const t of state.hand) {
@@ -1975,15 +2053,16 @@ export function resolveHunterCombo3Bonus(state, hero, events) {
     });
   } else if (hunterId === 'ponocny') {
     addStatus(hero, 'shield', 6, events);
+    const dmg = getComboDmg(5);
     events.push({
       type: 'log',
-      text: '🔔 Půlnoční vartování! Odbila dvanáctá hodina! Ponocný získal +6 Štít a smetl obě pole před sebou za 5 DMG!'
+      text: `🔔 Půlnoční vartování! Odbila dvanáctá hodina! Ponocný získal +6 Štít a smetl obě pole před sebou za ${dmg} DMG!`
     });
     for (const e of state.enemies) {
       if (e.hp > 0) {
         const offset = (e.cell - hero.cell) * hero.facing;
         if (offset === 1 || offset === 2) {
-          dealDamage(state, e, 5, { reason: 'ponocny_combo3', attackerId: hero.id }, events);
+          dealDamage(state, e, dmg, { reason: 'ponocny_combo3', attackerId: hero.id }, events);
         }
       }
     }
@@ -2005,7 +2084,8 @@ export function resolveHunterCombo3Bonus(state, hero, events) {
       }
     }
     if (nearestInLine) {
-      dealDamage(state, nearestInLine, 6, { reason: 'silak_combo3', attackerId: hero.id }, events);
+      const dmg = getComboDmg(6);
+      dealDamage(state, nearestInLine, dmg, { reason: 'silak_combo3', attackerId: hero.id }, events);
       addStatus(nearestInLine, 'stun', 1, events);
     }
   } else if (hunterId === 'anglicanka') {
@@ -2019,24 +2099,26 @@ export function resolveHunterCombo3Bonus(state, hero, events) {
       hp: hero.hp,
       remainingHp: hero.hp
     });
+    const dmg = getComboDmg(3);
     events.push({
       type: 'log',
-      text: '🫖 Čaj o páté! Lady Gwendolyn si dopřála doušek Earl Grey (+4 HP, +4 Štít) a vařící čaj opařil nepřátele v dohledu!'
+      text: `🫖 Čaj o páté! Lady Gwendolyn si dopřála doušek Earl Grey (+4 HP, +4 Štít) a vařící čaj opařil nepřátele v dohledu za ${dmg} DMG!`
     });
     for (const e of state.enemies) {
       if (e.hp > 0 && Math.sign(e.cell - hero.cell) === hero.facing) {
-        dealDamage(state, e, 3, { reason: 'anglicanka_combo3', attackerId: hero.id }, events);
+        dealDamage(state, e, dmg, { reason: 'anglicanka_combo3', attackerId: hero.id }, events);
         addStatus(e, 'bleed', 2, events);
       }
     }
   } else if (hunterId === 'helsing') {
+    const dmg = getComboDmg(4);
     events.push({
       type: 'log',
-      text: '🏹 Kruhový rotační rozptyl! Sir Arthur Featherstone roztočil multishot mechanismus a zasáhl nepřátele stříbrnou salvou!'
+      text: `🏹 Kruhový rotační rozptyl! Sir Arthur Featherstone roztočil multishot mechanismus a zasáhl nepřátele stříbrnou salvou za ${dmg} DMG!`
     });
     for (const e of state.enemies) {
       if (e.hp > 0) {
-        dealDamage(state, e, 4, { reason: 'helsing_combo3', attackerId: hero.id }, events);
+        dealDamage(state, e, dmg, { reason: 'helsing_combo3', attackerId: hero.id }, events);
         addStatus(e, 'bleed', 2, events);
       }
     }
@@ -2046,23 +2128,29 @@ export function resolveHunterCombo3Bonus(state, hero, events) {
       type: 'log',
       text: '📑 Finanční exekuce! Revident Ignác Šiml získal +3 Štít a zahájil daňovou kontrolu všech nočních monster!'
     });
+    const dmg = getComboDmg(3);
     for (const e of state.enemies) {
       if (e.hp > 0) {
         if (hasStatus(e, 'okolkovano')) {
-          dealDamage(state, e, 3, { reason: 'revident_combo3', attackerId: hero.id }, events);
+          dealDamage(state, e, dmg, { reason: 'revident_combo3', attackerId: hero.id }, events);
         }
         addStatus(e, 'okolkovano', 1, events);
       }
     }
   } else {
     addStatus(hero, 'shield', 4, events);
+    const dmg = getComboDmg(3);
     events.push({
       type: 'log',
-      text: '🧄 Česneková aura! Venca získal +4 Štít a omámil okolní upíry česnekovým odérem!'
+      text: `🦅 Sokolská prostná! Venca předvedl vrcholnou sestavu s tyčí (+4 Štít), smetl nepřátele před sebou i za sebou za ${dmg} DMG a ohromil je sokolským leskem (Zmatení ❓)!`
     });
     for (const e of state.enemies) {
-      if (e.hp > 0 && Math.abs(e.cell - hero.cell) === 1) {
-        addStatus(e, 'confusion', 1, events);
+      if (e.hp > 0) {
+        const dist = Math.abs(e.cell - hero.cell);
+        if (dist === 1 || dist === 2) {
+          dealDamage(state, e, dmg, { reason: 'venca_combo3', attackerId: hero.id }, events);
+          addStatus(e, 'confusion', 1, events);
+        }
       }
     }
   }
