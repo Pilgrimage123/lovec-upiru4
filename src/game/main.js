@@ -68,7 +68,6 @@ function loadMetaStats() {
       const p = JSON.parse(raw);
       return {
         fangs: 0,
-        unlockedLoadouts: ['classic', 'honza', 'dragoun', 'zlodejka'],
         selectedLoadout: 'classic',
         ...p,
         unlockedLoadouts: Array.isArray(p.unlockedLoadouts) && p.unlockedLoadouts.length >= 4
@@ -236,6 +235,7 @@ function enterMapNode(node) {
       encounterId: node.encounterId,
       heroMaxHp: run.heroMaxHp,
       heroHp: run.heroHp,
+      defense: run.defense,
       deck: run.deck,
       talismans: run.talismans,
       curseLevel: run.curseLevel || 0,
@@ -434,34 +434,7 @@ function renderAll() {
     },
     onToggleComboPreview: () => {
       appState.comboPreviewActive = !appState.comboPreviewActive;
-      renderBattleBoardOnly();
-      renderTileBar(bottomRoot, appState.battleState, {
-        isComboPreviewActive: appState.comboPreviewActive,
-        onStep: (dir) => actions.handlePlayerStep(dir),
-        onTurn: () => actions.handlePlayerTurn(),
-        onWait: () => actions.handlePlayerWait(),
-        onExecuteQueue: () => {
-          appState.comboPreviewActive = false;
-          actions.handleExecuteOrPrepareQueue();
-        },
-        onHoverExecute: (hovered) => {
-          if (appState.hoveredExecute !== hovered) {
-            appState.hoveredExecute = hovered;
-            renderBattleBoardOnly();
-          }
-        },
-        onToggleComboPreview: () => {
-          appState.comboPreviewActive = !appState.comboPreviewActive;
-          renderAll();
-        },
-        onSelectTile: (instanceId) => actions.handleSelectTile(instanceId),
-        onHoverTile: (instanceId) => {
-          if (appState.hoveredTileId !== instanceId) {
-            appState.hoveredTileId = instanceId;
-            renderBattleBoardOnly();
-          }
-        }
-      });
+      renderAll();
     },
     onSelectTile: (instanceId) => actions.handleSelectTile(instanceId),
     onHoverTile: (instanceId) => {

@@ -35,7 +35,9 @@ function playTone(freq, type = "triangle", duration = 0.12, gainVal = 0.12, slid
     gain.connect(ctx.destination);
     osc.start();
     osc.stop(ctx.currentTime + duration);
-  } catch {}
+  } catch {
+    /* audio autoplay or audio context failure */
+  }
 }
 
 export const SFX = {

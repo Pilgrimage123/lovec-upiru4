@@ -238,7 +238,9 @@ export function createBattleActions(deps) {
     appState.metaStats.bestAct = Math.max(appState.metaStats.bestAct || 1, run.act);
     try {
       localStorage.setItem('lovec_upiru_meta_v1', JSON.stringify(appState.metaStats));
-    } catch {}
+    } catch {
+      /* ignore storage error */
+    }
   }
 
   async function checkAndHandleBattleOutcome() {
@@ -292,7 +294,9 @@ export function createBattleActions(deps) {
           }
           try {
             localStorage.setItem('lovec_upiru_meta_v1', JSON.stringify(appState.metaStats));
-          } catch {}
+          } catch {
+            /* ignore storage error */
+          }
           openRunEndModal(modalRoot, run, true, {
             onRetrySeed: (s) => startNewRun(s),
             onNewRun: (s) => startNewRun(s)
@@ -302,7 +306,9 @@ export function createBattleActions(deps) {
         appState.metaStats.bestAct = Math.max(appState.metaStats.bestAct || 1, run.act);
         try {
           localStorage.setItem('lovec_upiru_meta_v1', JSON.stringify(appState.metaStats));
-        } catch {}
+        } catch {
+          /* ignore storage error */
+        }
         openBattleRewardModal(modalRoot, run, generateBattleRewards(run, true), () => {
           appState.battleState = null;
           appState.screen = 'map';

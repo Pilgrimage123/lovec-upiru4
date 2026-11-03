@@ -8,7 +8,7 @@ export const ENEMY_TILES = {
     delay: 1,
     cooldown: 1,
     pattern: [],
-    description: 'Otočí se k Vencovi a popojde o 1 pole směrem k němu (je-li volno).'
+    description: 'Otočí se k lovci a popojde o 1 pole směrem k němu (je-li volno).'
   },
   turn_toward: {
     id: 'turn_toward',
@@ -18,7 +18,7 @@ export const ENEMY_TILES = {
     delay: 1,
     cooldown: 1,
     pattern: [],
-    description: 'Otočí se čelem k Vencovi.'
+    description: 'Otočí se čelem k lovci.'
   },
   intern_bite: {
     id: 'intern_bite',
@@ -54,7 +54,7 @@ export const ENEMY_TILES = {
     delay: 1,
     cooldown: 1,
     pattern: [],
-    description: 'Drží si odstup od Venci nebo popojde do palebné pozice.'
+    description: 'Drží si odstup od lovce nebo popojde do palebné pozice.'
   },
   windup_roar: {
     id: 'windup_roar',
@@ -202,7 +202,7 @@ export const ENEMY_TILES = {
       { offset: 1, dmg: 2, effects: [{ type: 'push', distance: 2 }] },
       { offset: -1, dmg: 2, effects: [{ type: 'push', distance: 2 }] }
     ],
-    description: 'Odhodí sousedy na obou stranách za 2 DMG (Push 2) a nechá vyrazit kůly pod Vencou.'
+    description: 'Odhodí sousedy na obou stranách za 2 DMG (Push 2) a nechá vyrazit kůly pod lovcem.'
   },
   boss_dracula_strike: {
     id: 'boss_dracula_strike',

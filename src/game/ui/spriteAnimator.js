@@ -370,7 +370,7 @@ export async function animateUnitAttack(container, options = {}, animSpeed = 1) 
  * Hit Reaction: High-frequency horizontal shake, 120ms white/red CSS silhouette flash
  * (only on non-transparent PNG pixels), bottom-anchored squash (scaleY: 0.8, scaleX: 1.25).
  */
-export async function animateUnitHit(container, targetId, amount = 1, animSpeed = 1) {
+export async function animateUnitHit(container, targetId, _amount = 1, animSpeed = 1) {
   const els = getEntityElements(container, targetId);
   if (!els || !els.entityEl || !els.spriteImg || animSpeed === 0) {
     await waitMs(ANIMATION_CONFIG.hit.durationMs, animSpeed);

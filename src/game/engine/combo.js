@@ -18,7 +18,7 @@ export function detectResonances(tiles) {
       name: 'Česnekový opar',
       icon: '🧄',
       tag: 'garlic',
-      description: 'Zanechá Česnekový oblak na 2 tahy před Vencou.'
+      description: 'Zanechá Česnekový oblak na 2 tahy před lovcem.'
     });
   }
   if (counts.holy >= 2) {
@@ -27,7 +27,7 @@ export function detectResonances(tiles) {
       name: 'Posvátná ochrana',
       icon: '✝️',
       tag: 'holy',
-      description: 'Uloží Vencovi 1 Štít před protiútokem.'
+      description: 'Uloží lovci 2 Štíty před protiútokem.'
     });
   }
   if (counts.brawl >= 2) {
@@ -45,7 +45,7 @@ export function detectResonances(tiles) {
       name: 'Hodinářský fortel',
       icon: '⚙️',
       tag: 'craft',
-      description: 'Zkrátí cooldown o 1 tah náhodné destičce na opasku.'
+      description: 'Zkrátí Chladnutí o 1 tah náhodné destičce na opasku.'
     });
   }
   if (counts.garlic >= 1 && counts.holy >= 1) {
@@ -54,7 +54,7 @@ export function detectResonances(tiles) {
       name: 'Posvěcený opar',
       icon: '✨',
       tag: 'dual',
-      description: 'Zasáhne všechny sousední upíry za 1 DMG.'
+      description: 'Zasáhne všechny sousední upíry za 2 DMG.'
     });
   }
   return resonances;
@@ -85,7 +85,7 @@ export function applyResonances(state, tiles, events = []) {
       addStatus(hero, 'shield', 2, events);
       events.push({
         type: 'log',
-        text: '✝️ Rezonance Svěcené vody: Venca získal posvátný Štít!'
+        text: `✝️ Rezonance Svěcené vody: ${hero.name || 'Lovec'} získal posvátný Štít!`
       });
     } else if (res.id === 'brawl_force') {
       state.comboResonanceBonusPush = (state.comboResonanceBonusPush || 0) + 1;
@@ -96,11 +96,11 @@ export function applyResonances(state, tiles, events = []) {
     } else if (res.id === 'craft_reduction') {
       const cooling = (state.hand || []).filter((t) => t.currentCooldown > 0);
       if (cooling.length > 0) {
-        const picked = cooling[Math.floor(Math.random() * cooling.length)];
+        const picked = state.rng ? state.rng.pick(cooling) : cooling[Math.floor(Math.random() * cooling.length)];
         picked.currentCooldown = Math.max(0, picked.currentCooldown - 1);
         events.push({
           type: 'log',
-          text: `⚙️ Rezonance Řemesla: Důmyslné soukolí zkrátlo cooldown destičce „${picked.name}“!`
+          text: `⚙️ Rezonance Řemesla: Důmyslné soukolí zkrátilo Chladnutí destičce „${picked.name}“!`
         });
       }
     } else if (res.id === 'sanctified_mist') {

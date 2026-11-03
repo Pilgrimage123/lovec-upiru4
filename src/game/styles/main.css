@@ -64,6 +64,7 @@ body {
 
 
 
+.hidden,
 #modal-root.hidden,
 #loading-overlay.hidden,
 #app-shell.hidden,

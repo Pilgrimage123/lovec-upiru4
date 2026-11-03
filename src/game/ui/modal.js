@@ -31,11 +31,11 @@ export function openRulesModal(modalRoot) {
             <h4>1. 1D Bojiště (7–9 polí) a Ekonomika tahu</h4>
             <p>Na každém ze 7–9 kamenných polí smí stát nejvýše jedna postava nebo sud. Jeden tvůj <strong>TAH</strong> je právě jedna z akcí:</p>
             <ul>
-              <li><strong>Krok vlevo / vpravo (A / D):</strong> Posun o 1 pole bez změny směru pohledu. Cílové pole musí být volné (do obsazeného pole nelze vstoupit ani ho krokem přeskočit – přes překážky skáče pouze destička <em>Hospodský přemet</em>).</li>
+              <li><strong>Krok vlevo / vpravo (A / D):</strong> Posun o 1 pole bez změny směru pohledu do volného pole. Krok do sousedního nepřítele provede tvůj podpisový <strong>Krok do nepřítele</strong> (Česnekové žduchnutí, Selský beran, Úder těžkým jílcem, Kapsářská záměna), pokud manévr nechladne. Do sudu vstoupit nelze (přeskočí jej pouze <em>Hospodský přemet</em>).</li>
               <li><strong>Otočení (W):</strong> Změní směr pohledu (◀ / ▶). Stojíš-li v <strong>Česnekovém oblaku</strong>, je otočení <strong>ZDARMA (0 tahů)</strong>!</li>
-              <li><strong>Čekání (S):</strong> Stojí 1 tah, zkrátí Chladnutí tvých destiček i manévru.</li>
+              <li><strong>Čekání (S):</strong> Stojí 1 tah, zkrátí Chladnutí tvých destiček i manévru o 1 tah.</li>
               <li><strong>Vložení destičky do Fronty (1–4 / klik):</strong> Stojí 1 tah (vyjma destiček s vlastností <em>Rychlovka</em>, jejichž vložení stojí 0 tahů). Vyjmutí i libovolné přerovnání destiček ve frontě je vždy zdarma.</li>
-              <li><strong>PROVÉST KOMBO (Mezerník / Space):</strong> Okamžitý odpal! Všechny destičky ve frontě se provedou zleva doprava bez nutnosti přípravného nápřahu za <strong>JEDEN tah</strong>!</li>
+              <li><strong>PROVÉST KOMBO (Mezerník / Space):</strong> Okamžitý odpal! Všechny destičky ve frontě se provedou zleva doprava bez nutnosti přípravného nápřahu za <strong>JEDEN tah</strong>! Zřetězení 3 destiček spustí mocné 3-Kombo lovce!</li>
             </ul>
           </div>
 
@@ -50,11 +50,11 @@ export function openRulesModal(modalRoot) {
           </div>
 
           <div class="rule-block">
-            <h4>3. Kolize, Terén a poslední akce</h4>
+            <h4>3. Obrana, Kolize, Terén a Švunk</h4>
             <ul>
-              <li><strong>Odhození (Push) a Kolize:</strong> Narazí-li odhozená postava do zdi nebo do jiné postavy, utrpí obě <strong>+1 kolizní DMG</strong>. Vhození do sudu se zelím sud rozbije (2 DMG + Zmatení).</li>
-              <li><strong>Ještě jedna akce:</strong> Když nepřítel zčervená (🚨), útok ještě nejde. Stihneš jednu obyčejnou akci — krok, otočku, destičku nebo čekání. Pak teprve útok dopadne. Žádné zvláštní okno.</li>
-              <li><strong>Terén:</strong> <em>Propast</em> = okamžitá smrt (kromě létajících netopýrů). <em>Kůly</em> = 2 DMG. <em>Prohnilé prkno</em> = 1. stoupnutí zapraská, 2. stoupnutí se prolomí za 2 DMG.</li>
+              <li><strong>Obrana a Štít:</strong> Každá postava s Obranou získá na začátku kola dočasný Štít. Štít pohlcuje zranění bod po bodu před zásahem do HP a odráží omráčení i krvácení. Na konci nepřátelského kola veškerý nevyužitý Štít zcela vyprchá na 0!</li>
+              <li><strong>Odhození (Push) a Kolize:</strong> Narazí-li odhozená postava do zdi nebo jiné postavy, utrpí obě <strong>2 kolizní DMG</strong>. Vhození do sudu se zelím sud rozbije (<strong>4 DMG + Zmatení</strong>).</li>
+              <li><strong>Terén:</strong> <em>Propast</em> = okamžitá smrt (vyjma létajících potvor). <em>Kůly</em> = 4 DMG. <em>Prohnilé prkno</em> = 1. stoupnutí zapraská, 2. stoupnutí se prolomí za 4 DMG. <em>Posvěcená louže</em> = 2 DMG (3 tahy).</li>
               <li><strong>Švunk:</strong> Zabiješ-li nepřítele kombem 2+ destiček kdykoliv během bitvy, zkrátí se Chladnutí první (otevírací) destičce tohoto komba o počet destiček v kombu!</li>
             </ul>
           </div>
@@ -333,8 +333,8 @@ export function openPubModal(modalRoot, runState, onLeavePub, onUpdate) {
             </div>
 
             <div class="pub-section">
-              <h4>2. Promazat výzbroj sádlem (Trvale −1 Cooldown)</h4>
-              <p>Jedné destičce trvale snížíš nabíjení o 1 tah (min. CD 1):</p>
+              <h4>2. Promazat výzbroj sádlem (Trvale −1 Chladnutí)</h4>
+              <p>Jedné destičce trvale zkrátíš Chladnutí o 1 tah (min. Chladnutí 1):</p>
               <div class="pub-deck-list">${deckButtonsHtml}</div>
             </div>
 
@@ -837,7 +837,9 @@ export function openCastleArchiveModal(modalRoot, appState, onUpdate = null, onS
         meta.selectedLoadout = lId;
         try {
           localStorage.setItem('lovec_upiru_meta_v1', JSON.stringify(meta));
-        } catch {}
+        } catch {
+          /* ignore storage error */
+        }
         onUpdate?.();
         openCastleArchiveModal(modalRoot, appState, onUpdate, onSelect);
       }
@@ -850,7 +852,9 @@ export function openCastleArchiveModal(modalRoot, appState, onUpdate = null, onS
       meta.selectedLoadout = lId;
       try {
         localStorage.setItem('lovec_upiru_meta_v1', JSON.stringify(meta));
-      } catch {}
+      } catch {
+        /* ignore storage error */
+      }
       onSelect?.(lId);
       onUpdate?.();
       openCastleArchiveModal(modalRoot, appState, onUpdate, onSelect);
@@ -863,7 +867,9 @@ export function openCastleArchiveModal(modalRoot, appState, onUpdate = null, onS
       meta.selectedCurse = cLvl;
       try {
         localStorage.setItem('lovec_upiru_meta_v1', JSON.stringify(meta));
-      } catch {}
+      } catch {
+        /* ignore storage error */
+      }
       onUpdate?.();
       openCastleArchiveModal(modalRoot, appState, onUpdate, onSelect);
     });

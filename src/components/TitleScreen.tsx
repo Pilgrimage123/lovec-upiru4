@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { getHeroTileDefinition } from "@/game/config/tiles.js";
 import { SFX, setSoundEnabled } from "@/game/ui/audio.js";
 import {
@@ -27,7 +27,7 @@ export interface TitleScreenProps {
 /**
  * Centrální konfigurace portrétů lovců pro snadnou výměnu obrázků.
  */
-export const HUNTER_PORTRAITS: Record<string, string> = {
+const HUNTER_PORTRAITS: Record<string, string> = {
   classic: "/assets/characters/venca_idle.png",
   honza: "/assets/enemies/sedlak_stit.png",
   dragoun: "/assets/enemies/halapartnik.png",
@@ -56,7 +56,7 @@ export interface HunterDeed {
   deck: Array<{ id: string; upgradeLevel?: number }>;
 }
 
-export const HUNTERS_DATA: Record<string, HunterDeed> = {
+const HUNTERS_DATA: Record<string, HunterDeed> = {
   classic: {
     id: "classic",
     name: "Venca Česnekáč",
@@ -222,14 +222,14 @@ export function TitleScreen({
     }
   };
 
-  const handleLaunch = () => {
+  const handleLaunch = useCallback(() => {
     try {
       SFX.bell?.();
     } catch {
       // Audio fallback
     }
     onStartHunt(selectedId, seed.trim() || "CESNEK-1899");
-  };
+  }, [onStartHunt, selectedId, seed]);
 
   // Klávesové zkratky: 1-4 výběr lovce, R náhodný seed, Enter start
   useEffect(() => {
@@ -253,7 +253,7 @@ export function TitleScreen({
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedId, seed]);
+  }, [handleLaunch]);
 
   const renderHunterCardContent = (hunterItem: HunterDeed, isSelected: boolean, idx: number) => {
     const starterTiles = (hunterItem.deck || []).map((card) =>
@@ -530,7 +530,7 @@ export function TitleScreen({
         {/* Mobilní přepínač lovců (viditelný pouze na mobilu a tabletu < lg) */}
         <div className="hunters-mobile-view block lg:hidden mb-2">
           <div className="grid grid-cols-4 gap-1.5">
-            {Object.values(HUNTERS_DATA).map((item, idx) => {
+            {Object.values(HUNTERS_DATA).map((item) => {
               const isSelected = item.id === selectedId;
               return (
                 <button

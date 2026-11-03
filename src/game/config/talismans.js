@@ -22,7 +22,7 @@ export const TALISMANS = {
     icon: 'talisman.beer_frog',
     badge: '🐸',
     price: 26,
-    description: 'Když Venca přemetem přeskočí nepřítele nebo sud, získá 1 Štít.'
+    description: 'Když lovec přemetem přeskočí nepřítele nebo sud, získá 1 Štít.'
   },
   garlic_braid: {
     id: 'garlic_braid',
@@ -30,7 +30,7 @@ export const TALISMANS = {
     icon: 'talisman.garlic_braid',
     badge: '🧄',
     price: 22,
-    description: 'Na začátku každé bitvy se pod Vencou objeví Česnekový oblak na 2 tahy.'
+    description: 'Na začátku každé bitvy se pod lovcem objeví Česnekový oblak na 2 tahy.'
   },
   hobnailed_boots: {
     id: 'hobnailed_boots',
@@ -46,7 +46,7 @@ export const TALISMANS = {
     icon: 'talisman.sexton_keyring',
     badge: '🗝️',
     price: 22,
-    description: 'Friendly fire (když upír zasáhne jiného upíra) způsobí oběti +1 DMG navíc a 3 dukáty Vencovi.'
+    description: 'Friendly fire (když upír zasáhne jiného upíra) způsobí oběti +1 DMG navíc a 3 dukáty do měšce.'
   },
   sacred_flask: {
     id: 'sacred_flask',
@@ -54,7 +54,7 @@ export const TALISMANS = {
     icon: 'talisman.sacred_flask',
     badge: '🍶',
     price: 28,
-    description: 'Na konci každé vyhrané bitvy si Venca přihne a vyléčí 1 HP.'
+    description: 'Na konci každé vyhrané bitvy si lovec přihne a vyléčí 1 HP.'
   },
   notary_stamp: {
     id: 'notary_stamp',
@@ -78,7 +78,7 @@ export const TALISMANS = {
     icon: 'talisman.pocket_watch',
     badge: '⏱️',
     price: 25,
-    description: 'Akce „Čekat“ (S) zkrátí cooldown všem destičkám o 1 tah navíc (celkem o 2).'
+    description: 'Akce „Čekat“ (S) zkrátí Chladnutí všem destičkám o 1 tah navíc (celkem o 2).'
   },
   butcher_apron: {
     id: 'butcher_apron',
@@ -86,7 +86,7 @@ export const TALISMANS = {
     icon: 'talisman.butcher_apron',
     badge: '🥩',
     price: 27,
-    description: 'Zvyší maximální i aktuální zdraví Venci o +2 HP při získání.'
+    description: 'Zvýší maximální i aktuální zdraví lovce o +2 HP při získání.'
   },
   holy_aspergillum: {
     id: 'holy_aspergillum',
@@ -94,6 +94,6 @@ export const TALISMANS = {
     icon: 'talisman.holy_aspergillum',
     badge: '💦',
     price: 23,
-    description: 'Otočení na místě (W) postříká svěcenou vodou sousedního nepřítele před Vencou za 1 DMG (jednou za 2 tahy).'
+    description: 'Otočení na místě (W) postříká svěcenou vodou sousedního nepřítele před lovcem za 1 DMG (jednou za 2 tahy).'
   }
 };

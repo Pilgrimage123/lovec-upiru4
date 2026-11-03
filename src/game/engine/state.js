@@ -185,7 +185,7 @@ export function resolveEntityDeath(state, target, opts = {}, events = []) {
     events.push({ type: 'holy_font_shatter', cell: target.cell });
     events.push({
       type: 'log',
-      text: '💦 Kamenná kropenka se roztříštila! Gejzír svěcené vody zasáhl okolní nemrtvé za 2 DMG a vytvořil posvěcenou louži!'
+      text: '💦 Kamenná kropenka se roztříštila! Gejzír svěcené vody zasáhl okolní nemrtvé za 4 DMG a vytvořil posvěcenou louži!'
     });
     state.terrain[target.cell] = { type: 'holy_water_puddle', duration: 3 };
     events.push({ type: 'terrain_spawn', terrainType: 'holy_water_puddle', cell: target.cell });
@@ -242,7 +242,7 @@ export function triggerCellTerrainOnEnter(state, entity, cell, events = []) {
     events.push({ type: 'terrain_trigger', terrainType: 'holy_water_puddle', cell, targetId: entity.id });
     events.push({
       type: 'log',
-      text: `🔥 ${entity.name} vstoupil do posvěcené louže a škvaří se (1 DMG)!`
+      text: `🔥 ${entity.name} vstoupil do posvěcené louže a škvaří se (2 DMG)!`
     });
     dealDamage(state, entity, 2, { reason: 'holy_water_puddle', type: 'holy' }, events);
   } else if (terr.type === 'plank_intact') {
@@ -765,7 +765,6 @@ export function spawnEnemyEntity(enemyId, cell, facing = -1) {
     actionPool: pool,
     nextAction: null,
     countdown: 2,
-    statuses: {},
     bloodStains: [],
     flavor: def.flavor || ''
   };

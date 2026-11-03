@@ -136,7 +136,7 @@ function scheduleHeroIdle(container, delayMs, animSpeed = 1) {
   }, effectiveDelay);
 }
 
-async function playHeroPose(container, pose, ms, animSpeed) {
+export async function playHeroPose(container, pose, ms, animSpeed) {
   const frames = getHeroFrames(pose);
   if (!heroSprite(container) || isHeroDead(container)) return;
   const epoch = heroPoseEpoch;
@@ -736,7 +736,7 @@ export function refreshBoardOverlays(container, state, uiState = {}) {
       }
 
       if (warnEl) {
-        warnEl.classList.toggle('hidden', !Boolean(impact && impact.threatensHeroPostCombo));
+        warnEl.classList.toggle('hidden', !(impact && impact.threatensHeroPostCombo));
       }
     }
   });

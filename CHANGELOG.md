@@ -4,7 +4,23 @@ Veškeré významné změny v projektu Lovec upírů jsou zaznamenávány v tomt
 
 Formát vychází z [Keep a Changelog](https://keepachangelog.com/cs/1.0.0/).
 
-## [1.3.2] - 2026-11-02
+## [1.3.3] - 2026-11-02
+
+### Opraveno (Fixed)
+- **Konfigurace a integrace ESLint 9**: Vytvořena plochá konfigurace `eslint.config.js` pro ESLint v9, TypeScript ESLint a React Hooks; odstraněny všechny syntaktické chyby, nepoužité proměnné a prázdné catch bloky v celém projektu (`npm run lint` prochází s 0 chybami a 0 varováními).
+- **Kritická oprava startovního Štítu u nepřátel (`spawnEnemyEntity`)**: Odstraněn duplicitní klíč `statuses: {}` ve stavové továrně nepřátel, který při inicializaci přemazával vygenerovaný Štít z Obrany. Nepřátelé s Obranou (vrátný se štítem, úředník, boss Sosák) nyní začínají boj se svým plným Štítem dle pravidel v ADR 0003.
+- **Životní cyklus a zranění posvěcené louže (`holy_water_puddle`)**: Opraveno nezapočítávání odpočtu trvání louže svěcené vody. Louže nyní na konci kola zraňuje stojící nemrtvé za 2 posvátné DMG a po 3 tazích korektně vyprchá.
+- **Konzistence čísel v deníku a definicích terénu**: Sjednoceny texty hlášení při vstupu do svěcené louže (2 DMG) a při roztříštění kamenné kropenky (4 DMG do okolí), které dříve v deníku uváděly nesprávné hodnoty 1 a 2 DMG v rozporu se skutečným poškozením.
+- **Taktický náhled komba pro 3-Komba (`simulateComboImpact`)**: Doplněno volání `resolveHunterCombo3Bonus` do simulačního enginu náhledu komba. Hráč nyní v náhledu přesně vidí poškození ze salv a rázových vln (Honza, Jaromír, Káča) i jejich smrtící dopady před odpálením.
+- **Předávání Obrany mezi uzly mapy**: V `enterMapNode` v `main.js` se nyní do stavu bitvy korektně předává atribut `defense: run.defense`.
+- **Deterministické RNG v rezonanci řemesla**: Náhodný výběr chladnoucí destičky v rezonanci řemesla nyní využívá seedované `state.rng` namísto `Math.random()`.
+- **Terminologie dle GLOSSARY.md a oprava pravidel**:
+  - Odstraněny výskyty zakázaných termínů „cooldown“, „CD“ a „nabíjení“ v talismanech, popiscích a hospodě ve prospěch jednotného pojmu *Chladnutí*.
+  - Nahrazeno chybné hlášení „Manévr nárazu ještě chladne“ kanonickým pojmem *Krok do nepřítele*.
+  - Nahrazena nevhodně natvrdo vepsaná jména „Venca“ v talismanech, rezonancích a schopnostech neutrálním či dynamickým označením lovce.
+  - V modálu pravidel aktualizovány zastaralé hodnoty: kolize 2 DMG (namísto 1 DMG), rozbití sudu a propadnutí prknem/kůly 4 DMG (namísto 2 DMG), a doplněno vysvětlení *Kroku do nepřítele* a round-clearing cyklu *Štítu*.
+- **Čistý Fast Refresh v komponentách**: Odděleny animační konfigurace do `unitSpriteConfig.ts`, opraveny chybějící závislosti v hooks (`useCallback` u `handleLaunch` v `TitleScreen.tsx` a synchronizace `gridPos` v `UnitSprite.tsx`).
+- **Synchronizace `package-lock.json`**: Doplněna chybějící reference `framer-motion` v `package-lock.json`.
 
 ### Opraveno (Fixed)
 - **Kritický pád invariantu u Hloupého Honzy (`resolveHeroBump`)**: Při manévru *Selský beran* do nepřítele přiraženého ke zdi nebo překážce se pozice hrdiny dříve posouvala bezpodmínečně na obsazené pole, což vyvolalo pád hry a zamrznutí animací. Nyní se poškození a odhození vyhodnocují bezpečně a hrdina vstoupí na pole pouze v případě, že se uvolnilo.

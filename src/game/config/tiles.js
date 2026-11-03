@@ -184,7 +184,7 @@ export const HERO_TILES = {
     selfFlipAfter: true,
     pattern: [{ offset: -1, dmg: 2, effects: [] }],
     resonance: null,
-    description: 'Švihne 1 pole ZA ZÁDY za 2 DMG a okamžitě otočí Vencu čelem vzad.',
+    description: 'Švihne 1 pole ZA ZÁDY za 2 DMG a okamžitě otočí lovce čelem vzad.',
     flavor: '„Kdo mi to funí za krk?! Tady máš desátek přes dršku!“',
     starter: false,
     upgrades: [

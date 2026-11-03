@@ -1,10 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ANIMATION_CONFIG,
-  GridPos,
+  type GridPos,
   SPRITE_PRESETS,
+} from "./unitSpriteConfig";
+import {
   UnitSprite,
-  UnitSpriteHandle,
+  type UnitSpriteHandle,
 } from "./UnitSprite";
 
 interface TacticalUnit {

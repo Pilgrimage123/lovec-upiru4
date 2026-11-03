@@ -3,7 +3,7 @@ import { createRng } from './rng.js';
 import { ENEMY_TILES } from '../config/enemies.js';
 import { wouldEnemyTileHitTargetCell } from './state.js';
 import { detectResonances } from './combo.js';
-import { executeSingleQueueSlot } from './combat.js';
+import { executeSingleQueueSlot, resolveHunterCombo3Bonus } from './combat.js';
 
 export function cloneBattleStateForSim(state) {
   if (!state) return null;
@@ -104,6 +104,10 @@ export function simulateComboImpact(state, customQueue = null) {
     const nextId = queueIds[i + 1] || null;
     const evs = executeSingleQueueSlot(sim, curId, i, comboLength, nextId);
     allEvents.push(...evs);
+  }
+
+  if (comboLength >= 3 && sim.hero && sim.hero.hp > 0) {
+    resolveHunterCombo3Bonus(sim, sim.hero, allEvents);
   }
 
   const resonances = detectResonances(

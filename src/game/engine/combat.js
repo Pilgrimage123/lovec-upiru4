@@ -1072,11 +1072,23 @@ export function advanceTurnAfterPlayerAction(state, events = [], extraCdReductio
 
   for (let i = 0; i < state.terrain.length; i++) {
     const terr = state.terrain[i];
-    if (terr && terr.type === 'garlic_cloud' && typeof terr.duration === 'number') {
+    if (terr && typeof terr.duration === 'number') {
+      if (terr.type === 'holy_water_puddle') {
+        for (const enemy of state.enemies) {
+          if (enemy.hp > 0 && enemy.cell === i && !enemy.flying) {
+            events.push({
+              type: 'log',
+              text: `💧 ${enemy.name} stojí v posvěcené louži a škvaří se (2 DMG)!`
+            });
+            dealDamage(state, enemy, 2, { reason: 'holy_water_puddle', type: 'holy' }, events);
+          }
+        }
+      }
       terr.duration -= 1;
       if (terr.duration <= 0) {
+        const expiredType = terr.type;
         state.terrain[i] = { type: 'none' };
-        events.push({ type: 'terrain_expire', terrainType: 'garlic_cloud', cell: i });
+        events.push({ type: 'terrain_expire', terrainType: expiredType, cell: i });
       }
     }
   }
@@ -1210,7 +1222,7 @@ export function stepHero(state, direction) {
     if ((hero.bumpCooldown || 0) > 0) {
       events.push({
         type: 'invalid_action',
-        reason: `Manévr nárazu ještě chladne (zbývá ${hero.bumpCooldown} ${czechTurns(hero.bumpCooldown)})!`
+        reason: `Manévr Krok do nepřítele ještě chladne (zbývá ${hero.bumpCooldown} ${czechTurns(hero.bumpCooldown)})!`
       });
       return { ok: false, events };
     }
@@ -1483,7 +1495,7 @@ export function resolveHunterCombo3Bonus(state, hero, events) {
   } else if (hunterId === 'dragoun') {
     events.push({
       type: 'log',
-      text: '💥 Kavaleristická salva! Rittmeister Jaromír vypálil kartáčovou salvu a zkrátil chladnutí destiček!'
+      text: '💥 Kavaleristická salva! Rittmeister Jaromír vypálil kartáčovou salvu a zkrátil Chladnutí destiček!'
     });
     for (const e of state.enemies) {
       if (e.hp > 0 && Math.sign(e.cell - hero.cell) === hero.facing) {

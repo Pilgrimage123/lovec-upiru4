@@ -208,7 +208,7 @@ export function generateBattleRewards(run, isEliteOrBoss = false) {
       type: 'tile',
       tileId: pickedTileId,
       title: `Destička: ${def.name}`,
-      subtitle: `DMG ${def.dmg} · CD ${def.cooldown}`,
+      subtitle: `DMG ${def.dmg} · Chladnutí ${def.cooldown}`,
       description: def.description
     });
   }
