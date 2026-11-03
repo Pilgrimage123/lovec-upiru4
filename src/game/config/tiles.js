@@ -958,6 +958,667 @@ export const HERO_TILES = {
         description: 'CD 1! Přeskok až o 3 pole, otočení a získá +4 Štít.'
       }
     ]
+  },
+  halberd_sweep: {
+    id: 'halberd_sweep',
+    name: 'Ponocenská halapartna',
+    icon: 'tile.halberd_sweep',
+    type: 'attack',
+    tags: ['brawl', 'craft'],
+    dmg: 5,
+    cooldown: 4,
+    quick: false,
+    pattern: [
+      { offset: 1, dmg: 5, effects: [] },
+      { offset: 2, dmg: 4, effects: [{ type: 'push', distance: 1 }] }
+    ],
+    resonance: null,
+    description: 'Těžká kovaná halapartna ponocného. Zasáhne dvě políčka přímo před sebou (1. pole za 5 DMG, 2. pole za 4 DMG + Push 1).',
+    flavor: '„Dvě políčka odstup od městské brány! C. k. vyhláška o nočním klidu nepřipouští výjimky.“',
+    starter: true,
+    upgrades: [
+      {
+        level: 1,
+        name: 'Okovaná ponocenská halapartna+',
+        dmg: 7,
+        cooldown: 4,
+        pattern: [
+          { offset: 1, dmg: 7, effects: [] },
+          { offset: 2, dmg: 5, effects: [{ type: 'push', distance: 1 }] }
+        ],
+        description: 'Zesílený břit: 1. pole za 7 DMG, 2. pole za 5 DMG + Push 1.'
+      },
+      {
+        level: 2,
+        name: 'Mistrovská strážní halapartna++',
+        dmg: 8,
+        cooldown: 3,
+        pattern: [
+          { offset: 1, dmg: 8, effects: [{ type: 'bleed', amount: 2 }] },
+          { offset: 2, dmg: 6, effects: [{ type: 'push', distance: 2 }] }
+        ],
+        description: 'Mistrovské vyvážení (CD 3): 1. pole za 8 DMG + Krvácení (2), 2. pole za 6 DMG + Push 2.'
+      }
+    ]
+  },
+  watchman_lantern: {
+    id: 'watchman_lantern',
+    name: 'Půlnoční lucerna',
+    icon: 'tile.watchman_lantern',
+    type: 'attack',
+    tags: ['holy'],
+    dmg: 3,
+    cooldown: 4,
+    quick: false,
+    pattern: [
+      { offset: 1, dmg: 3, effects: [{ type: 'confusion', amount: 2 }] }
+    ],
+    resonance: null,
+    description: 'Žhnoucí olejová lucerna vrhne oslepující světlo na 1 pole vpřed za 3 DMG a uvrhne upíra do Zmatení (2 kola).',
+    flavor: '„V tomhle světle pozná každý noční tvor, jak vypadá hřích.“',
+    starter: true,
+    upgrades: [
+      {
+        level: 1,
+        name: 'Posvěcená olejová lampa+',
+        dmg: 5,
+        cooldown: 4,
+        pattern: [
+          { offset: 1, dmg: 5, effects: [{ type: 'confusion', amount: 2 }] }
+        ],
+        description: '5 DMG na 1 pole vpřed + Zmatení na 2 kola.'
+      },
+      {
+        level: 2,
+        name: 'Věčné světlo strážce++',
+        dmg: 6,
+        cooldown: 3,
+        pattern: [
+          {
+            offset: 1,
+            dmg: 6,
+            effects: [
+              { type: 'confusion', amount: 3 },
+              { type: 'spawn_garlic_target' }
+            ]
+          }
+        ],
+        description: 'CD 3! 6 DMG na 1 pole vpřed, Zmatení na 3 kola a zanechá Česnekový oblak.'
+      }
+    ]
+  },
+  watchman_horn: {
+    id: 'watchman_horn',
+    name: 'Ponocenský roh',
+    icon: 'tile.watchman_horn',
+    type: 'defend',
+    tags: ['brawl'],
+    dmg: 2,
+    cooldown: 4,
+    quick: false,
+    shieldAmount: 5,
+    pattern: [
+      { offset: 1, dmg: 2, effects: [{ type: 'push', distance: 2 }] },
+      { offset: -1, dmg: 2, effects: [{ type: 'push', distance: 2 }] }
+    ],
+    resonance: null,
+    description: 'Mocné zatroubení na noční mosazný roh. Ponocný získá +5 Štít a odhodí sousedící nepřátele před i za sebou o 2 pole (Push 2 za 2 DMG).',
+    flavor: '„Chval každý duch Hospodina! A vy upíři koukejte táhnout do komína!“',
+    starter: true,
+    upgrades: [
+      {
+        level: 1,
+        name: 'Mosazný polní roh+',
+        dmg: 3,
+        cooldown: 4,
+        shieldAmount: 7,
+        pattern: [
+          { offset: 1, dmg: 3, effects: [{ type: 'push', distance: 2 }] },
+          { offset: -1, dmg: 3, effects: [{ type: 'push', distance: 2 }] }
+        ],
+        description: 'Získá +7 Štít, odhodí sousedy o 2 pole za 3 DMG.'
+      },
+      {
+        level: 2,
+        name: 'Půlnoční polnice zkázy++',
+        dmg: 4,
+        cooldown: 3,
+        shieldAmount: 9,
+        pattern: [
+          { offset: 1, dmg: 4, effects: [{ type: 'push', distance: 3 }, { type: 'stun', amount: 1 }] },
+          { offset: -1, dmg: 4, effects: [{ type: 'push', distance: 3 }, { type: 'stun', amount: 1 }] }
+        ],
+        description: 'CD 3! Získá +9 Štít, odhodí sousedy o 3 pole za 4 DMG a omráčí je (Stun 1).'
+      }
+    ]
+  },
+  barbell_slam: {
+    id: 'barbell_slam',
+    name: 'Litinová činka',
+    icon: 'tile.barbell_slam',
+    type: 'attack',
+    tags: ['brawl', 'craft'],
+    dmg: 5,
+    cooldown: 3,
+    quick: false,
+    pattern: [{ offset: 1, dmg: 5, effects: [{ type: 'push', distance: 1 }] }],
+    resonance: null,
+    description: 'Drtivý úder padesátikilovou cirkusovou činkou za 5 DMG a odhození cíle o 1 pole (Push 1).',
+    flavor: '„S tímhle zvedám v manéži tři artistky naráz. Pro tvoji lebku to bude těžký večer!“',
+    starter: true,
+    upgrades: [
+      {
+        level: 1,
+        name: 'Okovaná litinová činka+',
+        dmg: 7,
+        cooldown: 3,
+        pattern: [{ offset: 1, dmg: 7, effects: [{ type: 'push', distance: 2 }] }],
+        description: '7 DMG a odhození o 2 pole (Push 2).'
+      },
+      {
+        level: 2,
+        name: 'Arénová dvousféra++',
+        dmg: 8,
+        cooldown: 2,
+        pattern: [{ offset: 1, dmg: 8, effects: [{ type: 'push', distance: 2 }, { type: 'stun', amount: 1 }] }],
+        description: 'CD 2! 8 DMG, Push 2 a omráčení cíle (Stun 1).'
+      }
+    ]
+  },
+  kettlebell_toss: {
+    id: 'kettlebell_toss',
+    name: 'Vrhací závaží',
+    icon: 'tile.kettlebell_toss',
+    type: 'ranged',
+    tags: ['brawl'],
+    dmg: 3,
+    cooldown: 3,
+    quick: false,
+    projectileRange: 3,
+    pattern: [
+      { offset: 1, dmg: 3, projectile: true, effects: [{ type: 'push', distance: 1 }] },
+      { offset: 2, dmg: 3, projectile: true, effects: [{ type: 'push', distance: 1 }] },
+      { offset: 3, dmg: 3, projectile: true, effects: [{ type: 'push', distance: 1 }] }
+    ],
+    resonance: null,
+    description: 'Vrhne kovanou litinovou kouli s uchem až na 3 pole. Způsobí 3 DMG prvnímu cíli v dráze a odhodí ho o 1 pole.',
+    flavor: '„Když létá železo vzduchem, publikum v prvních řadách raději sklání hlavy.“',
+    starter: true,
+    upgrades: [
+      {
+        level: 1,
+        name: 'Těžké vrhací závaží+',
+        dmg: 5,
+        cooldown: 3,
+        pattern: [
+          { offset: 1, dmg: 5, projectile: true, effects: [{ type: 'push', distance: 2 }] },
+          { offset: 2, dmg: 5, projectile: true, effects: [{ type: 'push', distance: 2 }] },
+          { offset: 3, dmg: 5, projectile: true, effects: [{ type: 'push', distance: 2 }] }
+        ],
+        description: '5 DMG na dosah až 3 polí a Push 2.'
+      },
+      {
+        level: 2,
+        name: 'Stolibrová dělová koule++',
+        dmg: 6,
+        cooldown: 2,
+        pattern: [
+          { offset: 1, dmg: 6, projectile: true, effects: [{ type: 'push', distance: 2 }, { type: 'stun', amount: 1 }] },
+          { offset: 2, dmg: 6, projectile: true, effects: [{ type: 'push', distance: 2 }, { type: 'stun', amount: 1 }] },
+          { offset: 3, dmg: 6, projectile: true, effects: [{ type: 'push', distance: 2 }, { type: 'stun', amount: 1 }] }
+        ],
+        description: 'CD 2! 6 DMG na dosah až 3 polí, Push 2 a omráčení cíle.'
+      }
+    ]
+  },
+  iron_flex: {
+    id: 'iron_flex',
+    name: 'Zatnutí svalů',
+    icon: 'tile.iron_flex',
+    type: 'defend',
+    tags: ['brawl'],
+    cooldown: 3,
+    quick: false,
+    shieldAmount: 5,
+    selfEffect: { type: 'empower', amount: 1 },
+    pattern: [],
+    resonance: null,
+    description: 'Předvede bicepsy publiku: Získá +5 Štít a Zesílení (+2 DMG k příštímu úderu).',
+    flavor: '„Ocelové svaly, ocelové nervy. Upíří zub se na mém rameni jenom zlomí!“',
+    starter: true,
+    upgrades: [
+      {
+        level: 1,
+        name: 'Železný hrudník+',
+        cooldown: 3,
+        shieldAmount: 7,
+        selfEffect: { type: 'empower', amount: 1 },
+        pattern: [],
+        description: 'Získá +7 Štít a Zesílení (+2 DMG).'
+      },
+      {
+        level: 2,
+        name: 'Bronzový titán++',
+        cooldown: 2,
+        shieldAmount: 8,
+        selfEffect: { type: 'empower', amount: 2 },
+        pattern: [],
+        description: 'CD 2! Získá +8 Štít a velké Zesílení (+4 DMG).'
+      }
+    ]
+  },
+  silver_parasol: {
+    id: 'silver_parasol',
+    name: 'Stříbrný slunečník',
+    icon: 'tile.silver_parasol',
+    type: 'attack',
+    tags: ['craft', 'holy'],
+    dmg: 4,
+    cooldown: 3,
+    quick: false,
+    pattern: [{ offset: 1, dmg: 4, backstabDmg: 7, effects: [] }],
+    resonance: null,
+    description: 'Šermířský výpad stříbrem okovanou špicí slunečníku na 1 pole za 4 DMG (do zad nepřipraveného tvora za 7 DMG!).',
+    flavor: '„Britská dáma nevychází bez slunečníku. Zvláště pokud se v kryptě práší a upíři nedodržují bontón.“',
+    starter: true,
+    upgrades: [
+      {
+        level: 1,
+        name: 'Broušený stříbrný slunečník+',
+        dmg: 6,
+        cooldown: 3,
+        pattern: [{ offset: 1, dmg: 6, backstabDmg: 9, effects: [] }],
+        description: '6 DMG vpřed (9 DMG do zad).'
+      },
+      {
+        level: 2,
+        name: 'Čepel královské gardy++',
+        dmg: 7,
+        cooldown: 2,
+        pattern: [{ offset: 1, dmg: 7, backstabDmg: 11, effects: [{ type: 'bleed', amount: 2 }] }],
+        description: 'CD 2! 7 DMG (11 DMG do zad) + Krvácení (2).'
+      }
+    ]
+  },
+  boiling_tea: {
+    id: 'boiling_tea',
+    name: 'Vařící Earl Grey',
+    icon: 'tile.boiling_tea',
+    type: 'ranged',
+    tags: ['holy'],
+    dmg: 3,
+    cooldown: 3,
+    quick: false,
+    projectileRange: 2,
+    pattern: [
+      { offset: 1, dmg: 3, projectile: true, effects: [{ type: 'confusion', amount: 1 }, { type: 'bleed', amount: 2 }] },
+      { offset: 2, dmg: 3, projectile: true, effects: [{ type: 'confusion', amount: 1 }, { type: 'bleed', amount: 2 }] }
+    ],
+    resonance: null,
+    description: 'Vrhne šálek vroucího černého čaje na dosah 2 polí za 3 DMG + Opaření (Krvácení 2) a Zmatení (1 kolo).',
+    flavor: '„Dvě lžičky bergamotu, vroucí voda ze stříbrného samovaru a kapka svěcené vody pro chuť.“',
+    starter: true,
+    upgrades: [
+      {
+        level: 1,
+        name: 'Vřelý královský čaj+',
+        dmg: 5,
+        cooldown: 3,
+        pattern: [
+          { offset: 1, dmg: 5, projectile: true, effects: [{ type: 'confusion', amount: 1 }, { type: 'bleed', amount: 2 }] },
+          { offset: 2, dmg: 5, projectile: true, effects: [{ type: 'confusion', amount: 1 }, { type: 'bleed', amount: 2 }] }
+        ],
+        description: '5 DMG na 2 pole + Krvácení (2) a Zmatení.'
+      },
+      {
+        level: 2,
+        name: 'Vroucí konvice zkázy++',
+        dmg: 6,
+        cooldown: 2,
+        pattern: [
+          { offset: 1, dmg: 6, projectile: true, effects: [{ type: 'confusion', amount: 2 }, { type: 'bleed', amount: 3 }] },
+          { offset: 2, dmg: 6, projectile: true, effects: [{ type: 'confusion', amount: 2 }, { type: 'bleed', amount: 3 }] }
+        ],
+        description: 'CD 2! 6 DMG na 2 pole + Krvácení (3) a Zmatení na 2 kola.'
+      }
+    ]
+  },
+  royal_etiquette: {
+    id: 'royal_etiquette',
+    name: 'Královská etiketa',
+    icon: 'tile.royal_etiquette',
+    type: 'defend',
+    tags: ['holy', 'craft'],
+    cooldown: 3,
+    quick: false,
+    shieldAmount: 5,
+    healAmount: 2,
+    pattern: [],
+    resonance: null,
+    description: 'Dámský doušek odpoledního čaje a ukázněný postoj: Získá +5 Štít a vyléčí si 2 HP.',
+    flavor: '„Pravá dáma neztrácí způsoby ani ve chvíli, kdy jí krvelačný hrabě sahá na kanýry.“',
+    starter: true,
+    upgrades: [
+      {
+        level: 1,
+        name: 'Viktoriánská důstojnost+',
+        cooldown: 3,
+        shieldAmount: 7,
+        healAmount: 3,
+        pattern: [],
+        description: 'Získá +7 Štít a vyléčí si 3 HP.'
+      },
+      {
+        level: 2,
+        name: 'Čajové panství++',
+        cooldown: 2,
+        shieldAmount: 8,
+        healAmount: 4,
+        pattern: [],
+        description: 'CD 2! Získá +8 Štít a vyléčí si 4 HP.'
+      }
+    ]
+  },
+  repeating_crossbow: {
+    id: 'repeating_crossbow',
+    name: 'Rotační opakovací kuše',
+    icon: 'tile.repeating_crossbow',
+    type: 'ranged',
+    tags: ['craft'],
+    dmg: 2,
+    cooldown: 3,
+    quick: false,
+    projectileRange: 4,
+    burstHits: 2,
+    pattern: [
+      { offset: 1, dmg: 2, projectile: true },
+      { offset: 2, dmg: 2, projectile: true },
+      { offset: 3, dmg: 2, projectile: true },
+      { offset: 4, dmg: 2, projectile: true }
+    ],
+    resonance: null,
+    description: 'Dosah 4 pole: Rotační bubínek vypálí dvě stříbrné šipky v rychlém sledu (2x 2 DMG = 4 DMG celkem).',
+    flavor: '„Gatlingův patent v kapesním provedení. Dva výstřely, než upír stihne mrknout!“',
+    starter: true,
+    upgrades: [
+      {
+        level: 1,
+        name: 'Rotační opakovací kuše+',
+        dmg: 3,
+        cooldown: 3,
+        projectileRange: 4,
+        burstHits: 2,
+        pattern: [
+          { offset: 1, dmg: 3, projectile: true },
+          { offset: 2, dmg: 3, projectile: true },
+          { offset: 3, dmg: 3, projectile: true },
+          { offset: 4, dmg: 3, projectile: true }
+        ],
+        description: 'Dosah 4 pole: Vypálí 2 šipky za 3 DMG (celkem 6 DMG).'
+      },
+      {
+        level: 2,
+        name: 'Gatlingova rotační kuše++',
+        dmg: 3,
+        cooldown: 2,
+        projectileRange: 4,
+        burstHits: 3,
+        pattern: [
+          { offset: 1, dmg: 3, projectile: true },
+          { offset: 2, dmg: 3, projectile: true },
+          { offset: 3, dmg: 3, projectile: true },
+          { offset: 4, dmg: 3, projectile: true }
+        ],
+        description: 'CD 2! Rychlopalba 3 šipek za 3 DMG (celkem 9 DMG).'
+      }
+    ]
+  },
+  silver_bolt_salvo: {
+    id: 'silver_bolt_salvo',
+    name: 'Stříbrná salva šípů',
+    icon: 'tile.silver_bolt_salvo',
+    type: 'ranged',
+    tags: ['holy', 'craft'],
+    dmg: 3,
+    cooldown: 3,
+    quick: false,
+    projectileRange: 3,
+    pattern: [
+      { offset: 1, dmg: 3, projectile: true, effects: [{ type: 'bleed', amount: 2 }] },
+      { offset: 2, dmg: 3, projectile: true, effects: [{ type: 'bleed', amount: 2 }] },
+      { offset: 3, dmg: 3, projectile: true, effects: [{ type: 'bleed', amount: 2 }] }
+    ],
+    resonance: null,
+    description: 'Dosah 3 pole: Zasáhne cíl za 3 DMG a způsobí Krvácení (2).',
+    flavor: '„Posvěcené stříbro leptá upíří maso jako vroucí kyselina.“',
+    starter: true,
+    upgrades: [
+      {
+        level: 1,
+        name: 'Stříbrná salva šípů+',
+        dmg: 4,
+        cooldown: 3,
+        projectileRange: 3,
+        pattern: [
+          { offset: 1, dmg: 4, projectile: true, effects: [{ type: 'bleed', amount: 3 }] },
+          { offset: 2, dmg: 4, projectile: true, effects: [{ type: 'bleed', amount: 3 }] },
+          { offset: 3, dmg: 4, projectile: true, effects: [{ type: 'bleed', amount: 3 }] }
+        ],
+        description: '4 DMG + Krvácení (3) na 3 pole.'
+      },
+      {
+        level: 2,
+        name: 'Posvěcená salva šípů++',
+        dmg: 5,
+        cooldown: 2,
+        projectileRange: 4,
+        pattern: [
+          { offset: 1, dmg: 5, projectile: true, effects: [{ type: 'bleed', amount: 4 }] },
+          { offset: 2, dmg: 5, projectile: true, effects: [{ type: 'bleed', amount: 4 }] },
+          { offset: 3, dmg: 5, projectile: true, effects: [{ type: 'bleed', amount: 4 }] },
+          { offset: 4, dmg: 5, projectile: true, effects: [{ type: 'bleed', amount: 4 }] }
+        ],
+        description: 'CD 2! Dosah 4 pole, 5 DMG + Krvácení (4).'
+      }
+    ]
+  },
+  winch_reload_kick: {
+    id: 'winch_reload_kick',
+    name: 'Odskok a natažení rumpálu',
+    icon: 'tile.winch_reload_kick',
+    type: 'attack',
+    tags: ['movement', 'craft'],
+    dmg: 2,
+    cooldown: 3,
+    quick: false,
+    recoilBack: 1,
+    reloadRangedTiles: 1,
+    pattern: [{ offset: 1, dmg: 2, effects: [{ type: 'push', distance: 1 }] }],
+    resonance: null,
+    description: 'Udeří cíl před sebou za 2 DMG, odhodí ho o 1 pole, odskočí o 1 pole vzad a zkrátí Chladnutí střeleckých destiček o 1.',
+    flavor: '„Taktický ústup s bleskovým natažením mechanismu.“',
+    starter: true,
+    upgrades: [
+      {
+        level: 1,
+        name: 'Odskok a natažení rumpálu+',
+        dmg: 3,
+        cooldown: 2,
+        recoilBack: 1,
+        reloadRangedTiles: 1,
+        pattern: [{ offset: 1, dmg: 3, effects: [{ type: 'push', distance: 1 }] }],
+        description: 'CD 2, 3 DMG, odhodí o 1 pole, odskok vzad a zkrátí Chladnutí střelby o 1.'
+      },
+      {
+        level: 2,
+        name: 'Mistrovský úskok s rumpálem++',
+        dmg: 4,
+        cooldown: 2,
+        recoilBack: 1,
+        reloadRangedTiles: 2,
+        pattern: [{ offset: 1, dmg: 4, effects: [{ type: 'push', distance: 2 }] }],
+        description: 'CD 2, 4 DMG, odhodí o 2 pole, odskok vzad a zkrátí Chladnutí střelby o 2!'
+      }
+    ]
+  },
+  gov_stake_1884: {
+    id: 'gov_stake_1884',
+    name: 'Erární osikový kolík vz. 1884',
+    icon: 'tile.gov_stake_1884',
+    type: 'attack',
+    tags: ['craft', 'holy'],
+    dmg: 2,
+    cooldown: 2,
+    quick: false,
+    pattern: [{ offset: 1, dmg: 2, effects: [] }],
+    resonance: null,
+    description: '1 políčko před sebe za 2 DMG. Čistý úder. Pokud má cíl stav [OKOLKOVÁNO], sníží se cooldown této destičky o 1.',
+    flavor: '„Vydáno c. k. zbrojním skladem ve Vídni. Každá tříska je řádně zainventarizována.“',
+    starter: true,
+    upgrades: [
+      {
+        level: 1,
+        name: 'Erární osikový kolík vz. 1884+',
+        dmg: 3,
+        cooldown: 2,
+        pattern: [{ offset: 1, dmg: 3, effects: [] }],
+        description: '3 DMG na 1 pole. Pokud má cíl [OKOLKOVÁNO], sníží cooldown o 1.'
+      },
+      {
+        level: 2,
+        name: 'Posvěcený erární kolík vz. 1884++',
+        dmg: 4,
+        cooldown: 1,
+        pattern: [{ offset: 1, dmg: 4, effects: [] }],
+        description: 'CD 1! 4 DMG na 1 pole. Pokud má cíl [OKOLKOVÁNO], sníží cooldown o 1.'
+      }
+    ]
+  },
+  brass_stamp_denied: {
+    id: 'brass_stamp_denied',
+    name: 'Mosazné razítko „ZAMÍTNUTO“',
+    icon: 'tile.brass_stamp_denied',
+    type: 'attack',
+    tags: ['craft'],
+    dmg: 1,
+    cooldown: 3,
+    quick: false,
+    delayEnemyCountdown: 1,
+    pattern: [{ offset: 1, dmg: 1, effects: [{ type: 'push', distance: 1 }] }],
+    resonance: null,
+    description: '1 políčko před sebe za 1 DMG. Odrazí nepřítele o 1 políčko dozadu a odloží jeho naplánovaný útok o 1 tah (+1 tah do odpočtu).',
+    flavor: '„Vaše žádost o vysátí krve byla zamítnuta pro formální nedostatky v kolkování!“',
+    starter: true,
+    upgrades: [
+      {
+        level: 1,
+        name: 'Mosazné razítko „ZAMÍTNUTO“+',
+        dmg: 2,
+        cooldown: 3,
+        delayEnemyCountdown: 1,
+        pattern: [{ offset: 1, dmg: 2, effects: [{ type: 'push', distance: 1 }] }],
+        description: '2 DMG, odrazí o 1 pole a odloží útok nepřítele o 1 tah.'
+      },
+      {
+        level: 2,
+        name: 'Císařská pečeť „ZAMÍTNUTO“++',
+        dmg: 3,
+        cooldown: 2,
+        delayEnemyCountdown: 1,
+        pattern: [{ offset: 1, dmg: 3, effects: [{ type: 'push', distance: 2 }] }],
+        description: 'CD 2! 3 DMG, odrazí o 2 pole a odloží útok nepřítele o 1 tah.'
+      }
+    ]
+  },
+  rast_gasser_revolver: {
+    id: 'rast_gasser_revolver',
+    name: 'Služební revolver Rast & Gasser (Stříbrná munice)',
+    icon: 'tile.rast_gasser_revolver',
+    type: 'ranged',
+    tags: ['craft', 'holy'],
+    dmg: 2,
+    cooldown: 5,
+    quick: false,
+    projectileRange: 5,
+    recoilBack: 1,
+    pattern: [
+      { offset: 1, dmg: 2, projectile: true },
+      { offset: 2, dmg: 2, projectile: true },
+      { offset: 3, dmg: 2, projectile: true },
+      { offset: 4, dmg: 2, projectile: true },
+      { offset: 5, dmg: 2, projectile: true }
+    ],
+    resonance: null,
+    description: 'Střelba v přímé linii za 2 DMG. Cooldown 5 tahů (kvůli papírování s vyúčtováním stříbra), ale zpětný ráz posune revidenta o 1 políčko dozadu.',
+    flavor: '„Osmiranný armádní revolver ráže 8 mm. Každou vystřelenou stříbrnou kulku musím písemně zdůvodnit.“',
+    starter: true,
+    upgrades: [
+      {
+        level: 1,
+        name: 'Služební revolver Rast & Gasser+',
+        dmg: 3,
+        cooldown: 4,
+        projectileRange: 5,
+        recoilBack: 1,
+        pattern: [
+          { offset: 1, dmg: 3, projectile: true },
+          { offset: 2, dmg: 3, projectile: true },
+          { offset: 3, dmg: 3, projectile: true },
+          { offset: 4, dmg: 3, projectile: true },
+          { offset: 5, dmg: 3, projectile: true }
+        ],
+        description: 'CD 4, 3 DMG v linii, zpětný ráz 1 pole vzad.'
+      },
+      {
+        level: 2,
+        name: 'Vyladěný revolver Rast & Gasser++',
+        dmg: 4,
+        cooldown: 3,
+        projectileRange: 5,
+        recoilBack: 1,
+        pattern: [
+          { offset: 1, dmg: 4, projectile: true },
+          { offset: 2, dmg: 3, projectile: true },
+          { offset: 3, dmg: 4, projectile: true },
+          { offset: 4, dmg: 4, projectile: true },
+          { offset: 5, dmg: 4, projectile: true }
+        ],
+        description: 'CD 3! 4 DMG v linii, zpětný ráz 1 pole vzad.'
+      }
+    ]
+  },
+  domicile_inspection: {
+    id: 'domicile_inspection',
+    name: 'Kontrola domovského listu',
+    icon: 'tile.domicile_inspection',
+    type: 'move',
+    tags: ['movement', 'craft'],
+    dmg: 0,
+    cooldown: 2,
+    quick: false,
+    pattern: [],
+    resonance: null,
+    description: 'Prohodí si místo se sousedním nepřítelem, otočí ho zády k sobě a aplikuje na něj stav [OKOLKOVÁNO].',
+    flavor: '„Váš domovský list je neplatný! Okamžitě se otočte zády k přepážce a čekejte na výměr!“',
+    starter: true,
+    upgrades: [
+      {
+        level: 1,
+        name: 'Kontrola domovského listu+',
+        cooldown: 2,
+        shieldAmount: 2,
+        pattern: [],
+        description: 'Prohodí místo se sousedem, otočí ho zády, aplikuje [OKOLKOVÁNO] a získá +2 Štít.'
+      },
+      {
+        level: 2,
+        name: 'Zabavení domovského listu++',
+        cooldown: 1,
+        shieldAmount: 3,
+        pattern: [],
+        description: 'CD 1! Prohodí místo, otočí zády, aplikuje [OKOLKOVÁNO] a získá +3 Štít.'
+      }
+    ]
   }
 };
 

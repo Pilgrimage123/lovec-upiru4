@@ -32,6 +32,11 @@ const HUNTER_PORTRAITS: Record<string, string> = {
   honza: "/assets/enemies/sedlak_stit.png",
   dragoun: "/assets/enemies/halapartnik.png",
   zlodejka: "/assets/enemies/vrhac_nozu.png",
+  ponocny: "/assets/characters/ponocny.png",
+  silak: "/assets/characters/silak.png",
+  anglicanka: "/assets/characters/anglicanka.png",
+  helsing: "/assets/characters/helsing.png",
+  revident: "/assets/characters/revident.png",
 };
 
 export interface HunterDeed {
@@ -165,9 +170,151 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
       { id: "shadow_slip", upgradeLevel: 0 },
     ],
   },
+  ponocny: {
+    id: "ponocny",
+    name: "Ponocný Bartoloměj",
+    epithet: "Strážce půlnoční hodiny",
+    role: "Noční hlídka & těžká halapartna",
+    tag: "Silný & Pomalý (26 HP) · Dvoupolíčkový dosah halapartny",
+    beerBadge: "Půlnoční ležák 13°",
+    maxHp: 26,
+    defense: 2,
+    icon: "🏮",
+    heraldicColor: "from-indigo-950 via-stone-900 to-slate-950",
+    heraldicBorder: "border-indigo-400",
+    portraitUrl: HUNTER_PORTRAITS.ponocny,
+    quote: "„Chval každý duch Hospodina! A vy upíři táhněte spát, nebo vás vezmu halapartnou přes hnáty!“",
+    signatureWeapon: "Kovaná dvoubřitá halapartna & Půlnoční mosazný roh",
+    bumpName: "Zarazení ratištěm",
+    bumpDesc:
+      "Krok do nepřítele: Vrazí do nepřítele těžké ratiště za 3 DMG, odhodí ho o 1 pole a na 1 tah omráčí (Chladnutí 4)!",
+    comboName: "Půlnoční vartování",
+    comboDesc:
+      "3-kombo: Získá +6 Štít, odtroubí půlnoc a zasáhne obě pole před sebou za 5 DMG.",
+    deck: [
+      { id: "halberd_sweep", upgradeLevel: 0 },
+      { id: "watchman_lantern", upgradeLevel: 0 },
+      { id: "watchman_horn", upgradeLevel: 0 },
+    ],
+  },
+  silak: {
+    id: "silak",
+    name: "Silák Gustav",
+    epithet: "Cirkusový lamač podkov",
+    role: "Cirkusová síla & vrh těžkých břemen",
+    tag: "Vysoká síla (22 HP) · Vrhání litinových závaží · Přehoz",
+    beerBadge: "Cirkusový ležák",
+    maxHp: 22,
+    defense: 1,
+    icon: "🏋️",
+    heraldicColor: "from-red-950 via-stone-900 to-amber-950",
+    heraldicBorder: "border-red-500",
+    portraitUrl: HUNTER_PORTRAITS.silak,
+    quote: "„Podkovu zlomím dvěma prsty, panáčku. Zlomení upíří páteře je jen lehká rozcvička!“",
+    signatureWeapon: "Dvousférická litinová činka & Kované závaží",
+    bumpName: "Cirkusový přehoz",
+    bumpDesc:
+      "Krok do nepřítele: Praští s nepřítelem o zem za 3 DMG a odhodí ho o 2 pole vzad (Chladnutí 3)!",
+    comboName: "Litinové finále",
+    comboDesc:
+      "3-kombo: Získá +5 Štít a vrhne obří činku na prvního nepřítele v linii pohledu za 6 DMG + omráčení.",
+    deck: [
+      { id: "barbell_slam", upgradeLevel: 0 },
+      { id: "kettlebell_toss", upgradeLevel: 0 },
+      { id: "iron_flex", upgradeLevel: 0 },
+    ],
+  },
+  anglicanka: {
+    id: "anglicanka",
+    name: "Lady Gwendolyn",
+    epithet: "Viktoriánská dáma & lovkyně",
+    role: "Britská etiketa & stříbrný slunečník",
+    tag: "Vysoká Obrana (2) · Horký Earl Grey · Bodnutí ze zálohy",
+    beerBadge: "Imperial Stout 18°",
+    maxHp: 18,
+    defense: 2,
+    icon: "🫖",
+    heraldicColor: "from-slate-950 via-stone-900 to-emerald-950",
+    heraldicBorder: "border-slate-400",
+    portraitUrl: HUNTER_PORTRAITS.anglicanka,
+    quote: "„Upíři jsou nanejvýš nevychovaná stvoření. Čaj o páté ignorují docela!“",
+    signatureWeapon: "Stříbrem kovaný slunečník & Porcelánová konvice",
+    bumpName: "Klepnutí slunečníkem",
+    bumpDesc:
+      "Krok do nepřítele: Klepne nevychovaného upíra přes prsty za 2 DMG a otočí ho zády k sobě (Chladnutí 2)!",
+    comboName: "Čaj o páté",
+    comboDesc:
+      "3-kombo: Vychutná si doušek čaje (+4 HP, +4 Štít) a vařící čaj opaří všechny nepřátele v linii za 3 DMG.",
+    deck: [
+      { id: "silver_parasol", upgradeLevel: 0 },
+      { id: "boiling_tea", upgradeLevel: 0 },
+      { id: "royal_etiquette", upgradeLevel: 0 },
+    ],
+  },
+  helsing: {
+    id: "helsing",
+    name: "Profesor Gabriel van Helsing",
+    epithet: "Vědecký okultista",
+    role: "Mechanická věda & rotační multishot",
+    tag: "Dálkový útok (18 HP) · Rotační opakovací kuše · Balistická salva",
+    beerBadge: "Oktogonální ležák 14°",
+    maxHp: 18,
+    defense: 1,
+    icon: "🏹",
+    heraldicColor: "from-stone-950 via-zinc-900 to-amber-950",
+    heraldicBorder: "border-stone-400",
+    portraitUrl: HUNTER_PORTRAITS.helsing,
+    quote: "„Kde selhává modlitba, tam nastupuje pružinová ocel a dvacet stříbrných šipek za minutu.“",
+    signatureWeapon: "Gatlingova rotační kuše vz. 1888 & Rumpálový napínák",
+    bumpName: "Úder pažbou kuše",
+    bumpDesc:
+      "Krok do nepřítele: Udeří nepřítele okovanou pažbou za 2 DMG a odhodí ho o 1 pole vzad (Chladnutí 2).",
+    comboName: "Kruhový rotační rozptyl",
+    comboDesc:
+      "3-kombo: Vypálí rotační salvu všemi směry: 4 DMG + Krvácení (2) všem nepřátelům v linii dohledu.",
+    deck: [
+      { id: "repeating_crossbow", upgradeLevel: 0 },
+      { id: "silver_bolt_salvo", upgradeLevel: 0 },
+      { id: "winch_reload_kick", upgradeLevel: 0 },
+    ],
+  },
+  revident: {
+    id: "revident",
+    name: "C. k. vrchní revident (Ignác Šiml)",
+    epithet: "Císařský daňový exekutor",
+    role: "Úřední předvolání & razítka",
+    tag: "Střední výdrž (4 HP, 2 Obrana) · Úřední předvolání · Stav [OKOLKOVÁNO]",
+    beerBadge: "C. k. Erární ležák 11°",
+    maxHp: 4,
+    defense: 2,
+    icon: "📑",
+    heraldicColor: "from-yellow-950 via-stone-900 to-amber-950",
+    heraldicBorder: "border-amber-600",
+    portraitUrl: HUNTER_PORTRAITS.revident,
+    quote: "„Nemáte zaplacenou daň ze záhrobního pobytu! Předložte domovský list, nebo přistoupíme k exekuci!“",
+    signatureWeapon: "Erární kolík vz. 1884 & Mosazné razítko „ZAMÍTNUTO“",
+    bumpName: "Třísknutí deskami spisů",
+    bumpDesc:
+      "Krok do nepřítele: Vrazí do nepřítele fasciklem za 1 DMG, odhodí ho o 1 pole a nalepí [OKOLKOVÁNO] (Chladnutí 2).",
+    comboName: "Finanční exekuce",
+    comboDesc:
+      "3-kombo: Získá +3 Štít, nalepí [OKOLKOVÁNO] na všechny noční netvory a již okolkovaným udělí 3 DMG!",
+    deck: [
+      { id: "gov_stake_1884", upgradeLevel: 0 },
+      { id: "brass_stamp_denied", upgradeLevel: 0 },
+      { id: "rast_gasser_revolver", upgradeLevel: 0 },
+      { id: "domicile_inspection", upgradeLevel: 0 },
+    ],
+  },
 };
 
 const THEMATIC_FOLK_SEEDS = [
+  "HELSING-1888",
+  "REVIDENT-1884",
+  "CIRKUS-1899",
+  "EARL-GREY-1899",
+  "PULNOC-1899",
+  "PONOCNY-1899",
   "CESNEK-1899",
   "POVIDLA-1420",
   "C-K-DRAGOUN-1848",
@@ -242,6 +389,11 @@ export function TitleScreen({
       else if (e.key === "2") handleSelectHunter("honza");
       else if (e.key === "3") handleSelectHunter("dragoun");
       else if (e.key === "4") handleSelectHunter("zlodejka");
+      else if (e.key === "5") handleSelectHunter("ponocny");
+      else if (e.key === "6") handleSelectHunter("silak");
+      else if (e.key === "7") handleSelectHunter("anglicanka");
+      else if (e.key === "8") handleSelectHunter("helsing");
+      else if (e.key === "9") handleSelectHunter("revident");
       else if (e.key === "r" || e.key === "R") {
         e.preventDefault();
         handleRandomSeed();
@@ -419,7 +571,7 @@ export function TitleScreen({
               <div className="text-[10px] font-serif font-black uppercase tracking-wider text-amber-300 mb-1 flex items-center justify-between">
                 <span>Startovní destičky:</span>
                 <span className="text-[9px] text-emerald-300 font-mono font-bold bg-emerald-950 px-1 rounded border border-emerald-700">
-                  3 PŘIPRAVENY
+                  {starterTiles.length} PŘIPRAVENY
                 </span>
               </div>
               <div className="space-y-1">
@@ -508,13 +660,13 @@ export function TitleScreen({
             <h2 className="text-xs sm:text-sm uppercase tracking-wider text-amber-300 font-serif font-black flex items-center gap-1.5">
               <span>Síň lovců: Zvol svého bijce</span>
               <span className="text-[11px] text-amber-200 font-mono font-bold">
-                (Klávesy 1–4)
+                (Klávesy 1–9)
               </span>
             </h2>
           </div>
           <div className="hidden sm:flex items-center gap-2 text-xs text-amber-200 font-mono font-bold">
             <span className="bg-stone-900 border border-amber-800/80 px-1.5 py-0.2 rounded text-amber-300">
-              [1–4] Výběr lovce
+              [1–9] Výběr lovce
             </span>
             <span>·</span>
             <span className="bg-stone-900 border border-amber-800/80 px-1.5 py-0.2 rounded text-amber-300">
@@ -529,7 +681,7 @@ export function TitleScreen({
 
         {/* Mobilní přepínač lovců (viditelný pouze na mobilu a tabletu < lg) */}
         <div className="hunters-mobile-view block lg:hidden mb-2">
-          <div className="grid grid-cols-4 gap-1.5">
+          <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-1">
             {Object.values(HUNTERS_DATA).map((item) => {
               const isSelected = item.id === selectedId;
               return (
@@ -538,18 +690,18 @@ export function TitleScreen({
                   data-mobile-hunter-id={item.id}
                   type="button"
                   onClick={() => handleSelectHunter(item.id)}
-                  className={`flex flex-col items-center justify-center p-1.5 rounded-xl border-2 transition-all cursor-pointer ${
+                  className={`flex flex-col items-center justify-center p-1 rounded-lg border-2 transition-all cursor-pointer ${
                     isSelected
                       ? "border-amber-400 bg-amber-950/90 text-white shadow-md ring-1 ring-amber-400"
                       : "border-stone-700 bg-stone-900/90 text-stone-300 hover:border-stone-500"
                   }`}
                 >
-                  <div className="flex items-center gap-1">
-                    <span className="text-base">{item.icon}</span>
-                    <span className="text-[11px] font-black">{item.name.split(" ")[0]}</span>
+                  <div className="flex items-center gap-0.5">
+                    <span className="text-sm">{item.icon}</span>
+                    <span className="text-[10px] font-black truncate">{item.name.split(" ")[0]}</span>
                   </div>
-                  <div className="flex items-center gap-1 text-[10px] mt-0.5">
-                    <span className="text-red-300 font-bold">{item.maxHp} HP</span>
+                  <div className="flex items-center gap-0.5 text-[9px] mt-0.5">
+                    <span className="text-red-300 font-bold">{item.maxHp}</span>
                     <span className="text-blue-300 font-bold">🛡️{item.defense}</span>
                   </div>
                 </button>
@@ -567,8 +719,8 @@ export function TitleScreen({
           </div>
         </div>
 
-        {/* Desktop: 4 Lovecké archy vedle sebe (pouze pro lg obrazovky) */}
-        <div className="hunters-desktop-view hidden lg:grid grid-cols-4 gap-3 items-stretch">
+        {/* Desktop: Lovecké archy (3 sloupce na lg, 9 sloupců na xl) */}
+        <div className="hunters-desktop-view hidden lg:grid grid-cols-3 xl:grid-cols-9 gap-2 items-stretch">
           {Object.values(HUNTERS_DATA).map((hunterItem, idx) =>
             renderHunterCardContent(hunterItem, hunterItem.id === selectedId, idx)
           )}

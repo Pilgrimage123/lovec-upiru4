@@ -4,6 +4,80 @@ Veškeré významné změny v projektu Lovec upírů jsou zaznamenávány v tomt
 
 Formát vychází z [Keep a Changelog](https://keepachangelog.com/cs/1.0.0/).
 
+## [1.5.0] - 2026-11-03
+
+### Přidáno (Added)
+- **Nový lovec: Profesor Gabriel van Helsing (Vědecký okultista)**:
+  - Založen na stylu Van Helsinga (ikona 🏹, klávesa `8`, 18 HP, 1 Obrana).
+  - Vyzbrojen opakovací rotační kuší (multishot crossbow), stříbrnou municí a balistickými tabulkami.
+  - **Startovní destičky**:
+    - *Rotační opakovací kuše* (typ střelba, dosah 4 pole, CD 3): Vypálí rotační dávku 2 stříbrných šipek v rychlém sledu (2x 2 DMG = 4 DMG celkem).
+    - *Stříbrná salva šípů* (typ střelba, dosah 3 pole, CD 3): Způsobí 3 DMG a Krvácení (2) na 2 tahy.
+    - *Odskok a natažení rumpálu* (typ nablízko / pohyb, CD 3): Udeří nepřítele za 2 DMG, odhodí o 1 pole, odskočí o 1 pole vzad a zkrátí Chladnutí střeleckých destiček o 1.
+  - **Krok do nepřítele**: *Úder pažbou kuše* — udeří nepřítele okovanou pažbou za 2 DMG a odhodí ho o 1 pole vzad (Chladnutí 2).
+  - **3-Kombo**: *Kruhový rotační rozptyl* — roztočí multishot mechanismus a zasáhne všechny nepřátele v linii dohledu za 4 DMG + Krvácení 2.
+  - **Komiksové bubliny**: Vědecké, balistické a empirické hlášky („Hypotéza: vaše tkáň nesnese stříbro. Důkaz provedu za tři... dva... jedna...“).
+
+- **Nový lovec: C. k. vrchní revident (Ignác Šiml)**:
+  - Císařský daňový exekutor s přísnou byrokracií (ikona 📑, klávesa `9`).
+  - **Životy (HP)**: Přesně 4 HP (střední výdrž – chráněn tvídovým převlečníkem a tlustým fasciklem spisů na hrudi reprezentovaným 2 Obranou = 2 Štít).
+  - **Unikátní schopnost (Signature Action) — „Úřední předvolání“**:
+    - Pokud se revident otočí čelem k nepříteli vzdálenému přesně 2 políčka, zdarma si ho přitáhne o 1 políčko k sobě a nalepí na něj stav `[OKOLKOVÁNO]` (Cooldown: 2 tahy).
+  - **Nový stav `[OKOLKOVÁNO]`**: Další útok do tohoto cíle způsobí +1 poškození (daňová přirážka) a spotřebuje stav.
+  - **4 Startovní destičky přesně dle zadání**:
+    1. *Erární osikový kolík vz. 1884*: Útok nablízko (1 pole, 2 DMG, Cooldown: 2 tahy). Čistý úder. Pokud má cíl stav `[OKOLKOVÁNO]`, sníží se cooldown této destičky o 1.
+    2. *Mosazné razítko „ZAMÍTNUTO“*: Nablízko / kontrola davu (1 pole, 1 DMG, Cooldown: 3 tahy). Odrazí nepřítele o 1 pole dozadu a odloží jeho naplánovaný útok o 1 tah (+1 tah do odpočtu akce).
+    3. *Služební revolver Rast & Gasser (Stříbrná munice)*: Střelba v přímé linii (2 DMG, Cooldown: 5 tahů kvůli vyúčtování drahých kovů). Zpětný ráz posune revidenta o 1 políčko dozadu (skvělé na úhyb).
+    4. *Kontrola domovského listu*: Pohyb / taktika (0 DMG, Cooldown: 2 tahy). Revident si prohodí místo se sousedním nepřítelem, otočí ho zády k sobě a aplikuje na něj stav `[OKOLKOVÁNO]`.
+  - **Krok do nepřítele**: *Třísknutí deskami spisů* — vrazí do nepřítele fasciklem za 1 DMG, odhodí ho o 1 pole a nalepí `[OKOLKOVÁNO]` (Chladnutí 2).
+  - **3-Kombo**: *Finanční exekuce* — získá +3 Štít, vyhlásí daňovou kontrolu (nalepí `[OKOLKOVÁNO]` na všechny nepřátele na bojišti a již okolkovaným udělí 3 DMG).
+  - **Komiksové bubliny**: Byrokratické a daňové hlášky, výhrůžky zabavením rakve, zamítnutá odvolání a daňové výměry.
+
+- **Rozšíření Síňě lovců na 9 hrdinů**:
+  - Responzivní mřížka na hlavní obrazovce s podporou všech 9 lovců a rychlých kláves `1`–`9`.
+  - Automatické dynamické zobrazení počtu startovních destiček na kartě lovce (3 nebo 4 dle výbavy).
+
+## [1.4.0] - 2026-11-03
+
+### Přidáno (Added)
+- **Nový lovec: Ponocný Bartoloměj (Strážce půlnoční hodiny)**:
+  - Nová hratelná postava v Síni lovců i Hradním archivu (ikona 🏮, klávesová zkratka `5`).
+  - **Profil vlastností**: Silný a rozvážný noční hlídač (vysoké zdraví 26 HP, 2 Obrana generující 2 Štít). Pomalé chladnutí vyvažuje masivním zásahem a kontrolou bojiště.
+  - **Dvoupolíčkový dosah halapartny**: Podpisová destička *Ponocenská halapartna* (CD 4) zasahuje dvě políčka přímo před sebou (1. pole za 5 DMG, 2. pole za 4 DMG a odhození o 1 pole).
+  - **Startovní destičky**:
+    - *Ponocenská halapartna*: Útok na dvě pole vpřed (5 DMG / 4 DMG + Push 1, Chladnutí 4).
+    - *Půlnoční lucerna*: Oslepující žár posvěceného oleje na 1 pole vpřed za 3 DMG + Zmatení na 2 kola (Chladnutí 4).
+    - *Ponocenský roh*: Mocné zatroubení na mosazný roh — přidá +5 Štít a odhodí sousední nepřátele před i za sebou o 2 pole za 2 DMG (Chladnutí 4).
+  - **Krok do nepřítele**: *Zarazení ratištěm* — vrazí těžké ratiště do nepřítele za 3 DMG, odhodí ho o 1 pole a omráčí na 1 tah (Chladnutí 4).
+  - **3-Kombo**: *Půlnoční vartování* — odbije dvanáctá hodina, získá +6 Štít, odtroubí půlnoc a zasáhne obě pole před sebou za 5 DMG.
+- **Nový lovec: Silák Gustav (Cirkusový lamač podkov)**:
+  - Cirkusový silák a vzpěrač (ikona 🏋️, klávesová zkratka `6`, 22 HP, 1 Obrana).
+  - **Startovní destičky**: *Litinová činka* (5 DMG + Push 1, CD 3), *Vrhací závaží* (střela na 3 pole za 3 DMG + Push 1, CD 3) a *Zatnutí svalů* (+5 Štít a Zesílení +2 DMG, CD 3).
+  - **Krok do nepřítele**: *Cirkusový přehoz* — popadne nepřítele za opasek, praští s ním o zem za 3 DMG a odhodí o 2 pole vzad (Chladnutí 3).
+  - **3-Kombo**: *Litinové finále* — získá +5 Štít a mrští obří činku na prvního nepřítele v linii za 6 DMG + omráčení (Stun 1).
+- **Nový lovec: Lady Gwendolyn (Viktoriánská dáma & lovkyně)**:
+  - Stará anglická aristokratka a lovkyně upírů (ikona 🫖, klávesová zkratka `7`, 18 HP, 2 Obrana).
+  - **Startovní destičky**: *Stříbrný slunečník* (šermířské bodnutí 4 DMG, 7 DMG do zad, CD 3), *Vařící Earl Grey* (vrh vroucího čaje na 2 pole za 3 DMG + Krvácení 2 a Zmatení 1, CD 3) a *Královská etiketa* (+5 Štít, vyléčení 2 HP, CD 3).
+  - **Krok do nepřítele**: *Klepnutí slunečníkem* — klepne nevychovaného upíra přes prsty za 2 DMG a otočí ho zády k sobě (Chladnutí 2).
+  - **3-Kombo**: *Čaj o páté* — dámský doušek čaje (+4 HP, +4 Štít) a vařící čaj opaří všechny nepřátele v linii za 3 DMG + Krvácení 2.
+- **Komiksové bubliny (Comic Speech Bubbles)**:
+  - Zaveden dynamický systém komiksových mluvících bublin na bojišti (`src/game/ui/comicBubbles.js` a `src/game/styles/animations.css`).
+  - Bubliny mají komiksovou špičku (ocas) směřující přímo k ústům mluvící postavy s ohledem na její orientaci (`facing`).
+  - Barevně i typograficky rozlišené varianty:
+    - *Bojový pokřik (`battle_cry`)*: Zlato-oranžový explozivní gradient, tučné verzálky, pop-in pružná animace.
+    - *Výhrůžka (`threat`)*: Temně rudý hradní gotický styl s krvavým lemem.
+    - *Poslední slova (`last_words`)*: Šedavý rozklepaný bublinový styl s tečkami při skonu jednotky (0 HP).
+    - *Hláška a vtip (`quip`)*: Čistý pergamenový komiksový styl.
+  - **Chytré a tematické dialogy (`src/game/config/dialogues.js`)**:
+    - Napsána bohatá sbírka českých parodických hlášek pro Ponocného, Vencu, Honzu, Jaromíra i Káču.
+    - Specifické hlášky pro nepřátele: Upír-praktikant Ignác (stážista bez smlouvy), Kryptový písař Hubert (úřední formulář 8b), Drábová Božena (karbanátky na cibulce), Vrátný Lojza (zavřeno z technických důvodů), Halapartník Šebestián, Netopýr Pepík i bossové (Arcikníže Sosák, Hraběnka Dagmar, G. Ř. Drákula).
+  - **Bojová interakce a spouštěče**:
+    - *Zahájení bitvy*: Lovec vyhlásí svou přísahu a boss či elitní předák arogantně kontruje v komiksovém dialogu.
+    - *Zabití jednotky*: Poražený nepřítel pronese svá tragikomická poslední slova.
+    - *3-Kombo finišer*: Lovec zvolá svůj triumfální pokřik.
+    - *Manévr a útok*: Při manévrech a těžkých výpadech padají břitké komiksové hlášky.
+    - Bubliny lze kdykoliv kliknutím/dotykem okamžitě zavřít.
+
 ## [1.3.4] - 2026-11-03
 
 ### Opraveno (Fixed)

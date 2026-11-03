@@ -79,5 +79,106 @@ export const STARTING_LOADOUTS = {
       { id: 'glass_shards', upgradeLevel: 0, permanentCdReduction: 0 },
       { id: 'shadow_slip', upgradeLevel: 0, permanentCdReduction: 0 }
     ]
+  },
+  ponocny: {
+    id: 'ponocny',
+    hunterId: 'ponocny',
+    name: 'Ponocný Bartoloměj',
+    icon: '🏮',
+    cost: 20,
+    epithet: 'Strážce půlnoční hodiny',
+    maxHp: 26,
+    defense: 2,
+    bumpName: 'Zarazení ratištěm',
+    bumpDesc: 'Krok do nepřítele: Vrazí do nepřítele těžké ratiště za 3 DMG, odhodí ho o 1 pole a na 1 tah omráčí (Chladnutí 4).',
+    comboName: 'Půlnoční vartování',
+    comboDesc: '3-kombo: Získá +6 Štít, odtroubí půlnoc a zasáhne obě pole před sebou za 5 DMG.',
+    description: 'Silný a rozvážný noční hlídač. Vysoké zdraví (26 HP), 2 Obrana. Jeho kovaná halapartna zasahuje dvě políčka před sebou! Pomalé chladnutí vyvažuje těžkým úderem, lucernou a nočním rohem.',
+    deck: [
+      { id: 'halberd_sweep', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'watchman_lantern', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'watchman_horn', upgradeLevel: 0, permanentCdReduction: 0 }
+    ]
+  },
+  silak: {
+    id: 'silak',
+    hunterId: 'silak',
+    name: 'Silák Gustav',
+    icon: '🏋️',
+    cost: 20,
+    epithet: 'Cirkusový lamač podkov',
+    maxHp: 22,
+    defense: 1,
+    bumpName: 'Cirkusový přehoz',
+    bumpDesc: 'Krok do nepřítele: Praští s nepřítelem o zem za 3 DMG a odhodí ho o 2 pole vzad (Chladnutí 3)!',
+    comboName: 'Litinové finále',
+    comboDesc: '3-kombo: Získá +5 Štít a vrhne obří činku na prvního nepřítele v linii pohledu za 6 DMG + omráčení.',
+    description: 'Bývalá hvězda kočovného cirkusu Kludský. 22 HP, litinové činky, vrhací závaží a ocelové svaly lámající upíří vazy.',
+    deck: [
+      { id: 'barbell_slam', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'kettlebell_toss', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'iron_flex', upgradeLevel: 0, permanentCdReduction: 0 }
+    ]
+  },
+  anglicanka: {
+    id: 'anglicanka',
+    hunterId: 'anglicanka',
+    name: 'Lady Gwendolyn',
+    icon: '🫖',
+    cost: 30,
+    epithet: 'Viktoriánská dáma & lovkyně',
+    maxHp: 18,
+    defense: 2,
+    bumpName: 'Klepnutí slunečníkem',
+    bumpDesc: 'Krok do nepřítele: Klepne nevychovaného upíra přes prsty za 2 DMG a otočí ho zády k sobě (Chladnutí 2).',
+    comboName: 'Čaj o páté',
+    comboDesc: '3-kombo: Vychutná si doušek čaje (+4 HP, +4 Štít) a vařící čaj opaří všechny nepřátele v linii pohledu za 3 DMG.',
+    description: 'Ušlechtilá britská aristokratka na ozdravném pobytu v Čechách. 18 HP, 2 Obrana, stříbrný slunečník a vařící Earl Grey proti nevychované noční havěti.',
+    deck: [
+      { id: 'silver_parasol', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'boiling_tea', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'royal_etiquette', upgradeLevel: 0, permanentCdReduction: 0 }
+    ]
+  },
+  helsing: {
+    id: 'helsing',
+    hunterId: 'helsing',
+    name: 'Profesor Gabriel van Helsing',
+    icon: '🏹',
+    cost: 25,
+    epithet: 'Vědecký okultista',
+    maxHp: 18,
+    defense: 1,
+    bumpName: 'Úder pažbou kuše',
+    bumpDesc: 'Krok do nepřítele: Udeří nepřítele okovanou pažbou za 2 DMG a odhodí ho o 1 pole vzad (Chladnutí 2).',
+    comboName: 'Kruhový rotační rozptyl',
+    comboDesc: '3-kombo: Vypálí salvu šipek: 4 DMG + Krvácení (2) všem nepřátelům v linii dohledu.',
+    description: 'Renomovaný profesor z Leidenu a Londýna. 18 HP, 1 Obrana, rotační multishot kuše, stříbrné salvy a vědecky neúprosná likvidace nočních kreatur.',
+    deck: [
+      { id: 'repeating_crossbow', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'silver_bolt_salvo', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'winch_reload_kick', upgradeLevel: 0, permanentCdReduction: 0 }
+    ]
+  },
+  revident: {
+    id: 'revident',
+    hunterId: 'revident',
+    name: 'C. k. vrchní revident (Ignác Šiml)',
+    icon: '📑',
+    cost: 20,
+    epithet: 'Císařský daňový exekutor',
+    maxHp: 4,
+    defense: 2,
+    bumpName: 'Třísknutí deskami spisů',
+    bumpDesc: 'Krok do nepřítele: Vrazí do nepřítele fasciklem za 1 DMG, odhodí ho o 1 pole a orazítkuje [OKOLKOVÁNO] (Chladnutí 2).',
+    comboName: 'Finanční exekuce',
+    comboDesc: '3-kombo: Získá +3 Štít, nalepí [OKOLKOVÁNO] na všechny noční netvory a již okolkovaným udělí 3 DMG!',
+    description: 'C. k. vrchní revident Ignác Šiml. 4 HP, 2 Obrana (chráněn tvídovým převlečníkem a fasciklem spisů na hrudi). Úřední předvolání, razítka a vymáhání daně z nočního pobytu.',
+    deck: [
+      { id: 'gov_stake_1884', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'brass_stamp_denied', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'rast_gasser_revolver', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'domicile_inspection', upgradeLevel: 0, permanentCdReduction: 0 }
+    ]
   }
 };

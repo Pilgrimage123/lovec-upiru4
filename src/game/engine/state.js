@@ -287,6 +287,28 @@ export function dealDamage(state, target, rawAmount, opts = {}, events = []) {
     return 0;
   }
 
+  if (
+    target.statuses?.okolkovano > 0 &&
+    !opts.reflected &&
+    opts.reason !== 'bleed' &&
+    opts.reason !== 'spikes' &&
+    opts.reason !== 'pit' &&
+    opts.reason !== 'holy_water_puddle'
+  ) {
+    consumeStatus(target, 'okolkovano', 1);
+    dmg += 1;
+    events.push({
+      type: 'tax_surcharge',
+      targetId: target.id,
+      cell: target.cell,
+      bonusDmg: 1
+    });
+    events.push({
+      type: 'log',
+      text: `📑 Daňová přirážka! Cíl (${target.name}) měl stav [OKOLKOVÁNO] – poškození zvýšeno o +1!`
+    });
+  }
+
   if (target.statuses?.shield > 0) {
     const sh = target.statuses.shield;
     const absorbed = Math.min(sh, dmg);
@@ -815,10 +837,51 @@ export function createBattleState(opts = {}) {
   const maxQueueSlots = talismans.includes('wet_kerchief') ? 4 : 3;
   const hunterId = opts.hunterId || opts.loadoutId || 'venca';
   const heroMaxHp =
-    opts.heroMaxHp || (hunterId === 'dragoun' ? 24 : hunterId === 'zlodejka' ? 14 : 20);
+    opts.heroMaxHp ||
+    (hunterId === 'ponocny'
+      ? 26
+      : hunterId === 'dragoun'
+      ? 24
+      : hunterId === 'silak'
+      ? 22
+      : hunterId === 'helsing'
+      ? 18
+      : hunterId === 'anglicanka'
+      ? 18
+      : hunterId === 'zlodejka'
+      ? 14
+      : hunterId === 'revident'
+      ? 4
+      : 20);
   const heroHp = Math.min(heroMaxHp, opts.heroHp ?? heroMaxHp);
 
   const defaultDecks = {
+    helsing: [
+      { id: 'repeating_crossbow', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'silver_bolt_salvo', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'winch_reload_kick', upgradeLevel: 0, permanentCdReduction: 0 }
+    ],
+    revident: [
+      { id: 'gov_stake_1884', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'brass_stamp_denied', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'rast_gasser_revolver', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'domicile_inspection', upgradeLevel: 0, permanentCdReduction: 0 }
+    ],
+    silak: [
+      { id: 'barbell_slam', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'kettlebell_toss', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'iron_flex', upgradeLevel: 0, permanentCdReduction: 0 }
+    ],
+    anglicanka: [
+      { id: 'silver_parasol', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'boiling_tea', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'royal_etiquette', upgradeLevel: 0, permanentCdReduction: 0 }
+    ],
+    ponocny: [
+      { id: 'halberd_sweep', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'watchman_lantern', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'watchman_horn', upgradeLevel: 0, permanentCdReduction: 0 }
+    ],
     honza: [
       { id: 'flail_sweep', upgradeLevel: 0, permanentCdReduction: 0 },
       { id: 'plum_bun', upgradeLevel: 0, permanentCdReduction: 0 },
@@ -859,6 +922,11 @@ export function createBattleState(opts = {}) {
   const terrain = Array.from({ length: boardSize }, () => ({ type: 'none' }));
 
   const hunterMeta = {
+    helsing: { name: 'Profesor Gabriel van Helsing', givenName: 'Gabriel', epithet: 'Vědecký okultista' },
+    revident: { name: 'C. k. vrchní revident (Ignác Šiml)', givenName: 'Ignác', epithet: 'Císařský daňový exekutor' },
+    silak: { name: 'Silák Gustav', givenName: 'Gustav', epithet: 'Cirkusový lamač podkov' },
+    anglicanka: { name: 'Lady Gwendolyn', givenName: 'Gwendolyn', epithet: 'Viktoriánská dáma' },
+    ponocny: { name: 'Ponocný Bartoloměj', givenName: 'Bartoloměj', epithet: 'Strážce půlnoční hodiny' },
     honza: { name: 'Hloupý Honza', givenName: 'Honza', epithet: 'Selský silák' },
     dragoun: { name: 'Rittmeister Jaromír', givenName: 'Jaromír', epithet: 'Vysloužilý dragoun' },
     zlodejka: { name: 'Káča Pavučina', givenName: 'Káča', epithet: 'Úskočná zlodějka' },
@@ -877,7 +945,17 @@ export function createBattleState(opts = {}) {
     epithet: hInfo.epithet,
     bodyScale: 'hero',
     sprite:
-      hunterId === 'honza'
+      hunterId === 'helsing'
+        ? 'hero.helsing'
+        : hunterId === 'revident'
+        ? 'hero.revident'
+        : hunterId === 'silak'
+        ? 'hero.silak'
+        : hunterId === 'anglicanka'
+        ? 'hero.anglicanka'
+        : hunterId === 'ponocny'
+        ? 'hero.ponocny'
+        : hunterId === 'honza'
         ? 'enemy.sedlak_stit'
         : hunterId === 'dragoun'
         ? 'enemy.halapartnik'
@@ -886,12 +964,20 @@ export function createBattleState(opts = {}) {
         : 'hero.idle',
     maxHp: heroMaxHp,
     hp: heroHp,
-    defense: typeof opts.defense === 'number' ? opts.defense : (hunterId === 'dragoun' ? 2 : hunterId === 'zlodejka' ? 2 : hunterId === 'honza' ? 0 : 1),
+    defense:
+      typeof opts.defense === 'number'
+        ? opts.defense
+        : hunterId === 'revident' || hunterId === 'ponocny' || hunterId === 'dragoun' || hunterId === 'anglicanka' || hunterId === 'zlodejka'
+        ? 2
+        : hunterId === 'helsing' || hunterId === 'silak' || hunterId === 'classic' || hunterId === 'venca'
+        ? 1
+        : 0,
     cell: enc.heroCell ?? 2,
     facing: enc.heroFacing ?? 1,
     flying: false,
     ichor: 'red',
     bumpCooldown: 0,
+    summonCooldown: 0,
     statuses: {},
     bloodStains: []
   };

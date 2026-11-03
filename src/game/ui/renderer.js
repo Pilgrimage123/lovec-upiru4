@@ -27,6 +27,8 @@ import {
   animateUnitHit,
   animateUnitDeath
 } from './spriteAnimator.js';
+import { spawnComicBubble } from './comicBubbles.js';
+import { getHunterDialogue, getEnemyDialogue } from '../config/dialogues.js';
 
 export function sleep(ms, speedMultiplier = 1) {
   if (speedMultiplier === 0) return Promise.resolve();
@@ -492,6 +494,33 @@ export function renderBattleBoard(container, state, uiState = {}, callbacks = {}
     startHeroIdle(container);
   } else {
     setHeroPose(container, 'dead', 0);
+  }
+
+  // Comic bubble banter at the beginning of a fresh battle
+  if (!state._battleIntroSpoken && state.status === 'playing' && state.hero && state.hero.hp > 0) {
+    state._battleIntroSpoken = true;
+    const heroHId = state.hero.hunterId || state.hero.kind || 'ponocny';
+    const heroCry = getHunterDialogue(heroHId, 'battle_cries');
+    spawnComicBubble(container, state.hero.cell, heroCry.text, 'battle_cry', {
+      speaker: heroCry.speaker,
+      icon: heroCry.icon,
+      facing: state.hero.facing,
+      delayMs: 250,
+      durationMs: 3200
+    });
+
+    const livingEnemies = (state.enemies || []).filter((e) => e.hp > 0);
+    const bossOrLeader = livingEnemies.find((e) => e.isBoss) || livingEnemies[0];
+    if (bossOrLeader) {
+      const enemyCry = getEnemyDialogue(bossOrLeader.id, 'battle_cries');
+      spawnComicBubble(container, bossOrLeader.cell, enemyCry.text, 'threat', {
+        speaker: enemyCry.speaker || bossOrLeader.name,
+        icon: enemyCry.icon || '🧛',
+        facing: bossOrLeader.facing,
+        delayMs: 1600,
+        durationMs: 3200
+      });
+    }
   }
 }
 
@@ -1275,6 +1304,21 @@ export async function playEngineEvents(container, events, animSpeed = 1, state =
           heroPoseLocked = true;
           clearHeroPoseTimer();
           setHeroPose(container, 'dead', 0);
+          const hWords = getHunterDialogue(activeState?.hero?.hunterId || activeState?.hero?.kind, 'last_words');
+          spawnComicBubble(container, ev.cell, hWords.text, 'last_words', {
+            speaker: hWords.speaker,
+            icon: hWords.icon,
+            facing: activeState?.hero?.facing || 1,
+            durationMs: 3400
+          });
+        } else {
+          const eWords = getEnemyDialogue(ev.targetId, 'last_words');
+          spawnComicBubble(container, ev.cell, eWords.text, 'last_words', {
+            speaker: eWords.speaker || ev.targetName,
+            icon: eWords.icon || '💀',
+            facing: -1,
+            durationMs: 2900
+          });
         }
         if (ev.ichor) {
           recordEntityHitBlood(activeState, {
@@ -1303,6 +1347,17 @@ export async function playEngineEvents(container, events, animSpeed = 1, state =
       case 'enemy_queue_firing':
         spawnFloatingBadgeOnCell(container, ev.cell, '🚨 ODPALUJE FRONTU!', 'float-warn');
         await sleep(180, animSpeed);
+        break;
+
+      case 'comic_bubble':
+        spawnComicBubble(container, ev.cell, ev.text, ev.variant || 'quip', {
+          speaker: ev.speaker,
+          icon: ev.icon,
+          facing: ev.facing ?? 1,
+          durationMs: ev.durationMs,
+          delayMs: ev.delayMs || 0
+        });
+        await sleep(140, animSpeed);
         break;
 
       default:

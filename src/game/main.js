@@ -24,6 +24,7 @@ import { initTooltips } from './ui/tooltips.js';
 import { initKeyboardInput } from './ui/input.js';
 import { setSoundEnabled } from './ui/audio.js';
 import { clearBattleBlood } from './ui/blood.js';
+import { clearAllComicBubbles } from './ui/comicBubbles.js';
 import { createBattleActions } from './battle.js';
 
 const META_STORAGE_KEY = 'lovec_upiru_meta_v1';
@@ -70,9 +71,10 @@ function loadMetaStats() {
         fangs: 0,
         selectedLoadout: 'classic',
         ...p,
-        unlockedLoadouts: Array.isArray(p.unlockedLoadouts) && p.unlockedLoadouts.length >= 4
-          ? p.unlockedLoadouts
-          : ['classic', 'honza', 'dragoun', 'zlodejka']
+        unlockedLoadouts:
+          Array.isArray(p.unlockedLoadouts) && p.unlockedLoadouts.length >= 9
+            ? p.unlockedLoadouts
+            : ['classic', 'honza', 'dragoun', 'zlodejka', 'ponocny', 'silak', 'anglicanka', 'helsing', 'revident']
       };
     }
   } catch {
@@ -84,7 +86,7 @@ function loadMetaStats() {
     totalKills: 0,
     lastSeed: 'VENCA-1899',
     fangs: 15,
-    unlockedLoadouts: ['classic', 'honza', 'dragoun', 'zlodejka'],
+    unlockedLoadouts: ['classic', 'honza', 'dragoun', 'zlodejka', 'ponocny', 'silak', 'anglicanka', 'helsing', 'revident'],
     selectedLoadout: 'classic'
   };
 }
@@ -200,6 +202,7 @@ async function bootstrap(token) {
 
 export function startNewRun(seedInput = 'VENCA-1899', loadoutId = null, curseLevel = null) {
   clearBattleBlood();
+  clearAllComicBubbles();
   appState.settings.currentSeed = seedInput;
   appState.metaStats.lastSeed = seedInput;
   if (loadoutId) {
@@ -228,6 +231,7 @@ function enterMapNode(node) {
     node.type === NODE_TYPES.BOSS
   ) {
     clearBattleBlood();
+    clearAllComicBubbles();
     appState.screen = 'battle';
     appState.battleState = createBattleState({
       seed: `${run.seed}_${node.id}`,
@@ -300,6 +304,7 @@ function enterMapNode(node) {
 }
 
 function completeCurrentNodeAndShowMap() {
+  clearAllComicBubbles();
   const run = appState.runState;
   if (run.currentNodeId && !run.completedNodeIds.includes(run.currentNodeId)) {
     run.completedNodeIds.push(run.currentNodeId);

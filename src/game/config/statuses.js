@@ -39,5 +39,13 @@ export const STATUSES = {
     badge: '🔥',
     color: '#d35400',
     description: 'Příští útočná akce způsobí +1 DMG.'
+  },
+  okolkovano: {
+    id: 'okolkovano',
+    name: 'Okolkováno',
+    icon: 'status.okolkovano',
+    badge: '📑',
+    color: '#d97706',
+    description: 'Příští útok do tohoto cíle způsobí +1 poškození (daňová přirážka).'
   }
 };

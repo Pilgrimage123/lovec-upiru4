@@ -530,3 +530,183 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ============================================================================
+   COMIC SPEECH BUBBLES
+   ============================================================================ */
+.comic-speech-bubble {
+  position: fixed;
+  z-index: 180;
+  max-width: 250px;
+  min-width: 140px;
+  pointer-events: auto;
+  cursor: pointer;
+  transform: translate(-50%, -100%);
+  transform-origin: bottom center;
+  animation: comicBubbleIn 270ms cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  transition: opacity 200ms ease, transform 200ms ease;
+  user-select: none;
+}
+
+.comic-speech-bubble.bubble-closing {
+  animation: comicBubbleOut 190ms ease forwards;
+}
+
+.comic-bubble-inner {
+  position: relative;
+  background: #fffdf5;
+  color: #1a110b;
+  border: 3px solid #1a110b;
+  border-radius: 12px;
+  padding: 6px 11px;
+  font-family: var(--font-display, "Georgia", serif);
+  font-size: 0.84rem;
+  line-height: 1.28;
+  box-shadow: 3px 3px 0 #1a110b, 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+.comic-bubble-speaker {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #78350f;
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.comic-speaker-icon {
+  font-size: 0.85rem;
+}
+
+.comic-bubble-quote {
+  font-weight: 600;
+}
+
+/* Comic bubble tail */
+.comic-bubble-tail {
+  position: absolute;
+  bottom: -11px;
+  width: 0;
+  height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-top: 11px solid #1a110b;
+}
+
+.comic-bubble-tail::after {
+  content: "";
+  position: absolute;
+  top: -14px;
+  left: -7px;
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 10px solid #fffdf5;
+}
+
+.comic-bubble-tail.tail-left {
+  left: 20%;
+  transform: rotate(14deg);
+}
+
+.comic-bubble-tail.tail-right {
+  left: 70%;
+  transform: rotate(-14deg);
+}
+
+.comic-bubble-tail.tail-center {
+  left: calc(50% - 9px);
+}
+
+/* 1. Battle cry */
+.comic-speech-bubble.variant-battle_cry .comic-bubble-inner {
+  background: linear-gradient(135deg, #fef08a 0%, #facc15 50%, #f59e0b 100%);
+  border-color: #78350f;
+  box-shadow: 3px 3px 0 #451a03, 0 8px 22px rgba(245, 158, 11, 0.45);
+  color: #451a03;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 0.86rem;
+  letter-spacing: 0.3px;
+}
+.comic-speech-bubble.variant-battle_cry .comic-bubble-tail {
+  border-top-color: #78350f;
+}
+.comic-speech-bubble.variant-battle_cry .comic-bubble-tail::after {
+  border-top-color: #facc15;
+}
+
+/* 2. Threat */
+.comic-speech-bubble.variant-threat .comic-bubble-inner {
+  background: linear-gradient(135deg, #450a0a 0%, #1f0505 100%);
+  border-color: #dc2626;
+  box-shadow: 3px 3px 0 #000, 0 8px 22px rgba(220, 38, 38, 0.45);
+  color: #fecaca;
+}
+.comic-speech-bubble.variant-threat .comic-bubble-speaker {
+  color: #f87171;
+}
+.comic-speech-bubble.variant-threat .comic-bubble-tail {
+  border-top-color: #dc2626;
+}
+.comic-speech-bubble.variant-threat .comic-bubble-tail::after {
+  border-top-color: #3b0707;
+}
+
+/* 3. Last words */
+.comic-speech-bubble.variant-last_words .comic-bubble-inner {
+  background: linear-gradient(135deg, #18181b 0%, #27272a 100%);
+  border-color: #a1a1aa;
+  border-style: dashed;
+  box-shadow: 3px 3px 0 #09090b, 0 6px 18px rgba(0, 0, 0, 0.65);
+  color: #f4f4f5;
+  font-style: italic;
+}
+.comic-speech-bubble.variant-last_words .comic-bubble-speaker {
+  color: #d4d4d8;
+}
+.comic-speech-bubble.variant-last_words .comic-bubble-tail {
+  border-top-color: #a1a1aa;
+}
+.comic-speech-bubble.variant-last_words .comic-bubble-tail::after {
+  border-top-color: #27272a;
+}
+
+/* 4. Quip */
+.comic-speech-bubble.variant-quip .comic-bubble-inner {
+  background: #fffbeb;
+  border-color: #854d0e;
+  box-shadow: 3px 3px 0 #1a110b, 0 6px 16px rgba(0, 0, 0, 0.35);
+  color: #1a110b;
+}
+
+@keyframes comicBubbleIn {
+  0% {
+    transform: translate(-50%, -100%) scale(0.28) rotate(-3deg);
+    opacity: 0;
+  }
+  75% {
+    transform: translate(-50%, -100%) scale(1.08) rotate(1deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -100%) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes comicBubbleOut {
+  0% {
+    transform: translate(-50%, -100%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -100%) scale(0.65) translateY(-8px);
+    opacity: 0;
+  }
+}
+

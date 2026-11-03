@@ -26,6 +26,7 @@ import {
   getSortedEnemiesByInitiative
 } from './state.js';
 import { applyResonances } from './combo.js';
+import { getHunterDialogue } from '../config/dialogues.js';
 
 export function computeHeroTileBonus(state, tile, slotIdx) {
   let dmgBonus = 0;
@@ -633,6 +634,7 @@ export function resolveHeroHitOnTarget(
     });
   }
   const totalDmg = Math.max(0, baseDmg + bonusInfo.dmgBonus);
+  const targetHadOkolkovano = Boolean(target.statuses?.okolkovano > 0);
   let blockType = null;
   if (totalDmg > 0) {
     const beforeIdx = events.length;
@@ -651,6 +653,22 @@ export function resolveHeroHitOnTarget(
     );
     blockType = getHitBlockType(events, beforeIdx);
     state.stats.damageDealt = (state.stats.damageDealt || 0) + dealt;
+  }
+
+  if (tile.id === 'gov_stake_1884' && targetHadOkolkovano) {
+    tile.currentCooldown = Math.max(0, tile.currentCooldown - 1);
+    events.push({
+      type: 'log',
+      text: `📑 Erární kolík: Cíl měl stav [OKOLKOVÁNO]! Chladnutí destičky sníženo o 1 (nyní: ${tile.currentCooldown}).`
+    });
+  }
+
+  if (tile.delayEnemyCountdown && target.entityType === 'enemy' && target.hp > 0) {
+    target.countdown = (target.countdown || 1) + tile.delayEnemyCountdown;
+    events.push({
+      type: 'log',
+      text: `💮 Mosazné razítko: Žádost ZAMÍTNUTA! Akce postavy ${target.name} odložena o ${tile.delayEnemyCountdown} tah (odpočet: ${target.countdown}).`
+    });
   }
 
   const allEffects = [
@@ -753,6 +771,43 @@ export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events 
     delete hero.statuses[tile.cureStatus];
     events.push({ type: 'status_cleared', targetId: hero.id, status: tile.cureStatus });
     events.push({ type: 'log', text: `✨ ${hero.name} se zbavil stavu ${tile.cureStatus}!` });
+  }
+
+  if (tile.id === 'domicile_inspection' && hero.hp > 0) {
+    const adjCell = hero.cell + hero.facing;
+    const targetEnemy = state.enemies.find((e) => e.hp > 0 && e.cell === adjCell);
+    if (targetEnemy) {
+      const heroFrom = hero.cell;
+      const enemyFrom = targetEnemy.cell;
+      hero.cell = enemyFrom;
+      targetEnemy.cell = heroFrom;
+      targetEnemy.facing = hero.facing;
+      addStatus(targetEnemy, 'okolkovano', 1, events);
+      events.push({
+        type: 'swap',
+        entityAId: hero.id,
+        entityBId: targetEnemy.id,
+        cellA: enemyFrom,
+        cellB: heroFrom,
+        heroFrom,
+        heroTo: enemyFrom,
+        enemyId: targetEnemy.id,
+        enemyFrom,
+        enemyTo: heroFrom
+      });
+      triggerCellTerrainOnEnter(state, hero, enemyFrom, events);
+      triggerCellTerrainOnEnter(state, targetEnemy, heroFrom, events);
+      events.push({
+        type: 'log',
+        text: `📋 Kontrola domovského listu! Revident Ignác Šiml si prohodil místo s ${targetEnemy.name}, otočil ho zády k sobě a nalepil [OKOLKOVÁNO]!`
+      });
+      assertBoardInvariants(state);
+    } else {
+      events.push({
+        type: 'log',
+        text: `📋 Kontrola domovského listu: Před revidentem nestojí žádný nepřítel!`
+      });
+    }
   }
 
   if (tile.leapDistance) {
@@ -883,7 +938,24 @@ export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events 
         });
       }
     } else if (hitTarget && hitStep) {
-      resolveHeroHitOnTarget(state, tile, hitStep, hitTarget, bonusInfo, comboLength, events);
+      const burstCount = tile.burstHits || 1;
+      for (let b = 0; b < burstCount; b++) {
+        if (hitTarget.hp <= 0) break;
+        if (b > 0) {
+          events.push({
+            type: 'projectile_vfx',
+            from: hero.cell,
+            to: endCell ?? hero.cell,
+            facing: hero.facing,
+            tileId: tile.id
+          });
+          events.push({
+            type: 'log',
+            text: `🏹 Rotační salva #${b + 1}: Další stříbrná šipka zasáhla cíl (${hitTarget.name})!`
+          });
+        }
+        resolveHeroHitOnTarget(state, tile, hitStep, hitTarget, bonusInfo, comboLength, events);
+      }
     } else {
       events.push({ type: 'tile_whiff', tileId: tile.id, cell: endCell ?? hero.cell });
       events.push({
@@ -946,6 +1018,37 @@ export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events 
     events.push({
       type: 'log',
       text: `🔄 ${hero.givenName || hero.name} se po ráně otočil čelem ${hero.facing === 1 ? 'vpravo ▶' : 'vlevo ◀'}.`
+    });
+  }
+
+  if (tile.recoilBack && hero.hp > 0) {
+    const dest = hero.cell - hero.facing * tile.recoilBack;
+    if (isValidCell(dest, state) && !getEntityAt(state, dest)) {
+      const from = hero.cell;
+      hero.cell = dest;
+      events.push({ type: 'step', entityId: hero.id, from, to: dest, facing: hero.facing });
+      events.push({
+        type: 'log',
+        text: `🏃 Zpětný ráz: ${hero.givenName || hero.name} byl odhozen o ${tile.recoilBack} pole vzad na pole ${dest + 1}!`
+      });
+      triggerCellTerrainOnEnter(state, hero, dest, events);
+    } else {
+      events.push({
+        type: 'log',
+        text: `🧱 Zpětný ráz: Pole za lovcem (${hero.givenName || hero.name}) je zablokováno!`
+      });
+    }
+  }
+
+  if (tile.reloadRangedTiles && hero.hp > 0) {
+    for (const t of state.hand) {
+      if (t.type === 'ranged' && t.currentCooldown > 0) {
+        t.currentCooldown = Math.max(0, t.currentCooldown - tile.reloadRangedTiles);
+      }
+    }
+    events.push({
+      type: 'log',
+      text: `⚙️ Natažení rumpálu: Chladnutí střeleckých destiček zkráceno o ${tile.reloadRangedTiles}!`
     });
   }
 
@@ -1036,6 +1139,13 @@ export function advanceTurnAfterPlayerAction(state, events = [], extraCdReductio
       state.hero.bumpCooldown = Math.max(0, state.hero.bumpCooldown - cdTick);
     }
   }
+  if (state.hero && (state.hero.summonCooldown || 0) > 0) {
+    if (state.hero.justSummonedThisTurn) {
+      delete state.hero.justSummonedThisTurn;
+    } else {
+      state.hero.summonCooldown = Math.max(0, state.hero.summonCooldown - cdTick);
+    }
+  }
 
   if (checkBattleEnd(state, events) !== 'playing') return events;
   resolveEnemyPhase(state, events);
@@ -1100,7 +1210,7 @@ export function advanceTurnAfterPlayerAction(state, events = [], extraCdReductio
   return events;
 }
 
-export function resolveHeroBump(state, hero, enemy, dir, targetCell, hunterId, events) {
+export function resolveHeroBump(state, hero, enemy, dir, targetCell, hunterId, events = []) {
   hero.justBumpedThisTurn = true;
   events.push({
     type: 'hero_bump',
@@ -1109,6 +1219,19 @@ export function resolveHeroBump(state, hero, enemy, dir, targetCell, hunterId, e
     cell: targetCell,
     dir
   });
+  const bumpQuip = getHunterDialogue(hunterId, 'threats');
+  if (bumpQuip?.text) {
+    events.push({
+      type: 'comic_bubble',
+      cell: hero.cell,
+      text: bumpQuip.text,
+      variant: 'threat',
+      speaker: bumpQuip.speaker,
+      icon: bumpQuip.icon,
+      facing: hero.facing,
+      durationMs: 2500
+    });
+  }
   if (hunterId === 'honza') {
     hero.bumpCooldown = 3;
     dealDamage(state, enemy, 2, { reason: 'honza_bump', attackerId: hero.id }, events);
@@ -1162,6 +1285,57 @@ export function resolveHeroBump(state, hero, enemy, dir, targetCell, hunterId, e
     events.push({
       type: 'log',
       text: `🧤 Kapsářská záměna! Káča Pavučina podklouzla ${enemy.name} pod nohama, prohodila si s ním místo a otočila ho zády k sobě!`
+    });
+  } else if (hunterId === 'ponocny') {
+    hero.bumpCooldown = 4;
+    dealDamage(state, enemy, 3, { reason: 'ponocny_bump', attackerId: hero.id }, events);
+    if (enemy.hp > 0) {
+      pushEntity(state, enemy, dir, 1, events);
+      addStatus(enemy, 'stun', 1, events);
+    }
+    events.push({
+      type: 'log',
+      text: `🏮 Zarazení ratištěm! Ponocný Bartoloměj zarazil kované ratiště halapartny do ${enemy.name} (3 DMG), odhodil ho a omráčil!`
+    });
+  } else if (hunterId === 'silak') {
+    hero.bumpCooldown = 3;
+    dealDamage(state, enemy, 3, { reason: 'silak_bump', attackerId: hero.id }, events);
+    if (enemy.hp > 0) {
+      pushEntity(state, enemy, dir, 2, events);
+    }
+    events.push({
+      type: 'log',
+      text: `🏋️ Cirkusový přehoz! Silák Gustav popadl ${enemy.name} za opasek, praštil s ním o dlažbu za 3 DMG a odmrštil ho o 2 pole!`
+    });
+  } else if (hunterId === 'anglicanka') {
+    hero.bumpCooldown = 2;
+    dealDamage(state, enemy, 2, { reason: 'anglicanka_bump', attackerId: hero.id }, events);
+    enemy.facing = dir;
+    events.push({ type: 'turn', entityId: enemy.id, facing: enemy.facing });
+    events.push({
+      type: 'log',
+      text: `🫖 Klepnutí slunečníkem! Lady Gwendolyn klepla ${enemy.name} stříbrnou špicí přes prsty za 2 DMG a otočila ho zády: „Zády k dámě se sice nestojí, ale aspoň nekoušete!“`
+    });
+  } else if (hunterId === 'helsing') {
+    hero.bumpCooldown = 2;
+    dealDamage(state, enemy, 2, { reason: 'helsing_bump', attackerId: hero.id }, events);
+    if (enemy.hp > 0) {
+      pushEntity(state, enemy, dir, 1, events);
+    }
+    events.push({
+      type: 'log',
+      text: `🏹 Úder pažbou kuše! Profesor Gabriel van Helsing udeřil ${enemy.name} okovanou pažbou za 2 DMG a odhodil ho!`
+    });
+  } else if (hunterId === 'revident') {
+    hero.bumpCooldown = 2;
+    dealDamage(state, enemy, 1, { reason: 'revident_bump', attackerId: hero.id }, events);
+    if (enemy.hp > 0) {
+      pushEntity(state, enemy, dir, 1, events);
+      addStatus(enemy, 'okolkovano', 1, events);
+    }
+    events.push({
+      type: 'log',
+      text: `📑 Třísknutí deskami spisů! C. k. vrchní revident Ignác Šiml vrazil do ${enemy.name} fasciklem (1 DMG), odhodil ho a orazítkoval [OKOLKOVÁNO]!`
     });
   } else {
     hero.bumpCooldown = 3;
@@ -1257,6 +1431,40 @@ export function turnHero(state) {
   hero.facing = -hero.facing;
   const inGarlic = state.terrain[hero.cell]?.type === 'garlic_cloud';
   events.push({ type: 'turn', entityId: hero.id, facing: hero.facing, free: inGarlic });
+
+  if (hero.hunterId === 'revident') {
+    const summonCd = hero.summonCooldown || 0;
+    const targetCell = hero.cell + hero.facing * 2;
+    const midCell = hero.cell + hero.facing;
+    if (summonCd <= 0 && isValidCell(targetCell, state)) {
+      const targetEnemy = state.enemies.find((e) => e.hp > 0 && e.cell === targetCell);
+      const midEnt = getEntityAt(state, midCell);
+      if (targetEnemy && !midEnt) {
+        targetEnemy.cell = midCell;
+        events.push({
+          type: 'pull_move',
+          targetId: targetEnemy.id,
+          from: targetCell,
+          to: midCell
+        });
+        addStatus(targetEnemy, 'okolkovano', 1, events);
+        hero.summonCooldown = 2;
+        hero.justSummonedThisTurn = true;
+        events.push({
+          type: 'official_summons',
+          heroId: hero.id,
+          targetId: targetEnemy.id,
+          cell: midCell
+        });
+        events.push({
+          type: 'log',
+          text: `📑 Úřední předvolání! C. k. vrchní revident Ignác Šiml spatřil nepřítele (${targetEnemy.name}) ve vzdálenosti 2 polí, zdarma si ho přitáhl k přepážce a nalepil [OKOLKOVÁNO]!`
+        });
+        triggerCellTerrainOnEnter(state, targetEnemy, midCell, events);
+        assertBoardInvariants(state);
+      }
+    }
+  }
 
   if (
     state.talismans?.includes('holy_aspergillum') &&
@@ -1481,6 +1689,19 @@ export function executeSingleQueueSlot(
 export function resolveHunterCombo3Bonus(state, hero, events) {
   const hunterId = hero.hunterId || hero.kind || 'venca';
   events.push({ type: 'hunter_combo3', hunterId, heroId: hero.id });
+  const comboShout = getHunterDialogue(hunterId, 'combo_cries');
+  if (comboShout?.text) {
+    events.push({
+      type: 'comic_bubble',
+      cell: hero.cell,
+      text: comboShout.text,
+      variant: 'battle_cry',
+      speaker: comboShout.speaker,
+      icon: comboShout.icon,
+      facing: hero.facing,
+      durationMs: 3000
+    });
+  }
   if (hunterId === 'honza') {
     addStatus(hero, 'shield', 6, events);
     events.push({
@@ -1517,6 +1738,87 @@ export function resolveHunterCombo3Bonus(state, hero, events) {
       type: 'log',
       text: '💨 Pavučinový únik! Káča získala +4 Štít a okamžitě obnovila manévr záměny!'
     });
+  } else if (hunterId === 'ponocny') {
+    addStatus(hero, 'shield', 6, events);
+    events.push({
+      type: 'log',
+      text: '🔔 Půlnoční vartování! Odbila dvanáctá hodina! Ponocný získal +6 Štít a smetl obě pole před sebou za 5 DMG!'
+    });
+    for (const e of state.enemies) {
+      if (e.hp > 0) {
+        const offset = (e.cell - hero.cell) * hero.facing;
+        if (offset === 1 || offset === 2) {
+          dealDamage(state, e, 5, { reason: 'ponocny_combo3', attackerId: hero.id }, events);
+        }
+      }
+    }
+  } else if (hunterId === 'silak') {
+    addStatus(hero, 'shield', 5, events);
+    events.push({
+      type: 'log',
+      text: '🏋️ Litinové finále! Silák Gustav se rozkročil, získal +5 Štít a mrštil obří činku po nepřátelích!'
+    });
+    let nearestInLine = null;
+    let minDistance = 999;
+    for (const e of state.enemies) {
+      if (e.hp > 0 && Math.sign(e.cell - hero.cell) === hero.facing) {
+        const dist = Math.abs(e.cell - hero.cell);
+        if (dist < minDistance) {
+          minDistance = dist;
+          nearestInLine = e;
+        }
+      }
+    }
+    if (nearestInLine) {
+      dealDamage(state, nearestInLine, 6, { reason: 'silak_combo3', attackerId: hero.id }, events);
+      addStatus(nearestInLine, 'stun', 1, events);
+    }
+  } else if (hunterId === 'anglicanka') {
+    hero.hp = Math.min(hero.maxHp || 18, hero.hp + 4);
+    addStatus(hero, 'shield', 4, events);
+    events.push({
+      type: 'heal',
+      targetId: hero.id,
+      cell: hero.cell,
+      amount: 4,
+      hp: hero.hp,
+      remainingHp: hero.hp
+    });
+    events.push({
+      type: 'log',
+      text: '🫖 Čaj o páté! Lady Gwendolyn si dopřála doušek Earl Grey (+4 HP, +4 Štít) a vařící čaj opařil nepřátele v dohledu!'
+    });
+    for (const e of state.enemies) {
+      if (e.hp > 0 && Math.sign(e.cell - hero.cell) === hero.facing) {
+        dealDamage(state, e, 3, { reason: 'anglicanka_combo3', attackerId: hero.id }, events);
+        addStatus(e, 'bleed', 2, events);
+      }
+    }
+  } else if (hunterId === 'helsing') {
+    events.push({
+      type: 'log',
+      text: '🏹 Kruhový rotační rozptyl! Profesor Gabriel van Helsing roztočil multishot mechanismus a zasáhl nepřátele stříbrnou salvou!'
+    });
+    for (const e of state.enemies) {
+      if (e.hp > 0) {
+        dealDamage(state, e, 4, { reason: 'helsing_combo3', attackerId: hero.id }, events);
+        addStatus(e, 'bleed', 2, events);
+      }
+    }
+  } else if (hunterId === 'revident') {
+    addStatus(hero, 'shield', 3, events);
+    events.push({
+      type: 'log',
+      text: '📑 Finanční exekuce! C. k. vrchní revident Ignác Šiml získal +3 Štít a zahájil daňovou kontrolu všech nočních monster!'
+    });
+    for (const e of state.enemies) {
+      if (e.hp > 0) {
+        if (hasStatus(e, 'okolkovano')) {
+          dealDamage(state, e, 3, { reason: 'revident_combo3', attackerId: hero.id }, events);
+        }
+        addStatus(e, 'okolkovano', 1, events);
+      }
+    }
   } else {
     addStatus(hero, 'shield', 4, events);
     events.push({
