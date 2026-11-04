@@ -147,7 +147,8 @@ console.log('\n--- TEST 8: Queue Preview Tracks RecoilBack and Domicile Inspecti
   revState.hero.cell = 2;
   revState.hero.facing = 1;
   revState.enemies[0].cell = 3;
-  const inspTile = revState.hand.find((t) => t.id === 'domicile_inspection');
+  const inspTile = { ...getHeroTileDefinition('domicile_inspection'), instanceId: 'test_insp_1', currentCooldown: 0 };
+  revState.hand.push(inspTile);
   revState.queue = [inspTile.instanceId];
   const revPreview = computePlayerQueuePreview(revState);
   assert.strictEqual(revPreview.ghostCell, 3, 'After domicile_inspection swap with adjacent enemy, ghostCell should be 3');

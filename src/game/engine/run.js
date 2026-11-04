@@ -23,6 +23,8 @@ export function createNewRun(seedInput = 'VENCA-1899', loadoutId = 'classic', cu
     fury: loadout.fury ?? 10,
     armor: loadout.armor ?? 0,
     backstabBonus: loadout.backstabBonus ?? 50,
+    persistence: loadout.persistence ?? 5,
+    maxPersistence: loadout.persistence ?? 5,
     curseLevel: cLvl,
     rng,
     act: 1,

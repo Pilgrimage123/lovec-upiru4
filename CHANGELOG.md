@@ -4,6 +4,37 @@ Veškeré významné změny v projektu Lovec upírů jsou zaznamenávány v tomt
 
 Formát vychází z [Keep a Changelog](https://keepachangelog.com/cs/1.0.0/).
 
+## [1.8.0] - 2026-11-04
+
+### Přidáno (Added)
+- **Mechanika Zubatá a Verva (Persistence & Death's Door) (ADR 0011)**:
+  - Zaveden permanentní run-level atribut **Verva** (`persistence: 5`, `maxPersistence: 5`), určující, jak hluboko do záporných životů může hrdina klesnout, než definitivně podlehne smrti.
+  - Zaveden stav **Zubatá** (`isReaperActive: true`), který se aktivuje při poklesu hrdiny do záporných životů (`currentHP <= 0`).
+  - Deterministický **Odpočet Zubaté** (`reaperCountdown = persistence + currentHP`):
+    - Pokud `reaperCountdown <= 0`, hrdina okamžitě umírá a bitva končí porážkou.
+    - Pokud `reaperCountdown > 0`, hrdina žije a pokračuje v boji.
+  - **Okamžité vyklizení fronty akcí**: Při vstupu do Zubaté nebo při utrpění dalšího zásahu v Zubaté se všechny destičky z fronty okamžitě vrátí do ruky (`state.queue = []`, `tile.inQueue = false`) bez spuštění a bez spuštění chladnutí. Vykonávání komba se ihned přeruší.
+  - **Úbytek Vervy na konci tahu**: Trvalý úbytek `persistence -= 1` nastává pouze tehdy, pokud hrdina v Zubaté své kolo zahájil i ukončil (`heroStartedTurnInReaper`). Zásah od nepřítele během nepřátelské fáze tak nesebere Vervu okamžitě – hrdina má vždy celý svůj tah na reakci a záchranu.
+  - **Zahnání Zubaté a návrat ze záhrobí**:
+    - *Léčení*: Přímé přičítání léčení k záporným HP. Při dosažení `HP >= 1` je Zubatá okamžitě zažehnána (`isReaperActive = false`), Verva zůstává na aktuální hodnotě.
+    - *Vítězství v místnosti*: Porážka všech nepřátel automaticky stabilizuje přeživšího hrdinu na `1 HP`, zažene Zubatou a v daném kole nezpůsobí úbytek Vervy.
+    - *Hospoda U Svěcené pípy*: Dát si pivo a guláš nyní kromě uzdravení +2 HP plně obnovuje Vervu zpět na `maxPersistence` (5).
+  - **UI a vizuální zpětná vazba**:
+    - Pulzující odznak `💀 [odpočet] ZUBATÁ` přímo nad postavou lovce na šachovnici.
+    - Číslo odpočtu Zubaté v HP baru `${hp}/${maxHp} (💀 ${countdown})` a v HUDu lovce.
+    - Plovoucí textové animace pro vstup do Zubaté, vyklizení fronty, úbytek Vervy i její zažehnání.
+    - Zobrazení statistiky `🪦 5 Verva` v Síni lovců i v HUDu výpravy.
+
+- **Prohloubení lovců a aktivní modulace Rozlícení (ADR 0012)**:
+  - Unikátní pasivní signatury pro všech 9 lovců (Selský furiant, Kavalírský nápřah, Cirkusová dominance, Noblesní sebeovládání, Zákaz nočního vycházení, Lovec trofejí, C. k. daňová kontrola, Zákeřný úder, Sokolský tělocvik).
+  - Aktivní modulace Bojového rozlícení a stav **Zchlazení** (`cold` / 🧊) až do -50 % poškození (s garancí minimálního zranění 1 DMG).
+  - Mechanika **Švunk**: Eliminace upíra v kombu (2+ destičky) zkracuje Chladnutí otevírací destičky i manévru Krok do nepřítele.
+
+### Ověřeno (Verified)
+- Všech 8 testů mechaniky Zubaté v `scratch_tests/test_zubata_deaths_door.mjs` prochází na 100 %.
+- Všechny regresní testovací sady (`test_all_fixes.mjs`, `test_all_seven_heroes.mjs`, `test_bojove_rozliceni.mjs`, `test_helsing_and_revident.mjs`, `test_hunter_refinement.mjs`, `test_ponocny_and_comic_bubbles.mjs`) prochází bez chyb.
+- Produkční Vite build probíhá úspěšně.
+
 ## [1.7.0] - 2026-11-03
 
 ### Přidáno (Added)

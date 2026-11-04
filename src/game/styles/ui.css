@@ -1746,3 +1746,51 @@
   gap: 1px;
   line-height: 1.3;
 }
+
+.hud-persistence {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: #a1a1aa;
+  font-weight: 800;
+}
+
+.hud-reaper-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  background: linear-gradient(135deg, #18181b, #450a0a);
+  color: #fca5a5;
+  border: 1px solid #ef4444;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-weight: 800;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
+  animation: pulse-reaper 1s infinite alternate;
+}
+
+.hud-hp-in-reaper {
+  background: rgba(69, 10, 10, 0.25);
+  border-radius: 4px;
+  padding: 1px 4px;
+  border: 1px dashed #ef4444;
+}
+
+.hud-hp-danger {
+  color: #ef4444 !important;
+  font-weight: 900;
+  text-shadow: 0 0 4px rgba(239, 68, 68, 0.6);
+}
+
+@keyframes pulse-reaper {
+  from {
+    transform: scale(1);
+    box-shadow: 0 0 4px rgba(239, 68, 68, 0.4);
+  }
+  to {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+  }
+}

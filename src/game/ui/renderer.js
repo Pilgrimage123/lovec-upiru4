@@ -5,7 +5,7 @@ import { TERRAIN_TYPES } from '../config/terrain.js';
 import { STRINGS, czechTurns } from '../config/strings.cs.js';
 import { detectResonances } from '../engine/combo.js';
 import { simulateComboImpact } from '../engine/simulation.js';
-import { getSortedEnemiesByInitiative } from '../engine/state.js';
+import { getSortedEnemiesByInitiative, isHeroAlive } from '../engine/state.js';
 import { computeBoardThreats, computePlayerQueuePreview } from '../engine/threat.js';
 import { getAssetUrl } from './assets.js';
 import { renderEnemyIntentStripHtml, buildEnemyTooltipHtml } from './enemyIntent.js';
@@ -520,14 +520,14 @@ export function renderBattleBoard(container, state, uiState = {}, callbacks = {}
     });
   });
 
-  if (state.hero && state.hero.hp > 0) {
+  if (state.hero && isHeroAlive(state.hero)) {
     startHeroIdle(container);
   } else {
     setHeroPose(container, 'dead', 0);
   }
 
   // Comic bubble banter at the beginning of a fresh battle
-  if (!state._battleIntroSpoken && state.status === 'playing' && state.hero && state.hero.hp > 0) {
+  if (!state._battleIntroSpoken && state.status === 'playing' && state.hero && isHeroAlive(state.hero)) {
     state._battleIntroSpoken = true;
     const heroHId = state.hero.hunterId || state.hero.kind || 'ponocny';
     const heroCry = getHunterDialogue(heroHId, 'battle_cries');
@@ -716,16 +716,23 @@ function renderEntityOnCellHtml(entity, initiativeRank = 1, impact = null) {
             ${entity.facing === 1 && entity.entityType !== 'prop' ? facingArrow : ''}
           </div>
         </div>
-        <div class="entity-hp-bar-outer" title="Zdraví: ${entity.hp}/${entity.maxHp} HP${(entity.statuses?.shield || 0) > 0 ? ` · Štít: ${entity.statuses.shield}` : ''}${(entity.armor || 0) > 0 ? ` · Brnění: ${entity.armor}` : ''}">
-          <div class="entity-hp-bar-inner hp-${entity.entityType}" style="width: ${hpPercent}%"></div>
+        <div class="entity-hp-bar-outer" title="${entity.isReaperActive ? `Zubatá na krku! Odpočet: ${entity.persistence + entity.hp}` : `Zdraví: ${entity.hp}/${entity.maxHp} HP`}${(entity.statuses?.shield || 0) > 0 ? ` · Štít: ${entity.statuses.shield}` : ''}${(entity.armor || 0) > 0 ? ` · Brnění: ${entity.armor}` : ''}">
+          <div class="entity-hp-bar-inner hp-${entity.entityType} ${entity.isReaperActive ? 'hp-reaper' : ''}" style="width: ${hpPercent}%"></div>
           <div class="entity-hp-bar-preview" style="left: ${previewLeft}%; width: ${previewWidth}%;"></div>
-          <span class="entity-hp-text">${impact && impact.dmgTaken > 0 ? `${Math.max(0, entity.hp - impact.dmgTaken)}/${entity.maxHp}` : `${entity.hp}/${entity.maxHp}`}${previewSkullHtml}</span>
+          <span class="entity-hp-text">${entity.isReaperActive ? `${entity.hp}/${entity.maxHp} (💀 ${entity.persistence + entity.hp})` : (impact && impact.dmgTaken > 0 ? `${Math.max(0, entity.hp - impact.dmgTaken)}/${entity.maxHp}` : `${entity.hp}/${entity.maxHp}`)}${previewSkullHtml}</span>
           ${(entity.statuses?.shield || 0) > 0 ? `<span class="entity-shield-pill" title="Aktivní Štít: ${entity.statuses.shield}">🛡️${entity.statuses.shield}</span>` : ''}
           ${(entity.armor || 0) > 0 ? `<span class="entity-armor-pill" title="Pasivní brnění: ztlumí každé pronikající fyzické zranění o ${entity.armor}">🦺${entity.armor}</span>` : ''}
         </div>
       </div>
 
       <div class="entity-floating-badges">
+        ${entity.entityType === 'hero' && entity.isReaperActive ? `
+          <div class="hero-reaper-badge" title="Zubatá na krku! Zbývající odpočet do definitivního skonu: ${entity.persistence + entity.hp}">
+            <span class="reaper-badge-icon">💀</span>
+            <span class="reaper-badge-num">${entity.persistence + entity.hp}</span>
+            <span class="reaper-badge-label">ZUBATÁ</span>
+          </div>
+        ` : ''}
         <div class="enemy-threat-warning-post-combo ${threatensPostCombo ? '' : 'hidden'}">⚠️ OHROŽUJE!</div>
         ${statusesHtml ? `<div class="entity-status-row">${statusesHtml}</div>` : ''}
       </div>
@@ -745,7 +752,7 @@ function renderEntityOnCellHtml(entity, initiativeRank = 1, impact = null) {
 }
 
 function livingEntityAt(state, cellIdx) {
-  if (state.hero && state.hero.hp > 0 && state.hero.cell === cellIdx) return state.hero;
+  if (state.hero && isHeroAlive(state.hero) && state.hero.cell === cellIdx) return state.hero;
   return (
     state.enemies.find((e) => e.hp > 0 && e.cell === cellIdx) ||
     state.props.find((p) => p.hp > 0 && p.cell === cellIdx) ||
@@ -755,7 +762,7 @@ function livingEntityAt(state, cellIdx) {
 
 function corpseAt(state, cellIdx) {
   if (livingEntityAt(state, cellIdx)) return null;
-  if (state.hero && state.hero.hp <= 0 && state.hero.cell === cellIdx) return state.hero;
+  if (state.hero && !isHeroAlive(state.hero) && state.hero.cell === cellIdx) return state.hero;
   return (
     state.enemies.find((e) => e.corpse && e.hp <= 0 && e.cell === cellIdx) ||
     state.props.find((p) => p.corpse && p.hp <= 0 && p.cell === cellIdx) ||
@@ -1206,14 +1213,22 @@ export async function playEngineEvents(container, events, animSpeed = 1, state =
           if (hpInnerEl && hpTextEl) {
             const parts = (hpTextEl.textContent || '').split('/');
             const maxHp = Number(parts[1]) || Math.max(1, ev.remainingHp);
-            const curHp = Math.max(0, ev.remainingHp);
-            hpTextEl.textContent = `${curHp}/${maxHp}`;
-            hpInnerEl.style.width = `${Math.max(0, Math.min(100, Math.round((curHp / maxHp) * 100)))}%`;
+            const curHp = ev.remainingHp;
+            const isHeroTarget = isHeroEntity(container, ev.targetId);
+            if (isHeroTarget && curHp <= 0 && activeState?.hero && isHeroAlive(activeState.hero)) {
+              const countdown = (activeState.hero.persistence || 5) + curHp;
+              hpTextEl.textContent = `${curHp}/${maxHp} (💀 ${countdown})`;
+              hpInnerEl.style.width = '0%';
+            } else {
+              const displayHp = Math.max(0, curHp);
+              hpTextEl.textContent = `${displayHp}/${maxHp}`;
+              hpInnerEl.style.width = `${Math.max(0, Math.min(100, Math.round((displayHp / maxHp) * 100)))}%`;
+            }
           }
         }
 
         if (isHeroEntity(container, ev.targetId)) {
-          if ((ev.remainingHp ?? 1) > 0) {
+          if ((ev.remainingHp ?? 1) > 0 || (activeState?.hero && isHeroAlive(activeState.hero))) {
             heroPoseLocked = true;
             setHeroPose(container, 'hurt', 0);
             scheduleHeroIdle(container, 360, animSpeed);
@@ -1347,6 +1362,43 @@ export async function playEngineEvents(container, events, animSpeed = 1, state =
         );
         await sleep(220, animSpeed);
         break;
+
+      case 'reaper_triggered': {
+        SFX.death();
+        const rCell = ev.cell ?? activeState?.hero?.cell;
+        if (rCell !== undefined) {
+          spawnFloatingBadgeOnCell(container, rCell, `💀 ZUBATÁ! (${ev.countdown})`, 'float-reaper');
+        }
+        await sleep(240, animSpeed);
+        break;
+      }
+
+      case 'queue_cleared_reaper': {
+        const qCell = activeState?.hero?.cell ?? 0;
+        spawnFloatingBadgeOnCell(container, qCell, '🚫 FRONTA ZRUŠENA!', 'float-warn');
+        await sleep(180, animSpeed);
+        break;
+      }
+
+      case 'reaper_decay': {
+        SFX.bell();
+        const dCell = ev.cell ?? activeState?.hero?.cell;
+        if (dCell !== undefined) {
+          spawnFloatingBadgeOnCell(container, dCell, `💀 VERVA −1 (${ev.countdown})`, 'float-reaper');
+        }
+        await sleep(220, animSpeed);
+        break;
+      }
+
+      case 'reaper_cleared': {
+        SFX.shield();
+        const cCell = ev.cell ?? activeState?.hero?.cell;
+        if (cCell !== undefined) {
+          spawnFloatingBadgeOnCell(container, cCell, '✨ ZUBATÁ ZAHNÁNA!', 'float-heal');
+        }
+        await sleep(200, animSpeed);
+        break;
+      }
 
       case 'death': {
         SFX.death();

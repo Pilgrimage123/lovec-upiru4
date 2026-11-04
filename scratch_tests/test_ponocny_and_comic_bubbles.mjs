@@ -93,9 +93,9 @@ const bumpTarget = state.enemies[0];
 const bumpEvents = [];
 resolveHeroBump(state, state.hero, bumpTarget, 1, bumpTarget.cell, 'ponocny', bumpEvents);
 assert.strictEqual(state.hero.bumpCooldown, 4, 'Slow bump recovery: 4 turns');
-assert(bumpTarget.statuses.stun > 0, 'Enemy stunned by heavy halberd butt');
+assert(bumpTarget.statuses.confusion > 0, 'Enemy confused by heavy halberd butt (Zmatení ❓)');
 assert(bumpEvents.some(e => e.type === 'comic_bubble'), 'Emits comic bubble on bump');
-console.log('✓ Zarazení ratištěm dealt DMG, stunned enemy, CD 4, and emitted comic bubble');
+console.log('✓ Zarazení ratištěm dealt DMG, confused enemy, CD 4, and emitted comic bubble');
 
 console.log('\n--- TEST 6: Ponocný 3-Combo finisher (Půlnoční vartování) ---');
 const comboEvents = [];

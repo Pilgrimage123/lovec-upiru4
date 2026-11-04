@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { ANIMATION_TIMINGS } from './config/constants.js';
 import { getCurseDefinition } from './config/curses.js';
-import { clearCorpses } from './engine/state.js';
+import { clearCorpses, isHeroAlive } from './engine/state.js';
 import {
   stepHero,
   turnHero,
@@ -181,7 +181,8 @@ export function createBattleActions(deps) {
       renderAll();
       await checkAndHandleBattleOutcome();
     } else {
-      for (let i = 0; i < queueSnapshot.length && state.hero.hp > 0; i++) {
+      for (let i = 0; i < queueSnapshot.length && isHeroAlive(state.hero); i++) {
+        if (state.queue.length === 0) break;
         const curId = queueSnapshot[i];
         const nextId = queueSnapshot[i + 1] || null;
         const slotEvents = executeSingleQueueSlot(state, curId, i, comboLength, nextId);
@@ -249,7 +250,7 @@ export function createBattleActions(deps) {
     if (!battle || !run) return;
     const modalRoot = document.getElementById('modal-root');
 
-    if (battle.status === 'lost' || battle.hero.hp <= 0) {
+    if (battle.status === 'lost' || !isHeroAlive(battle.hero)) {
       SFX.defeat();
       run.heroHp = 0;
       run.status = 'defeat';
@@ -261,6 +262,9 @@ export function createBattleActions(deps) {
     } else if (battle.status === 'won') {
       SFX.victory();
       run.heroHp = battle.hero.hp;
+      if (typeof battle.hero.persistence === 'number') {
+        run.persistence = battle.hero.persistence;
+      }
       if (run.talismans.includes('sacred_flask')) {
         run.heroHp = Math.min(run.heroMaxHp, run.heroHp + 1);
         battle.hero.hp = run.heroHp;

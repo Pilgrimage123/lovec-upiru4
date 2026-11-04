@@ -31,9 +31,17 @@ export function canDamageFinishVampires(opts = {}) {
   return false;
 }
 
+export function isHeroAlive(hero) {
+  if (!hero) return false;
+  if (hero.deathResolved || hero.corpse) return false;
+  if (hero.hp > 0) return true;
+  const persistence = typeof hero.persistence === 'number' ? hero.persistence : 5;
+  return Boolean(hero.isReaperActive && (persistence + hero.hp) > 0);
+}
+
 export function getAllLivingEntities(state) {
   const list = [];
-  if (state.hero && state.hero.hp > 0) list.push(state.hero);
+  if (state.hero && isHeroAlive(state.hero)) list.push(state.hero);
   for (const e of state.enemies) {
     if (e.hp > 0 || e.isTorpid) list.push(e);
   }
@@ -45,7 +53,7 @@ export function getAllLivingEntities(state) {
 
 export function getEntityAt(state, cell) {
   if (!isValidCell(cell, state)) return null;
-  if (state.hero && state.hero.hp > 0 && state.hero.cell === cell) return state.hero;
+  if (state.hero && isHeroAlive(state.hero) && state.hero.cell === cell) return state.hero;
   for (const e of state.enemies) {
     if ((e.hp > 0 || e.isTorpid) && e.cell === cell) return e;
   }
@@ -111,7 +119,7 @@ export function consumeStatus(entity, statusId, amount = 1) {
 }
 
 export function addStatus(entity, statusId, amount = 1, events = []) {
-  if (!entity || entity.hp <= 0 || !statusId || statusId === 'stagger') return;
+  if (!entity || (entity.entityType === 'hero' ? !isHeroAlive(entity) : entity.hp <= 0) || !statusId || statusId === 'stagger') return;
   entity.statuses ||= {};
   entity.statuses[statusId] = (entity.statuses[statusId] || 0) + amount;
   if (statusId === 'shield') {
@@ -219,6 +227,7 @@ export function resolveEntityDeath(state, target, opts = {}, events = []) {
       text: `💀 ${target.name} se s hlasitým zaklením poroučel do věčných lovišť!`
     });
   } else if (target.entityType === 'hero') {
+    state.status = 'lost';
     events.push({
       type: 'log',
       text: `⚰️ ${target.name || 'Venca Česnekáč'} padl! Upíři a noční stvůry dnes zvítězili.`
@@ -280,7 +289,7 @@ export function triggerCellTerrainOnEnter(state, entity, cell, events = []) {
 
 export function dealDamage(state, target, rawAmount, opts = {}, events = []) {
   if (!target || rawAmount <= 0) return 0;
-  if (target.hp <= 0) {
+  if (target.hp <= 0 && target.entityType !== 'hero') {
     if (target.isTorpid && target.entityType === 'enemy') {
       if (canDamageFinishVampires(opts)) {
         target.isTorpid = false;
@@ -388,7 +397,8 @@ export function dealDamage(state, target, rawAmount, opts = {}, events = []) {
     if (dmg <= 0) return 0;
   }
 
-  const armor = target.armor || 0;
+  const baseArmor = target.armor || 0;
+  const armor = Math.max(0, baseArmor - (opts.ignoreArmor || 0));
   if (
     armor > 0 &&
     dmg > 0 &&
@@ -414,7 +424,19 @@ export function dealDamage(state, target, rawAmount, opts = {}, events = []) {
     if (dmg <= 0) return 0;
   }
 
-  target.hp = Math.max(0, target.hp - dmg);
+  const isHero = target.entityType === 'hero' || target.id === state.hero?.id;
+  if (isHero) {
+    target.hp -= dmg;
+  } else {
+    target.hp = Math.max(0, target.hp - dmg);
+  }
+
+  const persistence = isHero
+    ? (typeof target.persistence === 'number' ? target.persistence : 5)
+    : 0;
+  const reaperCountdown = persistence + target.hp;
+  const isFatal = isHero ? (reaperCountdown <= 0) : (target.hp <= 0);
+
   events.push({
     type: 'damage',
     targetId: target.id,
@@ -427,8 +449,64 @@ export function dealDamage(state, target, rawAmount, opts = {}, events = []) {
     reason: opts.reason || 'attack',
     ichor: target.ichor || null,
     entityType: target.entityType || null,
-    fatal: target.hp <= 0
+    fatal: isFatal,
+    isReaperActive: isHero && target.hp <= 0 && !isFatal,
+    reaperCountdown: isHero && target.hp <= 0 ? reaperCountdown : null
   });
+
+  if (isHero && target.hp <= 0 && !isFatal) {
+    target.isReaperActive = true;
+    target.reaperCountdown = reaperCountdown;
+    if (state.queue && state.queue.length > 0) {
+      for (const instanceId of state.queue) {
+        const tile = state.hand?.find((t) => t.instanceId === instanceId);
+        if (tile) tile.inQueue = false;
+      }
+      state.queue = [];
+      events.push({
+        type: 'queue_cleared_reaper',
+        targetId: target.id,
+        cell: target.cell,
+        text: `💀 Zubatá! Šok z rány vyrazil ${target.name} zbraň z ruky a vyprázdnil frontu akcí!`
+      });
+      events.push({
+        type: 'log',
+        text: `💀 Zubatá! Zásah srazil hrdinu na práh smrti – fronta akcí byla okamžitě vyprázdněna a destičky vráceny na opasek!`
+      });
+    }
+    events.push({
+      type: 'reaper_triggered',
+      targetId: target.id,
+      cell: target.cell,
+      hp: target.hp,
+      persistence,
+      reaperCountdown,
+      text: `💀 Zubatá na krku! (${target.hp} HP, Odpočet: ${reaperCountdown})`
+    });
+    events.push({
+      type: 'log',
+      text: `💀 Zubatá na krku! ${target.name} se ocitá na prahu smrti (${target.hp} HP)! Odpočet Zubaté: ${reaperCountdown}.`
+    });
+  } else if (isHero && target.hp > 0) {
+    target.isReaperActive = false;
+    delete target.reaperCountdown;
+  }
+
+  if (dmg > 0 && (target.entityType === 'hero' || target.id === state.hero?.id) && (target.hunterId === 'honza' || state.hero?.hunterId === 'honza')) {
+    const heroRef = state.hero || target;
+    heroRef.currentFury = (heroRef.currentFury || 0) + 10;
+    events.push({
+      type: 'fury_accumulated',
+      targetId: heroRef.id,
+      cell: heroRef.cell,
+      furyAdded: 10,
+      currentFury: heroRef.currentFury
+    });
+    events.push({
+      type: 'log',
+      text: `🔨 Selský furiant! Zásah do těla Honzu rozpálil do běla (+10 % Rozlícení, nyní ${heroRef.currentFury > 0 ? '+' : ''}${heroRef.currentFury} %)!`
+    });
+  }
 
   if (target.bloodThorns && !opts.reflected && opts.attackerId && opts.attackerId !== target.id) {
     const attacker = findEntityById(state, opts.attackerId);
@@ -515,7 +593,7 @@ export function dealDamage(state, target, rawAmount, opts = {}, events = []) {
     }
   }
 
-  if (target.hp <= 0) {
+  if (isFatal) {
     if (target.entityType === 'enemy' && isVampireEntity(target) && !target.deathResolved) {
       target.isTorpid = true;
       target.torporTurnsLeft = 2;
@@ -542,6 +620,41 @@ export function dealDamage(state, target, rawAmount, opts = {}, events = []) {
   return dmg;
 }
 
+export function applyHealToEntity(state, target, amount, events = []) {
+  if (!target || amount <= 0) return 0;
+  const maxHp = target.maxHp || 20;
+  const healed = Math.max(0, Math.min(maxHp - target.hp, amount));
+  if (healed > 0) {
+    target.hp += healed;
+    if (target.entityType === 'hero' && target.hp >= 1 && target.isReaperActive) {
+      target.isReaperActive = false;
+      delete target.reaperCountdown;
+      events.push({
+        type: 'reaper_cleared',
+        targetId: target.id,
+        cell: target.cell,
+        hp: target.hp,
+        text: `✨ Zubatá ustoupila! ${target.name} se vyléčil na ${target.hp} HP.`
+      });
+      events.push({
+        type: 'log',
+        text: `✨ Zubatá ustupuje! ${target.name} se vyléčil na ${target.hp} HP a je mimo bezprostřední ohrožení života.`
+      });
+    } else if (target.entityType === 'hero' && target.isReaperActive) {
+      target.reaperCountdown = (target.persistence || 5) + target.hp;
+    }
+    events.push({
+      type: 'heal',
+      targetId: target.id,
+      cell: target.cell,
+      amount: healed,
+      hp: target.hp,
+      remainingHp: target.hp
+    });
+  }
+  return healed;
+}
+
 export function getHitBlockType(events, startIdx) {
   for (let i = events.length - 1; i >= startIdx; i--) {
     const t = events[i]?.type;
@@ -563,14 +676,35 @@ export function pushEntity(state, target, direction, distance, events = [], opts
   const dir = Math.sign(direction);
   let actualMoved = 0;
   const pusher = opts.pusher || null;
-  const pusherFury = typeof opts.pusherFury === 'number' ? opts.pusherFury : (pusher?.currentFury || 0);
+  const rawPusherFury = typeof opts.pusherFury === 'number' ? opts.pusherFury : (pusher?.currentFury || 0);
+  const pusherFury = Math.max(-50, rawPusherFury);
+  const isSilak = pusher?.hunterId === 'silak';
+
+  const computeCollisionDamage = (unmoved) => {
+    const furyBonus = pusherFury !== 0 ? Math.round(unmoved * (pusherFury / 100)) : 0;
+    let dmg = unmoved + furyBonus;
+    if (unmoved > 0) dmg = Math.max(1, dmg);
+    if (isSilak) dmg += 1;
+    return { collisionDmg: dmg, furyBonus };
+  };
+
+  const rewardSilakIfApplicable = () => {
+    if (isSilak && !opts._silakRewarded && pusher && pusher.hp > 0) {
+      opts._silakRewarded = true;
+      addStatus(pusher, 'shield', 2, events);
+      events.push({
+        type: 'log',
+        text: '🏋️ Cirkusová dominance! Srážka pobavila publikum (+1 kolizní DMG, Gustav získává +2 Štít)!'
+      });
+    }
+  };
 
   for (let step = 0; step < distance && target.hp > 0; step++) {
     const nextCell = target.cell + dir;
     if (!isValidCell(nextCell, state)) {
       const unmoved = distance - actualMoved;
-      const furyBonus = pusherFury > 0 ? Math.round(unmoved * (pusherFury / 100)) : 0;
-      const collisionDmg = unmoved + furyBonus;
+      const { collisionDmg, furyBonus } = computeCollisionDamage(unmoved);
+      rewardSilakIfApplicable();
       events.push({
         type: 'collision_wall',
         targetId: target.id,
@@ -582,7 +716,7 @@ export function pushEntity(state, target, direction, distance, events = [], opts
       });
       events.push({
         type: 'log',
-        text: `🧱 ${target.name} narazil do hradní zdi (${collisionDmg} DMG za neprojitá pole${furyBonus > 0 ? ` – vč. +${furyBonus} z Rozlícení` : ''})!`
+        text: `🧱 ${target.name} narazil do hradní zdi (${collisionDmg} DMG za neprojitá pole${furyBonus > 0 ? ` – vč. +${furyBonus} z Rozlícení` : furyBonus < 0 ? ` – vč. ${furyBonus} ze Zchlazení` : ''})!`
       });
       dealDamage(state, target, collisionDmg, { reason: 'wall_collision', attackerId: pusher?.id }, events);
       break;
@@ -591,8 +725,8 @@ export function pushEntity(state, target, direction, distance, events = [], opts
     const blocker = getEntityAt(state, nextCell);
     if (blocker) {
       const unmoved = distance - actualMoved;
-      const furyBonus = pusherFury > 0 ? Math.round(unmoved * (pusherFury / 100)) : 0;
-      const collisionDmg = unmoved + furyBonus;
+      const { collisionDmg, furyBonus } = computeCollisionDamage(unmoved);
+      rewardSilakIfApplicable();
       if (blocker.entityType === 'prop' && blocker.kind === 'barrel') {
         events.push({
           type: 'collision_barrel',
@@ -605,7 +739,7 @@ export function pushEntity(state, target, direction, distance, events = [], opts
         });
         events.push({
           type: 'log',
-          text: `🛢️ ${target.name} vletěl do sudu se zelím (oba ${collisionDmg} DMG za neprojitá pole${furyBonus > 0 ? ` – vč. +${furyBonus} z Rozlícení` : ''})! Sud praská!`
+          text: `🛢️ ${target.name} vletěl do sudu se zelím (oba ${collisionDmg} DMG za neprojitá pole${furyBonus > 0 ? ` – vč. +${furyBonus} z Rozlícení` : furyBonus < 0 ? ` – vč. ${furyBonus} ze Zchlazení` : ''})! Sud praská!`
         });
         dealDamage(state, blocker, collisionDmg, { reason: 'barrel_smash', attackerId: pusher?.id }, events);
         dealDamage(state, target, collisionDmg, { reason: 'barrel_smash', attackerId: pusher?.id }, events);
@@ -632,7 +766,7 @@ export function pushEntity(state, target, direction, distance, events = [], opts
         });
         events.push({
           type: 'log',
-          text: `💦 ${target.name} narazil do kropenky (oba ${collisionDmg} DMG za neprojitá pole${furyBonus > 0 ? ` – vč. +${furyBonus} z Rozlícení` : ''})!`
+          text: `💦 ${target.name} narazil do kropenky (oba ${collisionDmg} DMG za neprojitá pole${furyBonus > 0 ? ` – vč. +${furyBonus} z Rozlícení` : furyBonus < 0 ? ` – vč. ${furyBonus} ze Zchlazení` : ''})!`
         });
         dealDamage(state, blocker, collisionDmg, { reason: 'font_smash', attackerId: pusher?.id }, events);
         dealDamage(state, target, collisionDmg, { reason: 'font_smash', attackerId: pusher?.id }, events);
@@ -658,7 +792,7 @@ export function pushEntity(state, target, direction, distance, events = [], opts
       const quote = STRINGS.collisionQuotes[0];
       events.push({
         type: 'log',
-        text: `💥 Srážka! ${target.name} vrazil do postavy ${blocker.name} (oba ${collisionDmg} DMG za neprojitá pole${furyBonus > 0 ? ` – vč. +${furyBonus} z Rozlícení` : ''})! ${quote}`
+        text: `💥 Srážka! ${target.name} vrazil do postavy ${blocker.name} (oba ${collisionDmg} DMG za neprojitá pole${furyBonus > 0 ? ` – vč. +${furyBonus} z Rozlícení` : furyBonus < 0 ? ` – vč. ${furyBonus} ze Zchlazení` : ''})! ${quote}`
       });
       dealDamage(state, target, collisionDmg, { reason: 'entity_collision', attackerId: pusher?.id }, events);
       dealDamage(state, blocker, collisionDmg, { reason: 'entity_collision', attackerId: pusher?.id }, events);
@@ -999,8 +1133,7 @@ export function createBattleState(opts = {}) {
     revident: [
       { id: 'gov_stake_1884', upgradeLevel: 0, permanentCdReduction: 0 },
       { id: 'brass_stamp_denied', upgradeLevel: 0, permanentCdReduction: 0 },
-      { id: 'rast_gasser_revolver', upgradeLevel: 0, permanentCdReduction: 0 },
-      { id: 'domicile_inspection', upgradeLevel: 0, permanentCdReduction: 0 }
+      { id: 'rast_gasser_revolver', upgradeLevel: 0, permanentCdReduction: 0 }
     ],
     silak: [
       { id: 'barbell_slam', upgradeLevel: 0, permanentCdReduction: 0 },
@@ -1123,6 +1256,20 @@ export function createBattleState(opts = {}) {
       typeof opts.armor === 'number'
         ? opts.armor
         : STARTING_LOADOUTS[hunterId]?.armor ?? 0,
+    persistence:
+      typeof opts.persistence === 'number'
+        ? opts.persistence
+        : STARTING_LOADOUTS[hunterId]?.persistence ?? 5,
+    maxPersistence:
+      typeof opts.maxPersistence === 'number'
+        ? opts.maxPersistence
+        : (typeof opts.persistence === 'number'
+            ? opts.persistence
+            : (STARTING_LOADOUTS[hunterId]?.persistence ?? 5)),
+    isReaperActive: heroHp <= 0,
+    reaperCountdown: heroHp <= 0
+      ? ((typeof opts.persistence === 'number' ? opts.persistence : 5) + heroHp)
+      : null,
     cell: enc.heroCell ?? 2,
     facing: enc.heroFacing ?? 1,
     flying: false,
@@ -1220,6 +1367,7 @@ export function createBattleState(opts = {}) {
     firstAttackUsed: false,
     lastTurnAspergillumTurn: -99,
     hero,
+    heroStartedTurnInReaper: heroHp <= 0,
     enemies,
     props,
     terrain,

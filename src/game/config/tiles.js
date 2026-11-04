@@ -443,11 +443,11 @@ export const HERO_TILES = {
     cooldown: 5,
     quick: false,
     pattern: [
-      { offset: 1, dmg: 2, effects: [{ type: 'stun', amount: 1 }] },
-      { offset: 2, dmg: 2, effects: [{ type: 'stun', amount: 1 }] }
+      { offset: 1, dmg: 2, effects: [{ type: 'confusion', amount: 1 }] },
+      { offset: 2, dmg: 2, effects: [{ type: 'confusion', amount: 1 }] }
     ],
     resonance: null,
-    description: 'Zazvoní na 2 pole vpřed za 2 DMG a všem zasaženým způsobí Omráčení (přeskočí jejich aktivní akci!).',
+    description: 'Zazvoní na 2 pole vpřed za 2 DMG a všem zasaženým způsobí Zmatení (❓) na 1 tah.',
     flavor: '„Po třech pivech z toho brní uši i mrtvému.“',
     starter: false,
     upgrades: [
@@ -457,10 +457,10 @@ export const HERO_TILES = {
         dmg: 2,
         cooldown: 4,
         pattern: [
-          { offset: 1, dmg: 2, effects: [{ type: 'stun', amount: 1 }] },
-          { offset: 2, dmg: 2, effects: [{ type: 'stun', amount: 1 }] }
+          { offset: 1, dmg: 2, effects: [{ type: 'confusion', amount: 1 }] },
+          { offset: 2, dmg: 2, effects: [{ type: 'confusion', amount: 1 }] }
         ],
-        description: 'CD 4, zasáhne 2 pole vpřed za 2 DMG + Omráčení.'
+        description: 'CD 4, zasáhne 2 pole vpřed za 2 DMG + Zmatení (❓).'
       },
       {
         level: 2,
@@ -468,10 +468,10 @@ export const HERO_TILES = {
         dmg: 4,
         cooldown: 4,
         pattern: [
-          { offset: 1, dmg: 4, effects: [{ type: 'stun', amount: 1 }] },
-          { offset: 2, dmg: 4, effects: [{ type: 'stun', amount: 1 }] }
+          { offset: 1, dmg: 4, effects: [{ type: 'confusion', amount: 1 }] },
+          { offset: 2, dmg: 4, effects: [{ type: 'confusion', amount: 1 }] }
         ],
-        description: 'CD 4, zasáhne 2 pole vpřed za 4 DMG + Omráčení.'
+        description: 'CD 4, zasáhne 2 pole vpřed za 4 DMG + Zmatení (❓).'
       }
     ]
   },
@@ -599,12 +599,12 @@ export const HERO_TILES = {
         cooldown: 2,
         quick: false,
         selfEffect: { type: 'empower', amount: 2 },
-        pattern: [{ offset: 1, dmg: 2, effects: [{ type: 'confusion', amount: 1 }, { type: 'flip_target' }, { type: 'stun', amount: 1 }] }],
+        pattern: [{ offset: 1, dmg: 2, effects: [{ type: 'confusion', amount: 1 }, { type: 'flip_target' }] }],
         resonance: {
           nextTileCdReduction: 1,
           description: 'Rezonance: další destička má CD −1.'
         },
-        description: 'CD 2, 2 DMG, Omráčení, otočení a Zesílení.'
+        description: 'CD 2, 2 DMG, Zmatení (❓), otočení a Zesílení.'
       }
     ]
   },
@@ -799,9 +799,10 @@ export const HERO_TILES = {
     quick: false,
     healAmount: 4,
     cureStatus: 'bleed',
+    furyChange: -15,
     pattern: [],
     resonance: null,
-    description: 'Poctivá česká buchta: vyléčí 4 HP (přebytek přemění na Štít) a zastaví Krvácení.',
+    description: 'Poctivá česká buchta: vyléčí 4 HP (přebytek přemění na Štít), zastaví Krvácení, ale zchladí horkou krev (−15 % Rozlícení, může jít do Zchlazení 🧊).',
     flavor: '„Kdo jí babiččiny povidláky, tomu ani upíří tesák kůži neprokousne.“',
     starter: true,
     upgrades: [
@@ -812,7 +813,8 @@ export const HERO_TILES = {
         cooldown: 3,
         healAmount: 6,
         cureStatus: 'bleed',
-        description: 'CD 3, vyléčí 6 HP a zastaví Krvácení.'
+        furyChange: -15,
+        description: 'CD 3, vyléčí 6 HP, zastaví Krvácení a zchladí krev (−15 % Rozlícení).'
       },
       {
         level: 2,
@@ -822,7 +824,8 @@ export const HERO_TILES = {
         healAmount: 8,
         cureStatus: 'bleed',
         selfEffect: { type: 'shield', amount: 4 },
-        description: 'CD 3, vyléčí 8 HP, zastaví Krvácení a přidá +4 Štít!'
+        furyChange: -15,
+        description: 'CD 3, vyléčí 8 HP, zastaví Krvácení, přidá +4 Štít a zchladí krev (−15 % Rozlícení).'
       }
     ]
   },
@@ -835,10 +838,11 @@ export const HERO_TILES = {
     dmg: 0,
     cooldown: 3,
     quick: true,
-    selfEffect: { type: 'empower', amount: 4 },
+    furyChange: 20,
+    selfEffect: { type: 'empower', amount: 2 },
     pattern: [],
     resonance: null,
-    description: '⚡ Rychlovka (0 tahů). Honza si plivne do dlaní: Zesílení (+4 DMG k příštímu úderu).',
+    description: '⚡ Rychlovka (0 tahů). Honza si plivne do dlaní: okamžitě získá +20 % k Bojovému rozlícení a Zesílení (+2 DMG k příštímu úderu).',
     flavor: '„Počkej, ty bledá potvoro, jen co se pořádně napřáhnu!“',
     starter: true,
     upgrades: [
@@ -847,20 +851,22 @@ export const HERO_TILES = {
         name: 'Drtivý nápřah+',
         dmg: 0,
         cooldown: 2,
-        selfEffect: { type: 'empower', amount: 6 },
-        description: 'CD 2, Zesílení (+6 DMG).'
+        furyChange: 25,
+        selfEffect: { type: 'empower', amount: 3 },
+        description: 'CD 2, získá +25 % k Rozlícení a Zesílení (+3 DMG).'
       },
       {
         level: 2,
         name: 'Rázový selský úder++',
         dmg: 0,
         cooldown: 2,
-        selfEffect: { type: 'empower', amount: 8 },
+        furyChange: 30,
+        selfEffect: { type: 'empower', amount: 4 },
         resonance: {
           nextTileCdReduction: 1,
           description: 'Rezonance: další destička má CD −1.'
         },
-        description: 'CD 2, Zesílení (+8 DMG) a Rezonance CD −1.'
+        description: 'CD 2, získá +30 % k Rozlícení, Zesílení (+4 DMG) a Rezonanci CD −1.'
       }
     ]
   },
@@ -908,13 +914,13 @@ export const HERO_TILES = {
     quick: false,
     projectileRange: 4,
     pattern: [
-      { offset: 1, dmg: 4, projectile: true, effects: [{ type: 'stun', amount: 1 }] },
-      { offset: 2, dmg: 4, projectile: true, effects: [{ type: 'stun', amount: 1 }] },
-      { offset: 3, dmg: 4, projectile: true, effects: [{ type: 'stun', amount: 1 }] },
-      { offset: 4, dmg: 4, projectile: true, effects: [{ type: 'stun', amount: 1 }] }
+      { offset: 1, dmg: 4, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+      { offset: 2, dmg: 4, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+      { offset: 3, dmg: 4, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+      { offset: 4, dmg: 4, projectile: true, effects: [{ type: 'confusion', amount: 1 }] }
     ],
     resonance: null,
-    description: 'Výstřel olověné kule na dosah až 4 pole: 4 DMG prvnímu cíli a Omráčení (1).',
+    description: 'Výstřel olověné kule na dosah až 4 pole: 4 DMG prvnímu cíli a Zmatení (❓) na 1 tah.',
     flavor: '„Rakouský armádní revolver ráže 11 mm. Spolehlivá kavaleristická rána.“',
     starter: true,
     upgrades: [
@@ -925,12 +931,12 @@ export const HERO_TILES = {
         cooldown: 4,
         projectileRange: 4,
         pattern: [
-          { offset: 1, dmg: 6, projectile: true, effects: [{ type: 'stun', amount: 1 }] },
-          { offset: 2, dmg: 6, projectile: true, effects: [{ type: 'stun', amount: 1 }] },
-          { offset: 3, dmg: 6, projectile: true, effects: [{ type: 'stun', amount: 1 }] },
-          { offset: 4, dmg: 6, projectile: true, effects: [{ type: 'stun', amount: 1 }] }
+          { offset: 1, dmg: 6, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+          { offset: 2, dmg: 6, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+          { offset: 3, dmg: 6, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+          { offset: 4, dmg: 6, projectile: true, effects: [{ type: 'confusion', amount: 1 }] }
         ],
-        description: 'Dosah 4 pole: 6 DMG a Omráčení.'
+        description: 'Dosah 4 pole: 6 DMG a Zmatení (❓) na 1 tah.'
       },
       {
         level: 2,
@@ -939,13 +945,13 @@ export const HERO_TILES = {
         cooldown: 3,
         projectileRange: 5,
         pattern: [
-          { offset: 1, dmg: 8, projectile: true, effects: [{ type: 'stun', amount: 1 }] },
-          { offset: 2, dmg: 8, projectile: true, effects: [{ type: 'stun', amount: 1 }] },
-          { offset: 3, dmg: 8, projectile: true, effects: [{ type: 'stun', amount: 1 }] },
-          { offset: 4, dmg: 8, projectile: true, effects: [{ type: 'stun', amount: 1 }] },
-          { offset: 5, dmg: 8, projectile: true, effects: [{ type: 'stun', amount: 1 }] }
+          { offset: 1, dmg: 8, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+          { offset: 2, dmg: 8, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+          { offset: 3, dmg: 8, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+          { offset: 4, dmg: 8, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+          { offset: 5, dmg: 8, projectile: true, effects: [{ type: 'confusion', amount: 1 }] }
         ],
-        description: 'CD 3, dosah 5 polí: 8 DMG a Omráčení.'
+        description: 'CD 3, dosah 5 polí: 8 DMG a Zmatení (❓) na 1 tah.'
       }
     ]
   },
@@ -1149,11 +1155,12 @@ export const HERO_TILES = {
     dmg: 3,
     cooldown: 4,
     quick: false,
+    reduceTargetFury: 15,
     pattern: [
-      { offset: 1, dmg: 3, effects: [{ type: 'confusion', amount: 2 }] }
+      { offset: 1, dmg: 3, effects: [{ type: 'confusion', amount: 1 }] }
     ],
     resonance: null,
-    description: 'Žhnoucí olejová lucerna vrhne oslepující světlo na 1 pole vpřed za 3 DMG a uvrhne upíra do Zmatení (2 kola).',
+    description: 'Žhnoucí olejová lucerna vrhne oslepující světlo na 1 pole vpřed za 3 DMG, uvrhne upíra do Zmatení (❓) na 1 tah a zchladí jeho běsnění (−15 % Rozlícení).',
     flavor: '„V tomhle světle pozná každý noční tvor, jak vypadá hřích.“',
     starter: true,
     upgrades: [
@@ -1162,27 +1169,29 @@ export const HERO_TILES = {
         name: 'Posvěcená olejová lampa+',
         dmg: 5,
         cooldown: 4,
+        reduceTargetFury: 20,
         pattern: [
-          { offset: 1, dmg: 5, effects: [{ type: 'confusion', amount: 2 }] }
+          { offset: 1, dmg: 5, effects: [{ type: 'confusion', amount: 1 }] }
         ],
-        description: '5 DMG na 1 pole vpřed + Zmatení na 2 kola.'
+        description: '5 DMG na 1 pole vpřed + Zmatení (❓) na 1 tah a zchlazení cíle (−20 % Rozlícení).'
       },
       {
         level: 2,
         name: 'Věčné světlo strážce++',
         dmg: 6,
         cooldown: 3,
+        reduceTargetFury: 25,
         pattern: [
           {
             offset: 1,
             dmg: 6,
             effects: [
-              { type: 'confusion', amount: 3 },
+              { type: 'confusion', amount: 1 },
               { type: 'spawn_garlic_target' }
             ]
           }
         ],
-        description: 'CD 3! 6 DMG na 1 pole vpřed, Zmatení na 3 kola a zanechá Česnekový oblak.'
+        description: 'CD 3! 6 DMG na 1 pole vpřed, Zmatení (❓) na 1 tah, zchlazení cíle (−25 % Rozlícení) a Česnekový oblak.'
       }
     ]
   },
@@ -1224,10 +1233,10 @@ export const HERO_TILES = {
         cooldown: 3,
         shieldAmount: 9,
         pattern: [
-          { offset: 1, dmg: 4, effects: [{ type: 'push', distance: 3 }, { type: 'stun', amount: 1 }] },
-          { offset: -1, dmg: 4, effects: [{ type: 'push', distance: 3 }, { type: 'stun', amount: 1 }] }
+          { offset: 1, dmg: 4, effects: [{ type: 'push', distance: 3 }, { type: 'confusion', amount: 1 }] },
+          { offset: -1, dmg: 4, effects: [{ type: 'push', distance: 3 }, { type: 'confusion', amount: 1 }] }
         ],
-        description: 'CD 3! Získá +9 Štít, odhodí sousedy o 3 pole za 4 DMG a omráčí je (Stun 1).'
+        description: 'CD 3! Získá +9 Štít, odhodí sousedy o 3 pole za 4 DMG a uvrhne je do Zmatení (❓).'
       }
     ]
   },
@@ -1259,8 +1268,8 @@ export const HERO_TILES = {
         name: 'Arénová dvousféra++',
         dmg: 8,
         cooldown: 2,
-        pattern: [{ offset: 1, dmg: 8, effects: [{ type: 'push', distance: 2 }, { type: 'stun', amount: 1 }] }],
-        description: 'CD 2! 8 DMG, Push 2 a omráčení cíle (Stun 1).'
+        pattern: [{ offset: 1, dmg: 8, effects: [{ type: 'push', distance: 2 }, { type: 'confusion', amount: 1 }] }],
+        description: 'CD 2! 8 DMG, Push 2 a Zmatení (❓) cíle.'
       }
     ]
   },
@@ -1302,11 +1311,11 @@ export const HERO_TILES = {
         dmg: 6,
         cooldown: 2,
         pattern: [
-          { offset: 1, dmg: 6, projectile: true, effects: [{ type: 'push', distance: 2 }, { type: 'stun', amount: 1 }] },
-          { offset: 2, dmg: 6, projectile: true, effects: [{ type: 'push', distance: 2 }, { type: 'stun', amount: 1 }] },
-          { offset: 3, dmg: 6, projectile: true, effects: [{ type: 'push', distance: 2 }, { type: 'stun', amount: 1 }] }
+          { offset: 1, dmg: 6, projectile: true, effects: [{ type: 'push', distance: 2 }, { type: 'confusion', amount: 1 }] },
+          { offset: 2, dmg: 6, projectile: true, effects: [{ type: 'push', distance: 2 }, { type: 'confusion', amount: 1 }] },
+          { offset: 3, dmg: 6, projectile: true, effects: [{ type: 'push', distance: 2 }, { type: 'confusion', amount: 1 }] }
         ],
-        description: 'CD 2! 6 DMG na dosah až 3 polí, Push 2 a omráčení cíle.'
+        description: 'CD 2! 6 DMG na dosah až 3 polí, Push 2 a Zmatení (❓) cíle.'
       }
     ]
   },
@@ -1320,10 +1329,11 @@ export const HERO_TILES = {
     cooldown: 3,
     quick: false,
     shieldAmount: 5,
+    furyChange: 10,
     selfEffect: { type: 'empower', amount: 1 },
     pattern: [],
     resonance: null,
-    description: 'Předvede bicepsy publiku: Získá +5 Štít a Zesílení (+2 DMG k příštímu úderu).',
+    description: 'Předvede bicepsy publiku: Získá +5 Štít, +10 % k Bojovému rozlícení a Zesílení (+2 DMG k příštímu úderu).',
     flavor: '„Ocelové svaly, ocelové nervy. Upíří zub se na mém rameni jenom zlomí!“',
     starter: true,
     upgrades: [
@@ -1333,9 +1343,10 @@ export const HERO_TILES = {
         dmg: 0,
         cooldown: 3,
         shieldAmount: 7,
+        furyChange: 15,
         selfEffect: { type: 'empower', amount: 1 },
         pattern: [],
-        description: 'Získá +7 Štít a Zesílení (+2 DMG).'
+        description: 'Získá +7 Štít, +15 % k Rozlícení a Zesílení (+2 DMG).'
       },
       {
         level: 2,
@@ -1343,9 +1354,10 @@ export const HERO_TILES = {
         dmg: 0,
         cooldown: 2,
         shieldAmount: 8,
+        furyChange: 20,
         selfEffect: { type: 'empower', amount: 2 },
         pattern: [],
-        description: 'Chladnutí 2! Získá +8 Štít a velké Zesílení (+4 DMG).'
+        description: 'Chladnutí 2! Získá +8 Štít, +20 % k Rozlícení a velké Zesílení (+4 DMG).'
       }
     ]
   },
@@ -1436,9 +1448,11 @@ export const HERO_TILES = {
     quick: false,
     shieldAmount: 5,
     healAmount: 2,
+    convertFuryToShield: true,
+    furyPerShield: 5,
     pattern: [],
     resonance: null,
-    description: 'Dámský doušek odpoledního čaje a ukázněný postoj: Získá +5 Štít a vyléčí si 2 HP.',
+    description: 'Dámský doušek odpoledního čaje a ukázněný postoj: Získá +5 Štít a vyléčí si 2 HP. Veškeré kladné Rozlícení noblesně přetaví ve Štít (každých 5 % Rozlícení = +1 Štít navíc)!',
     flavor: '„Pravá dáma neztrácí způsoby ani ve chvíli, kdy jí krvelačný hrabě sahá na kanýry.“',
     starter: true,
     upgrades: [
@@ -1449,8 +1463,10 @@ export const HERO_TILES = {
         cooldown: 3,
         shieldAmount: 7,
         healAmount: 3,
+        convertFuryToShield: true,
+        furyPerShield: 5,
         pattern: [],
-        description: 'Získá +7 Štít a vyléčí si 3 HP.'
+        description: 'Získá +7 Štít, vyléčí 3 HP a přetaví Rozlícení na Štít (5 % = +1 Štít).'
       },
       {
         level: 2,
@@ -1459,8 +1475,10 @@ export const HERO_TILES = {
         cooldown: 2,
         shieldAmount: 8,
         healAmount: 4,
+        convertFuryToShield: true,
+        furyPerShield: 4,
         pattern: [],
-        description: 'Chladnutí 2! Získá +8 Štít a vyléčí si 4 HP.'
+        description: 'Chladnutí 2! Získá +8 Štít, vyléčí 4 HP a přetaví Rozlícení na Štít (4 % = +1 Štít).'
       }
     ]
   },
@@ -1745,7 +1763,7 @@ export const HERO_TILES = {
     resonance: null,
     description: 'Prohodí si místo se sousedním nepřítelem, otočí ho zády k sobě a aplikuje na něj stav [OKOLKOVÁNO].',
     flavor: '„Váš domovský list je neplatný! Okamžitě se otočte zády k přepážce a čekejte na výměr!“',
-    starter: true,
+    starter: false,
     upgrades: [
       {
         level: 1,

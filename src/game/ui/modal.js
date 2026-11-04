@@ -327,8 +327,8 @@ export function openPubModal(modalRoot, runState, onLeavePub, onUpdate) {
             <div class="pub-section">
               <h4>1. Teplá dršťková a ležák</h4>
               <p>Hospodský ti natočí poctivý džbánek na kuráž.</p>
-              <button type="button" class="btn-parchment" id="btn-pub-heal" ${healedInThisVisit || runState.heroHp >= runState.heroMaxHp ? 'disabled' : ''}>
-                🍺 Dát si pivo a guláš (+2 HP ZDARMA)
+              <button type="button" class="btn-parchment" id="btn-pub-heal" ${healedInThisVisit || (runState.heroHp >= runState.heroMaxHp && (runState.persistence || 5) >= (runState.maxPersistence || 5)) ? 'disabled' : ''}>
+                🍺 Dát si pivo a guláš (+2 HP a obnovení Vervy ZDARMA)
               </button>
             </div>
 
@@ -375,6 +375,7 @@ export function openPubModal(modalRoot, runState, onLeavePub, onUpdate) {
     modalRoot.querySelector('#btn-pub-heal')?.addEventListener('click', () => {
       healedInThisVisit = true;
       runState.heroHp = Math.min(runState.heroMaxHp, runState.heroHp + 2);
+      runState.persistence = runState.maxPersistence || 5;
       onUpdate?.();
       renderContent();
     });
@@ -698,12 +699,13 @@ export function openCastleArchiveModal(modalRoot, appState, onUpdate = null, onS
               : `<span class="loadout-card-icon">${loadout.icon}</span>`
           }
           <div>
-            <h4 class="loadout-card-title">${loadout.name} <span class="badge-hp">❤️ ${loadout.maxHp || 20} HP</span> <span class="badge-defense" style="margin-left: 4px; padding: 1px 6px; border-radius: 4px; background: rgba(30, 64, 175, 0.4); border: 1px solid rgba(59, 130, 246, 0.5); font-size: 0.78rem; color: #bfdbfe;">🛡️ ${loadout.defense ?? 0} Obrana</span></h4>
+            <h4 class="loadout-card-title">${loadout.name} <span class="badge-hp">❤️ ${loadout.maxHp || 20} HP</span> <span class="badge-defense" style="margin-left: 4px; padding: 1px 6px; border-radius: 4px; background: rgba(30, 64, 175, 0.4); border: 1px solid rgba(59, 130, 246, 0.5); font-size: 0.78rem; color: #bfdbfe;">🛡️ ${loadout.defense ?? 0} Obrana</span>${loadout.armor ? ` <span class="badge-armor" style="margin-left: 4px; padding: 1px 6px; border-radius: 4px; background: rgba(180, 83, 9, 0.4); border: 1px solid rgba(245, 158, 11, 0.5); font-size: 0.78rem; color: #fde68a;">🦺 ${loadout.armor} Brnění</span>` : ''}${loadout.fury ? ` <span class="badge-fury" style="margin-left: 4px; padding: 1px 6px; border-radius: 4px; background: rgba(185, 28, 28, 0.4); border: 1px solid rgba(239, 68, 68, 0.5); font-size: 0.78rem; color: #fca5a5;">💢 +${loadout.fury} %</span>` : ''}</h4>
             <div class="loadout-card-epithet">${loadout.epithet}</div>
           </div>
         </div>
         <p class="loadout-card-desc">${loadout.description}</p>
         <div class="loadout-card-abilities" style="margin: 0.35rem 0; font-size: 0.85rem; line-height: 1.35; color: #e2e8f0;">
+          ${loadout.passiveName ? `<div style="margin-bottom: 0.2rem;"><strong style="color: #fb7185;">✨ Pasivita (${loadout.passiveName}):</strong> ${loadout.passiveDesc}</div>` : ''}
           ${loadout.bumpName ? `<div style="margin-bottom: 0.2rem;"><strong style="color: #f59e0b;">💥 ${loadout.bumpName}:</strong> ${loadout.bumpDesc}</div>` : ''}
           ${loadout.comboName ? `<div><strong style="color: #38bdf8;">✨ 3-Kombo:</strong> ${loadout.comboDesc}</div>` : ''}
         </div>

@@ -239,6 +239,8 @@ function enterMapNode(node) {
       encounterId: node.encounterId,
       heroMaxHp: run.heroMaxHp,
       heroHp: run.heroHp,
+      persistence: run.persistence,
+      maxPersistence: run.maxPersistence,
       defense: run.defense,
       deck: run.deck,
       talismans: run.talismans,

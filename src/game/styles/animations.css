@@ -489,6 +489,15 @@
   font-size: 1rem;
 }
 
+.float-reaper {
+  background: linear-gradient(180deg, #18181b 0%, #450a0a 60%, #7f1d1d 100%);
+  color: #fca5a5;
+  border: 1px solid #ef4444;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.7);
+  font-weight: 900;
+  text-shadow: 0 1px 3px #000;
+}
+
 .flying-projectile {
   position: fixed;
   z-index: 40;

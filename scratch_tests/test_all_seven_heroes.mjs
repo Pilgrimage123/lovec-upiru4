@@ -60,9 +60,9 @@ const comboEvents = [];
 resolveHunterCombo3Bonus(silakState, silakState.hero, comboEvents);
 assert(silakState.hero.statuses.shield >= 5, 'Gained +5 Shield');
 assert.strictEqual(dummyEnemy.hp, 2, 'Dummy took 7 DMG with Rozlícení (9 - 7 = 2)');
-assert(dummyEnemy.statuses.stun > 0, 'Dummy is stunned');
+assert(dummyEnemy.statuses.confusion > 0, 'Dummy is confused (Zmatení ❓)');
 assert(comboEvents.some(e => e.type === 'comic_bubble' && e.variant === 'battle_cry'), 'Emitted 3-combo shout bubble');
-console.log('  ✓ Litinové finále: +5 Shield, 6 DMG line of sight, Stun 1, shout bubble');
+console.log('  ✓ Litinové finále: +5 Shield, 6 DMG line of sight, Zmatení 1, shout bubble');
 
 console.log('\n--- TEST 3: Lady Gwendolyn - Mechanics & Bump & Combo ---');
 const ladyState = createBattleState({

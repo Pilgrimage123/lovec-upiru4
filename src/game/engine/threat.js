@@ -6,7 +6,8 @@ import {
   findNearestFreeCell,
   getStatusStacks,
   simulateLungeTargetCell,
-  getSortedEnemiesByInitiative
+  getSortedEnemiesByInitiative,
+  isHeroAlive
 } from './state.js';
 
 export function computeSingleEnemyTileHits(state, enemy, tileDef, context = null) {
@@ -328,7 +329,7 @@ function simulatePreviewStep(state, tile, heroCell, heroFacing, isFirst, isLateS
 }
 
 export function computePlayerQueuePreview(state, hoveredTileId = null) {
-  if (!state.hero || state.hero.hp <= 0) {
+  if (!state.hero || !isHeroAlive(state.hero)) {
     return {
       ghostCell: 0,
       ghostFacing: 1,

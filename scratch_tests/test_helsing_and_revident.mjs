@@ -105,16 +105,15 @@ console.log('--- Testing Helsing & Revident Implementation ---');
   assert.equal(state.hero.defense, 2, 'Revident should have 2 defense');
   assert.equal(state.hero.statuses.shield, 2, 'Revident starts with 2 shield from dossier');
 
-  // Starter deck check (4 tiles!)
-  assert.equal(state.hand.length, 4, 'Revident should have 4 starter tiles');
+  // Starter deck check (3 tiles normalized!)
+  assert.equal(state.hand.length, 3, 'Revident should have 3 starter tiles');
   const tileIds = state.hand.map((t) => t.id);
   assert.deepEqual(tileIds, [
     'gov_stake_1884',
     'brass_stamp_denied',
-    'rast_gasser_revolver',
-    'domicile_inspection'
+    'rast_gasser_revolver'
   ]);
-  console.log('✓ Revident HP (16), Defense (2), and 4 Starter Tiles verified');
+  console.log('✓ Revident HP (16), Defense (2), and 3 Starter Tiles verified');
 
   // Test Úřední předvolání (Signature Action):
   // When revident turns facing enemy at distance exactly 2:
@@ -142,18 +141,19 @@ console.log('--- Testing Helsing & Revident Implementation ---');
   // Target enemy is at cell 3, revident at cell 2, facing 1.
   // Enemy has okolkovano: true!
   executeHeroTileEffect(state, stakeTile, 0, 1, []);
-  // 2 DMG + 1 daňová přirážka = 3 DMG dealt, and CD reduced by 1
-  assert.equal(enemy.hp, 7, '2 DMG + 1 tax surcharge dealt');
+  // 2 DMG + 1 passive (C. k. daňová kontrola) + 1 debuff = 4 DMG dealt, and CD reduced by 1
+  assert.equal(enemy.hp, 6, '2 DMG + 1 passive + 1 tax surcharge dealt (10 - 4 = 6)');
+  assert.equal(state.hero.statuses.shield, 3, 'Revident gained +1 shield from C. k. daňová kontrola');
   assert.equal(stakeTile.currentCooldown, 1, 'CD reduced by 1 because target had OKOLKOVÁNO');
   console.log('✓ Revident Erární osikový kolík vz. 1884 verified');
 
   // Test brass_stamp_denied:
-  // 1 DMG, push 1, delay enemy countdown by 1
+  // 1 DMG (okolkovano already consumed by stake), push 1, delay enemy countdown by 1
   enemy.cell = 3;
   enemy.countdown = 1;
   const stampTile = state.hand.find((t) => t.id === 'brass_stamp_denied');
   executeHeroTileEffect(state, stampTile, 0, 1, []);
-  assert.equal(enemy.hp, 6, 'Brass stamp deals 1 DMG');
+  assert.equal(enemy.hp, 5, 'Brass stamp deals 1 base DMG (6 - 1 = 5)');
   assert.equal(enemy.cell, 4, 'Enemy pushed back 1 cell');
   assert.equal(enemy.countdown, 2, 'Enemy countdown delayed by 1');
   console.log('✓ Revident Mosazné razítko „ZAMÍTNUTO“ verified');
@@ -165,17 +165,17 @@ console.log('--- Testing Helsing & Revident Implementation ---');
   enemy.cell = 4;
   const revTile = state.hand.find((t) => t.id === 'rast_gasser_revolver');
   executeHeroTileEffect(state, revTile, 0, 1, []);
-  assert.equal(enemy.hp, 4, 'Revolver deals 2 DMG');
+  assert.equal(enemy.hp, 3, 'Revolver deals 2 DMG (5 - 2 = 3)');
   assert.equal(state.hero.cell, 1, 'Revident pushed back to cell 1 by recoil');
   console.log('✓ Revident Služební revolver Rast & Gasser (recoil back) verified');
 
-  // Test domicile_inspection:
+  // Test domicile_inspection (chest reward tile):
   // Swaps place with adjacent enemy, faces enemy away, applies OKOLKOVÁNO
   state.hero.cell = 2;
   state.hero.facing = 1;
   enemy.cell = 3;
   enemy.facing = -1; // enemy was facing hero
-  const inspectTile = state.hand.find((t) => t.id === 'domicile_inspection');
+  const inspectTile = { ...getHeroTileDefinition('domicile_inspection'), currentCooldown: 0 };
   executeHeroTileEffect(state, inspectTile, 0, 1, []);
   assert.equal(state.hero.cell, 3, 'Hero swapped to cell 3');
   assert.equal(enemy.cell, 2, 'Enemy swapped to cell 2');

@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { createRng } from './rng.js';
 import { ENEMY_TILES } from '../config/enemies.js';
-import { wouldEnemyTileHitTargetCell } from './state.js';
+import { wouldEnemyTileHitTargetCell, isHeroAlive } from './state.js';
 import { detectResonances } from './combo.js';
 import { executeSingleQueueSlot, resolveHunterCombo3Bonus } from './combat.js';
 
@@ -34,7 +34,7 @@ export function cloneBattleStateForSim(state) {
 }
 
 export function simulateComboImpact(state, customQueue = null) {
-  if (!state || !state.hero || state.hero.hp <= 0) {
+  if (!state || !state.hero || !isHeroAlive(state.hero)) {
     return {
       hero: null,
       entities: [],
@@ -99,14 +99,14 @@ export function simulateComboImpact(state, customQueue = null) {
 
   const comboLength = queueIds.length;
   const allEvents = [];
-  for (let i = 0; i < comboLength && sim.hero.hp > 0; i++) {
+  for (let i = 0; i < comboLength && isHeroAlive(sim.hero); i++) {
     const curId = queueIds[i];
     const nextId = queueIds[i + 1] || null;
     const evs = executeSingleQueueSlot(sim, curId, i, comboLength, nextId);
     allEvents.push(...evs);
   }
 
-  if (comboLength >= 3 && sim.hero && sim.hero.hp > 0) {
+  if (comboLength >= 3 && sim.hero && isHeroAlive(sim.hero)) {
     resolveHunterCombo3Bonus(sim, sim.hero, allEvents);
   }
 
@@ -119,7 +119,7 @@ export function simulateComboImpact(state, customQueue = null) {
   const ghosts = [];
   const impactMap = {};
 
-  if (heroMoved && sim.hero.hp > 0) {
+  if (heroMoved && isHeroAlive(sim.hero)) {
     ghosts.push({
       id: sim.hero.id,
       name: sim.hero.name,

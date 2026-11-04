@@ -1,5 +1,6 @@
 import { STARTING_LOADOUTS } from '../config/loadouts.js';
 // @ts-nocheck
+import { isHeroAlive } from '../engine/state.js';
 import { getAssetUrl } from './assets.js';
 import { showTooltip, hideTooltip } from './tooltips.js';
 import { czechTurns } from '../config/strings.cs.js';
@@ -175,7 +176,7 @@ export function renderTileBar(container, state, callbacks = {}) {
 }
 
 function canHeroMoveDir(state, dir) {
-  if (!state.hero || state.hero.hp <= 0 || state.status !== 'playing') return false;
+  if (!state.hero || !isHeroAlive(state.hero) || state.status !== 'playing') return false;
   const limit = state.boardSize || 7;
   const nextCell = state.hero.cell + dir;
   if (!Number.isInteger(nextCell) || nextCell < 0 || nextCell >= limit) return false;

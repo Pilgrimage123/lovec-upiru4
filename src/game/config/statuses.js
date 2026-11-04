@@ -10,11 +10,11 @@ export const STATUSES = {
   },
   stun: {
     id: 'stun',
-    name: 'Omráčení',
-    icon: 'status.stun',
-    badge: '🔔',
-    color: '#f1c40f',
-    description: 'Vynechá příští akci. U nepřítele zůstane zčervenalá fronta zamčená a odpálí se až další tah.'
+    name: 'Zmatení',
+    icon: 'status.confusion',
+    badge: '❓',
+    color: '#9b59b6',
+    description: 'Postava má nad hlavou otazník ❓ a jeden tah nic nedělá (vynechá akci). Sjednoceno se stavem Zmatení.'
   },
   bleed: {
     id: 'bleed',
@@ -54,7 +54,15 @@ export const STATUSES = {
     icon: 'status.rozliceni',
     badge: '💢',
     color: '#e74c3c',
-    description: 'Postupně gradující bojový hněv a horká krev. Zvyšuje veškeré udělené zranění.'
+    description: 'Postupně gradující bojový hněv a horká krev (+% za kolo). Zvyšuje veškeré udělené zranění, útoky i kinetické kolize.'
+  },
+  zchlazeni: {
+    id: 'zchlazeni',
+    name: 'Zchlazení',
+    icon: 'status.zchlazeni',
+    badge: '🧊',
+    color: '#60a5fa',
+    description: 'Stav poklesu Rozlícení pod 0 % (až do limitu −50 %). Nasycení, rozvaha či letargie tlumí poškození útoků (garance min. 1 DMG u nenulových útoků).'
   },
   torpor: {
     id: 'torpor',

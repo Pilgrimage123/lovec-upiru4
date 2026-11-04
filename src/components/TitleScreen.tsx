@@ -52,6 +52,7 @@ interface HunterDeed {
   defense: number;
   fury: number;
   armor?: number;
+  persistence?: number;
   backstabBonus?: number;
   icon: string;
   heraldicColor: string;
@@ -59,6 +60,8 @@ interface HunterDeed {
   portraitUrl: string;
   quote: string;
   signatureWeapon: string;
+  passiveName?: string;
+  passiveDesc?: string;
   bumpName: string;
   bumpDesc: string;
   comboName: string;
@@ -69,7 +72,7 @@ interface HunterDeed {
 const HUNTERS_DATA: Record<string, HunterDeed> = {
   classic: {
     id: "classic",
-    shortName: "Štamgast Venca",
+    shortName: "Sokol Venca",
     name: "Sokol Venca Česnek",
     epithet: "Sokolský cvičenec a pěstitel česneku",
     role: "Vlastenecký sokol & pěstitel česneku",
@@ -78,6 +81,9 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     maxHp: 20,
     defense: 1,
     fury: 10,
+    persistence: 5,
+    passiveName: "Sokolský tělocvik",
+    passiveDesc: "Pohybové manévry a moravský paličák. Skoky přes překážky a Česnekový oblak (zmatení a definitivní dorážení upírů).",
     icon: "🦅",
     heraldicColor: "from-emerald-950 via-stone-900 to-amber-950",
     heraldicBorder: "border-emerald-500",
@@ -100,14 +106,17 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     id: "honza",
     shortName: "Chasník Honza",
     name: "Chasník Honza Buchta",
-    epithet: "Selský silák",
-    role: "Selská síla & husitský cep",
-    tag: "Drtivá síla · Kolize & Beraní průraz",
+    epithet: "Selský silák & polní furiant",
+    role: "Polní furiant & selská síla",
+    tag: "Polní furiant (+25 % Rozlícení) · 1 Brnění · Drtivé rány",
     beerBadge: "Selský ležák",
     maxHp: 20,
     defense: 0,
-    fury: 15,
+    fury: 25,
     armor: 1,
+    persistence: 5,
+    passiveName: "Selský furiant",
+    passiveDesc: "Kdykoliv Honza utrpí přímé zranění do těla (po proražení Štítu i Brnění), okamžitě získá +10 % Rozlícení navíc.",
     icon: "🥖",
     heraldicColor: "from-amber-950 via-stone-900 to-yellow-950",
     heraldicBorder: "border-amber-500",
@@ -132,11 +141,14 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     name: "Rittmeister Jaromír Vraný",
     epithet: "Vysloužilý c. k. dragoun",
     role: "Císařský kavalerista",
-    tag: "Vysoké zdraví (24 HP) · Kartáčová salva & Pevný kryt",
+    tag: "Kavalírský nápřah (24 HP, 2 Obrana) · Kartáčová salva · Průraz brnění",
     beerBadge: "C. k. speciál",
     maxHp: 24,
     defense: 2,
     fury: 10,
+    persistence: 5,
+    passiveName: "Kavalírský nápřah",
+    passiveDesc: "Pokud se Jaromír v tomto tahu posunul vpřed, příští útok destičkou získá +2 DMG a ignoruje 1 bod Brnění.",
     icon: "⚔️",
     heraldicColor: "from-blue-950 via-stone-900 to-slate-950",
     heraldicBorder: "border-blue-400",
@@ -145,7 +157,7 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     signatureWeapon: "Důstojnická šavle vzor 1877 & Armádní revolver Gasser",
     bumpName: "Úder těžkým jílcem",
     bumpDesc:
-      "Krok do nepřítele: Praští ho mosazným jílcem za 2 DMG, odhodí ho a na 1 tah omráčí (Chladnutí 3).",
+      "Krok do nepřítele: Praští ho mosazným jílcem za 2 DMG, odhodí ho a uvrhne do Zmatení (❓) (Chladnutí 3).",
     comboName: "Kavaleristická salva",
     comboDesc:
       "3-kombo: Vypálí kartáčovou salvu (4 DMG všem v linii pohledu) a zkrátí Chladnutí všech destiček o 1.",
@@ -166,7 +178,10 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     maxHp: 14,
     defense: 2,
     fury: 10,
+    persistence: 5,
     backstabBonus: 100,
+    passiveName: "Zákeřný úder",
+    passiveDesc: "Mistrovský bonus +100 % k poškození při úderu do zad nebo proti zmatenému cíli (❓).",
     icon: "🗡️",
     heraldicColor: "from-purple-950 via-stone-900 to-rose-950",
     heraldicBorder: "border-purple-400",
@@ -191,11 +206,14 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     name: "Ponocný Bartoloměj Klika",
     epithet: "Strážce půlnoční hodiny",
     role: "Noční hlídka & těžká halapartna",
-    tag: "Silný & Pomalý (26 HP) · Dvoupolíčkový dosah halapartny",
+    tag: "Zákaz nočního vycházení (26 HP, 2 Obrana) · Dosah 2 pole",
     beerBadge: "Půlnoční ležák 13°",
     maxHp: 26,
     defense: 2,
     fury: 5,
+    persistence: 5,
+    passiveName: "Zákaz nočního vycházení",
+    passiveDesc: "Na začátku každého kola získá +1 Štít navíc za každého nepřítele v dohledu lucerny (1–2 pole před sebou).",
     icon: "🏮",
     heraldicColor: "from-indigo-950 via-stone-900 to-slate-950",
     heraldicBorder: "border-indigo-400",
@@ -204,7 +222,7 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     signatureWeapon: "Kovaná dvoubřitá halapartna & Půlnoční mosazný roh",
     bumpName: "Zarazení ratištěm",
     bumpDesc:
-      "Krok do nepřítele: Vrazí do nepřítele těžké ratiště za 3 DMG, odhodí ho o 1 pole a na 1 tah omráčí (Chladnutí 4)!",
+      "Krok do nepřítele: Vrazí do nepřítele těžké ratiště za 3 DMG, odhodí ho o 1 pole a uvrhne do Zmatení (❓) (Chladnutí 4)!",
     comboName: "Půlnoční vartování",
     comboDesc:
       "3-kombo: Získá +6 Štít, odtroubí půlnoc a zasáhne obě pole před sebou za 5 DMG.",
@@ -219,13 +237,16 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     shortName: "Silák Gustav",
     name: "Silák Gustav Železný",
     epithet: "Cirkusový lamač podkov",
-    role: "Cirkusová síla & litinová břemena",
-    tag: "Vysoká síla (22 HP) · Vrhání závaží · Přehoz",
+    role: "Cirkusová dominance & litinová břemena",
+    tag: "Cirkusová dominance (22 HP, 1 Brnění) · Vrhání závaží · Přehoz",
     beerBadge: "Cirkusový ležák",
     maxHp: 22,
     defense: 1,
-    fury: 15,
+    fury: 10,
     armor: 1,
+    persistence: 5,
+    passiveName: "Cirkusová dominance",
+    passiveDesc: "Každá srážka nepřítele způsobená odhozením udělí o +1 kolizní DMG navíc a Gustav získá +2 Štít z potlesku diváků.",
     icon: "🏋️",
     heraldicColor: "from-red-950 via-stone-900 to-amber-950",
     heraldicBorder: "border-red-500",
@@ -237,7 +258,7 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
       "Krok do nepřítele: Praští s nepřítelem o zem za 3 DMG a odhodí ho o 2 pole vzad (Chladnutí 3)!",
     comboName: "Litinové finále",
     comboDesc:
-      "3-kombo: Získá +5 Štít a vrhne obří činku na prvního nepřítele v linii pohledu za 6 DMG + omráčení.",
+      "3-kombo: Získá +5 Štít a vrhne obří činku na prvního nepřítele v linii pohledu za 6 DMG + Zmatení (❓).",
     deck: [
       { id: "barbell_slam", upgradeLevel: 0 },
       { id: "kettlebell_toss", upgradeLevel: 0 },
@@ -250,11 +271,14 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     name: "Lady Gwendolyn Sterling",
     epithet: "Viktoriánská dáma & lovkyně",
     role: "Britská etiketa & stříbrný slunečník",
-    tag: "Vysoká Obrana (2) · Horký Earl Grey · Bodnutí ze zálohy",
+    tag: "Noblesní sebeovládání (18 HP, 2 Obrana) · Komorník Archibald · Earl Grey",
     beerBadge: "Imperial Stout 18°",
     maxHp: 18,
     defense: 2,
     fury: 5,
+    persistence: 5,
+    passiveName: "Noblesní sebeovládání",
+    passiveDesc: "Při čajových rituálech (Královská etiketa) přetaví veškeré kladné Rozlícení na chladnokrevný Štít (každých 5 % Rozlícení = +1 Štít navíc).",
     icon: "🫖",
     heraldicColor: "from-slate-950 via-stone-900 to-emerald-950",
     heraldicBorder: "border-slate-400",
@@ -279,11 +303,14 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     name: "Sir Arthur Featherstone",
     epithet: "Britský lovec trofejí",
     role: "Britská lovecká expedice & rotační kuše",
-    tag: "Dálkový útok (18 HP) · Rotační opakovací kuše · Balistická salva",
+    tag: "Lovec trofejí (18 HP, 1 Obrana) · Rotační kuše · Kritický zásah krvácejících",
     beerBadge: "Oktogonální ležák 14°",
     maxHp: 18,
     defense: 1,
     fury: 10,
+    persistence: 5,
+    passiveName: "Lovec trofejí",
+    passiveDesc: "Zásah na dálku (2+ pole) do krvácejícího cíle udělí o +2 DMG vyšší zranění a okamžitě zkrátí Chladnutí této destičky o 1.",
     icon: "🏹",
     heraldicColor: "from-stone-950 via-zinc-900 to-amber-950",
     heraldicBorder: "border-stone-400",
@@ -308,11 +335,14 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     name: "Revident Ignác Šiml",
     epithet: "Císařský daňový exekutor",
     role: "Úřední předvolání & razítka",
-    tag: "Vysoká odolnost (16 HP, 2 Obrana) · Úřední předvolání · Stav [OKOLKOVÁNO]",
+    tag: "C. k. daňová kontrola (16 HP, 2 Obrana) · Razítko ZAMÍTNUTO · Stav [OKOLKOVÁNO]",
     beerBadge: "Erární ležák 11°",
     maxHp: 16,
     defense: 2,
     fury: 5,
+    persistence: 5,
+    passiveName: "C. k. daňová kontrola",
+    passiveDesc: "Útoky do nepřítele se stavem [OKOLKOVÁNO] udělují +1 DMG a revident získá +1 Štít jako úřední krytí.",
     icon: "📑",
     heraldicColor: "from-yellow-950 via-stone-900 to-amber-950",
     heraldicBorder: "border-amber-600",
@@ -329,7 +359,6 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
       { id: "gov_stake_1884", upgradeLevel: 0 },
       { id: "brass_stamp_denied", upgradeLevel: 0 },
       { id: "rast_gasser_revolver", upgradeLevel: 0 },
-      { id: "domicile_inspection", upgradeLevel: 0 },
     ],
   },
 };
@@ -573,6 +602,8 @@ export function TitleScreen({
                     ) : null}
                     <span className="text-stone-500">·</span>
                     <span className="text-amber-400">💢{hunter.fury}%</span>
+                    <span className="text-stone-500">·</span>
+                    <span className="text-zinc-400" title={`Verva: ${hunter.persistence ?? 5}`}>🪦{hunter.persistence ?? 5}</span>
                   </div>
                 </button>
               );
@@ -646,6 +677,12 @@ export function TitleScreen({
                     <span>🗡️ +{activeHunter.backstabBonus} % Zákeřný úder</span>
                   </div>
                 ) : null}
+                <div
+                  className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-zinc-600 bg-zinc-950 text-zinc-100 text-xs font-black shadow-md"
+                  title={`Verva ${activeHunter.persistence ?? 5}: určuje, jak hluboko do záporných životů může lovec klesnout před definitivním skonem (Zubatá)`}
+                >
+                  <span>🪦 {activeHunter.persistence ?? 5} Verva</span>
+                </div>
               </div>
             </div>
 
@@ -697,6 +734,23 @@ export function TitleScreen({
                   {activeHunter.tag}
                 </span>
               </div>
+
+              {/* 0. Pasivní signatura */}
+              {activeHunter.passiveName && (
+                <div className="p-2 sm:p-2.5 rounded-xl bg-stone-950/90 border border-rose-900/40 shadow-sm flex items-start gap-2">
+                  <div className="p-1 rounded bg-rose-950 border border-rose-700 text-rose-300 mt-0.5 shrink-0 text-sm">
+                    ✨
+                  </div>
+                  <div>
+                    <div className="text-xs font-serif font-black text-rose-300">
+                      Pasivní signatura: {activeHunter.passiveName}
+                    </div>
+                    <div className="text-xs text-stone-200 leading-snug">
+                      {activeHunter.passiveDesc}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* 1. Podpisová zbraň */}
               <div className="p-2 sm:p-2.5 rounded-xl bg-stone-950/90 border border-stone-800 shadow-sm flex items-start gap-2">

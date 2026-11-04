@@ -49,7 +49,7 @@ Počet odehraných tahů spotřebovávajících čas, po které musí destička 
 _Avoid_: Cooldown, CD, Nabíjení, Přebíjení, Odpočinek
 
 **Švunk**:
-Bojová hybnost získaná při usmrcení nepřítele kombem, která okamžitě zkrátí Chladnutí první destičce tohoto komba o počet destiček v něm zařazených.
+Bojová hybnost získaná při usmrcení nepřítele kombem, která okamžitě zkrátí Chladnutí první destičce tohoto komba a manévru Krok do nepřítele o počet destiček v něm zařazených.
 _Avoid_: Momentum, Druhý dech, Reset, Tempo
 
 **Obrana**:
@@ -101,7 +101,7 @@ Vencovo zakončovací 3-kombo: předvede bezchybnou sokolskou sestavu s tyčí z
 _Avoid_: Česneková aura, Pivní dech, Slet
 
 **Bojové rozlícení**:
-Trvalá bojová vlastnost postavy vyjadřující její temperament a kumulující se procentuální bonus ke zranění, který narůstá na začátku každého kola dané postavy a přetrvává po celý souboj. Posiluje přímé útoky destičkami, manévry (Krok do nepřítele) a kinetické poškození ze srážky při Odstrčení.
+Bojová vlastnost postavy vyjadřující její temperament a kumulující se procentuální modifikátor zranění, který narůstá na začátku každého kola dané postavy. Může být dynamicky zvyšován nebo snižován konkrétními destičkami a manévry a může klesnout i do záporných hodnot (reprezentuje nasycení, letargii, omámenost či stoický klid, kdy útočné poškození klesá pod základ). Posiluje (nebo v záporu tlumí) přímé útoky destičkami, manévry (Krok do nepřítele) a kinetické poškození ze srážky při Odstrčení.
 _Avoid_: Rage, Fury, Zuřivost, Berserk, Enrage
 
 **Polní furiant**:
@@ -111,6 +111,20 @@ _Avoid_: Berserker, Barbarian, Šílenec, Zuřivec
 **Zákeřný úder**:
 Bojový úder vedený zezadu do zad protivníka nebo proti cíli pod vlivem Zmatení (❓), který uděluje o 50 % vyšší poškození (Kapsářka Káča má díky své profesi mistrovský bonus +100 %). Platí oboustranně pro lovce i nepřátele.
 _Avoid_: Backstab, Sneak Attack, Útok ze zálohy, Bodnutí do zad
+
+**Zchlazení**:
+Stav vyvolaný poklesem Bojového rozlícení pod 0 % (až do limitu −50 %), označovaný modrou ikonou (🧊). Reprezentuje nasycení, rozvahu, letargii či ztlumení běsnění, při němž je udělené zranění sníženo (vždy však garantuje minimálně 1 DMG u útoků s nenulovým základem).
+_Avoid_: Chill, Debuff, Zmrazení, Otupělost
+
+**Zubatá**:
+Kritický stav lovce, jemuž kleslo Zdraví na nulu či do záporných hodnot (`HP <= 0`), signalizovaný temným symbolem lebky s kosou (💀) a Odpočtem Zubaté nad hlavou. Při vstupu do tohoto stavu nebo při dalším obdrženém zásahu lovec v šoku okamžitě vyprázdní svou frontu akcí a vrátí destičky do ruky. Pokud lovec v tomto stavu zahájí i ukončí svůj tah bez vyléčení, klesne jeho Verva o 1. Vítězství v místnosti či vyléčení nad nulu (`HP >= 1`) Zubatou zažene.
+_Avoid_: Death's Door, Grim Reaper, Kmotra Smrt, Na prahu smrti, Agónie
+
+**Verva**:
+Trvalá expediční vlastnost lovce udávající maximální hloubku záporných životů, kterou lovec unese, než definitivně zhasne a zemře. Zbývající rezerva vyjadřuje Odpočet Zubaté (`Verva + HP`). Při dlouhém prodlévání v záporných životech Verva trvale degraduje, lze ji však vyspravit poctivým odpočinkem a občerstvením v Hospodě U Svěcené pípy.
+_Avoid_: Persistence, Willpower, Houževnatost, Vytrvalost, Odolnost, Životní síla
+
+
 
 
 

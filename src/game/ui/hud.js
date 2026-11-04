@@ -57,6 +57,10 @@ export function renderHud(container, runState, battleState, callbacks = {}) {
   const canToggleBattle = Boolean(isMapView && battleState && battleState.status === 'playing');
   const heroDef = battleState?.hero?.defense ?? runState?.defense ?? 1;
   const heroArmor = battleState?.hero?.armor ?? runState?.armor ?? 0;
+  const heroPersistence = battleState?.hero?.persistence ?? runState?.persistence ?? 5;
+  const heroMaxPersistence = battleState?.hero?.maxPersistence ?? runState?.maxPersistence ?? 5;
+  const isReaper = Boolean(battleState?.hero?.isReaperActive);
+  const reaperCountdown = isReaper ? (battleState.hero.persistence + battleState.hero.hp) : null;
   const heroDisplayName = battleState?.hero?.name || runState?.hunterName || 'Venca Česnekáč';
 
   container.innerHTML = `
@@ -70,11 +74,22 @@ export function renderHud(container, runState, battleState, callbacks = {}) {
           <span class="hud-location" title="${locationTitle}">${locationTitle}</span>${curseHtml}
         </div>
         <div class="hud-vitals">
-          <div class="hud-hp-group" title="Zdraví lovce (${heroDisplayName})">
+          <div class="hud-hp-group ${isReaper ? 'hud-hp-in-reaper' : ''}" title="Zdraví lovce (${heroDisplayName})${isReaper ? ` · Zubatá na krku! (${reaperCountdown} zbývá do skonu)` : ''}">
             <span class="hud-vital-label">Zdraví:</span>
             <div class="hud-hearts">${heartsHtml}</div>
-            <span class="hud-hp-numbers"><span class="hud-hp-icon" aria-hidden="true">❤️</span>${hp}/${maxHp}<span class="hud-unit-suffix"> HP</span></span>
+            <span class="hud-hp-numbers ${isReaper ? 'hud-hp-danger' : ''}"><span class="hud-hp-icon" aria-hidden="true">${isReaper ? '💀' : '❤️'}</span>${hp}/${maxHp}${isReaper ? ` (💀 ${reaperCountdown})` : ''}<span class="hud-unit-suffix"> HP</span></span>
           </div>
+          ${isReaper ? `
+            <span class="hud-separator">·</span>
+            <div class="hud-reaper-badge pulse-reaper" title="Zubatá na krku! Lovec se drží při životě jen silou vůle. Zbývající odpočet do definitivního skonu: ${reaperCountdown}">
+              💀 <strong>${reaperCountdown}</strong> <span class="hud-reaper-title">Zubatá na krku!</span>
+            </div>
+          ` : `
+            <span class="hud-separator">·</span>
+            <div class="hud-persistence" title="Verva lovce (${heroPersistence}/${heroMaxPersistence}): určuje, jak hluboko do záporných životů může lovec klesnout, než definitivně podlehne Zubaté.">
+              🪦 <strong>${heroPersistence}</strong><span class="hud-unit-suffix"> Verva</span>
+            </div>
+          `}
           <span class="hud-separator">·</span>
           <div class="hud-defense" title="Obrana lovce (${heroDef}): na začátku každého kola získá ${heroDef} Štítu">
             🛡️ <strong>${battleState?.hero?.statuses?.shield ? `${battleState.hero.statuses.shield} Štít` : `${heroDef} Obrana`}</strong>
@@ -87,6 +102,11 @@ export function renderHud(container, runState, battleState, callbacks = {}) {
             <span class="hud-separator">·</span>
             <div class="hud-fury" title="Bojové rozlícení lovce (+${battleState.hero.currentFury} %): Zvyšuje veškeré poškození v boji (+${battleState.hero.fury || 10} % za kolo)">
               💢 <strong>+${battleState.hero.currentFury} %</strong><span class="hud-unit-suffix"> Rozlícení</span>
+            </div>
+          ` : (battleState?.hero?.currentFury || 0) < 0 ? `
+            <span class="hud-separator">·</span>
+            <div class="hud-fury hud-fury-cold" style="color: #60a5fa;" title="Zchlazení lovce (${battleState.hero.currentFury} %): Snižuje poškození útoků v boji (nasycení, rozvaha či letargie, min. 1 DMG). Vyprchá přirozeným růstem Rozlícení (+${battleState.hero.fury || 10} % za kolo).">
+              🧊 <strong>${battleState.hero.currentFury} %</strong><span class="hud-unit-suffix"> Zchlazení</span>
             </div>
           ` : ''}
           <span class="hud-separator">·</span>

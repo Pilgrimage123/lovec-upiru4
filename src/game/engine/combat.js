@@ -28,7 +28,9 @@ import {
   isVampireEntity,
   isHumanEntity,
   canDamageFinishVampires,
-  resolveEntityDeath
+  resolveEntityDeath,
+  isHeroAlive,
+  applyHealToEntity
 } from './state.js';
 import { applyResonances } from './combo.js';
 import { getHunterDialogue } from '../config/dialogues.js';
@@ -45,9 +47,10 @@ export function computeHeroTileBonus(state, tile, slotIdx) {
     dmgBonus += getStatusStacks(state.hero, 'empower');
   }
   let furyBonus = 0;
-  const heroFury = state.hero?.currentFury || 0;
+  const rawFury = state.hero?.currentFury || 0;
+  const heroFury = Math.max(-50, rawFury);
   const baseDamage = tile.dmg ?? (tile.pattern && tile.pattern[0]?.dmg) ?? 0;
-  if (heroFury > 0 && (baseDamage > 0 || tile.type === 'attack')) {
+  if (heroFury !== 0 && (baseDamage > 0 || tile.type === 'attack')) {
     furyBonus = Math.round(baseDamage * (heroFury / 100));
     dmgBonus += furyBonus;
   }
@@ -69,22 +72,30 @@ export function checkSvunkBonus(state, comboLength, events = []) {
 
   if (kills <= 0) return false;
 
-  const firstTile = (state.hand || []).find((t) => t.instanceId === firstTileId);
-  if (!firstTile) return false;
-
   const reduction = comboLength;
-  firstTile.currentCooldown = Math.max(0, firstTile.currentCooldown - reduction);
-  events.push({
-    type: 'svunk',
-    instanceId: firstTile.instanceId,
-    tileName: firstTile.name,
-    reduction,
-    newCooldown: firstTile.currentCooldown
-  });
-  events.push({
-    type: 'log',
-    text: `⚡ ŠVUNK! Padl upír v kombu – otevírací destička „${firstTile.name}“ chytila švunk a zkrátila Chladnutí o ${reduction} (zbývá: ${firstTile.currentCooldown})!`
-  });
+  const firstTile = (state.hand || []).find((t) => t.instanceId === firstTileId);
+  if (firstTile) {
+    firstTile.currentCooldown = Math.max(0, firstTile.currentCooldown - reduction);
+    events.push({
+      type: 'svunk',
+      instanceId: firstTile.instanceId,
+      tileName: firstTile.name,
+      reduction,
+      newCooldown: firstTile.currentCooldown
+    });
+    events.push({
+      type: 'log',
+      text: `⚡ ŠVUNK! Padl upír v kombu – otevírací destička „${firstTile.name}“ chytila švunk a zkrátila Chladnutí o ${reduction} (zbývá: ${firstTile.currentCooldown})!`
+    });
+  }
+
+  if (state.hero && (state.hero.bumpCooldown || 0) > 0) {
+    state.hero.bumpCooldown = Math.max(0, state.hero.bumpCooldown - reduction);
+    events.push({
+      type: 'log',
+      text: `⚡ ŠVUNK! Manévr Krok do nepřítele chytil švunk a zkrátil Chladnutí o ${reduction} (zbývá: ${state.hero.bumpCooldown})!`
+    });
+  }
   return true;
 }
 
@@ -553,10 +564,10 @@ export function computeEnemyQueueTargetedCells(state, enemy) {
 }
 
 export function resolveEnemyPhase(state, events = []) {
-  if (!state.hero || state.hero.hp <= 0) return events;
+  if (!state.hero || !isHeroAlive(state.hero)) return events;
   const enemies = getSortedEnemiesByInitiative(state);
   for (const enemy of enemies) {
-    if (enemy.hp <= 0 || state.hero.hp <= 0) continue;
+    if (enemy.hp <= 0 || !isHeroAlive(state.hero)) continue;
     if (hasStatus(enemy, 'stun')) {
       consumeStatus(enemy, 'stun', 1);
       events.push({
@@ -620,7 +631,7 @@ export function resolveEnemyPhase(state, events = []) {
           });
           const queueCopy = [...enemy.actionQueue];
           for (const tileId of queueCopy) {
-            if (enemy.hp <= 0 || state.hero.hp <= 0) break;
+            if (enemy.hp <= 0 || !isHeroAlive(state.hero)) break;
             const def = ENEMY_TILES[tileId];
             if (def) {
               executeEnemyQueuedTile(state, enemy, def, events);
@@ -640,7 +651,7 @@ export function resolveEnemyPhase(state, events = []) {
         resolveEnemyStepOrIntentAction(state, enemy, enemy.nextAction, events);
       }
 
-      if (enemy.hp > 0 && state.hero.hp > 0) {
+      if (enemy.hp > 0 && isHeroAlive(state.hero)) {
         checkArmingCondition(state, enemy, events);
         planEnemyNextAction(state, enemy);
         enemy.countdown = enemy.queueState === 'ARMED_RED' ? 1 : 2;
@@ -700,8 +711,50 @@ export function resolveHeroHitOnTarget(
       text: `🦅 Sokolí spár! Cíl (${target.name}) je člověk – kritická slabina za +2 DMG!`
     });
   }
-  const totalDmg = Math.max(0, baseDmg + sneakBonusDmg + bonusInfo.dmgBonus + humanBonus);
+
+  let dragounBonus = 0;
+  let armorIgnore = 0;
+  if (hero.hunterId === 'dragoun' && hero.movedThisTurn) {
+    dragounBonus = 2;
+    armorIgnore = 1;
+    events.push({
+      type: 'log',
+      text: `⚔️ Kavalírský nápřah! Útočný výpad z pohybu proráží formaci (+2 DMG, ignoruje 1 Brnění)!`
+    });
+  }
+
+  let helsingBonus = 0;
+  if (hero.hunterId === 'helsing' && Math.abs(target.cell - hero.cell) >= 2 && Boolean(target.statuses?.bleed > 0)) {
+    helsingBonus = 2;
+    tile.currentCooldown = Math.max(0, (tile.currentCooldown || 0) - 1);
+    events.push({
+      type: 'log',
+      text: `🏹 Lovec trofejí! Přesný zásah krvácejícího cíle na dálku do slabiny (+2 DMG, −1 Chladnutí)!`
+    });
+  }
+
   const targetHadOkolkovano = Boolean(target.statuses?.okolkovano > 0);
+  let revidentBonus = 0;
+  if (hero.hunterId === 'revident' && targetHadOkolkovano) {
+    revidentBonus = 1;
+    addStatus(hero, 'shield', 1, events);
+    events.push({
+      type: 'log',
+      text: `📑 C. k. daňová kontrola! Zásah okolkovaného poplatníka (+1 DMG, +1 Štít z úředního krytí)!`
+    });
+  }
+
+  if (tile.reduceTargetFury && target.entityType === 'enemy') {
+    const furyDrop = tile.reduceTargetFury;
+    target.currentFury = Math.max(-50, (target.currentFury || 0) - furyDrop);
+    events.push({
+      type: 'log',
+      text: `🏮 Půlnoční lucerna: Světlo zchladilo běsnění postavy ${target.name} (−${furyDrop} % Rozlícení, nyní: ${target.currentFury} %)!`
+    });
+  }
+
+  const calculatedDmg = baseDmg + sneakBonusDmg + bonusInfo.dmgBonus + humanBonus + dragounBonus + helsingBonus + revidentBonus;
+  const totalDmg = (rawBaseDmg > 0 || baseDmg > 0) ? Math.max(1, calculatedDmg) : Math.max(0, calculatedDmg);
   let blockType = null;
   if (totalDmg > 0) {
     const beforeIdx = events.length;
@@ -714,7 +767,8 @@ export function resolveHeroHitOnTarget(
         attackerId: hero.id,
         attackerCell: hero.cell,
         isComboHit: comboLength >= 2,
-        reason: tile.id
+        reason: tile.id,
+        ignoreArmor: armorIgnore
       },
       events
     );
@@ -789,7 +843,7 @@ export function resolveHeroHitOnTarget(
 }
 
 export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events = []) {
-  if (!state.hero || state.hero.hp <= 0 || !tile) return;
+  if (!state.hero || !isHeroAlive(state.hero) || !tile) return;
   const bonusInfo = computeHeroTileBonus(state, tile, slotIdx);
   const hero = state.hero;
   const prevEmpower = hero.statuses?.empower || 0;
@@ -809,11 +863,8 @@ export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events 
   }
 
   if (tile.healAmount) {
-    const missing = (hero.maxHp || 20) - hero.hp;
-    const healed = Math.min(tile.healAmount, missing);
+    const healed = applyHealToEntity(state, hero, tile.healAmount, events);
     if (healed > 0) {
-      hero.hp += healed;
-      events.push({ type: 'heal', targetId: hero.id, cell: hero.cell, amount: healed, hp: hero.hp, remainingHp: hero.hp });
       events.push({
         type: 'log',
         text: `🥟 ${hero.name} si zakousl do buchty a vyléčil se o ${healed} HP!`
@@ -834,13 +885,51 @@ export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events 
     events.push({ type: 'log', text: `🛡️ ${hero.name} získal +${tile.shieldAmount} Štítu!` });
   }
 
+  if (tile.type === 'move' || tile.leapDistance) {
+    hero.movedThisTurn = true;
+  }
+
+  if (typeof tile.furyChange === 'number') {
+    hero.currentFury = Math.max(-50, (hero.currentFury || 0) + tile.furyChange);
+    events.push({
+      type: 'fury_changed',
+      heroId: hero.id,
+      delta: tile.furyChange,
+      currentFury: hero.currentFury
+    });
+    if (tile.furyChange > 0) {
+      events.push({
+        type: 'log',
+        text: `💢 ${hero.name} se rozohnil o +${tile.furyChange} % Rozlícení (nyní ${hero.currentFury > 0 ? '+' : ''}${hero.currentFury} % v boji)!`
+      });
+    } else {
+      events.push({
+        type: 'log',
+        text: `🧊 ${hero.name} zchladil svou horkou krev o ${tile.furyChange} % Rozlícení (nyní ${hero.currentFury > 0 ? '+' : ''}${hero.currentFury} %)! ${hero.currentFury < 0 ? 'Nastalo Zchlazení 🧊.' : ''}`
+      });
+    }
+  }
+
+  if (tile.convertFuryToShield && (hero.currentFury || 0) > 0) {
+    const furySpent = hero.currentFury;
+    const shieldGained = Math.floor(furySpent / (tile.furyPerShield || 5));
+    hero.currentFury = 0;
+    if (shieldGained > 0) {
+      addStatus(hero, 'shield', shieldGained, events);
+      events.push({
+        type: 'log',
+        text: `🫖 Noblesní sebeovládání! Lady Gwendolyn přetavila ${furySpent} % hněvu na +${shieldGained} chladnokrevného Štítu!`
+      });
+    }
+  }
+
   if (tile.cureStatus && hero.statuses?.[tile.cureStatus]) {
     delete hero.statuses[tile.cureStatus];
     events.push({ type: 'status_cleared', targetId: hero.id, status: tile.cureStatus });
     events.push({ type: 'log', text: `✨ ${hero.name} se zbavil stavu ${tile.cureStatus}!` });
   }
 
-  if (tile.id === 'domicile_inspection' && hero.hp > 0) {
+  if (tile.id === 'domicile_inspection' && isHeroAlive(hero)) {
     const adjCell = hero.cell + hero.facing;
     const targetEnemy = state.enemies.find((e) => e.hp > 0 && e.cell === adjCell);
     if (targetEnemy) {
@@ -967,7 +1056,7 @@ export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events 
         }
       }
     }
-  } else if (tile.stepBackward && hero.hp > 0) {
+  } else if (tile.stepBackward && isHeroAlive(hero)) {
     const hName = hero.givenName || hero.name;
     const dest = hero.cell - hero.facing * tile.stepBackward;
     if (isValidCell(dest, state) && !getEntityAt(state, dest)) {
@@ -1122,7 +1211,7 @@ export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events 
     }
   }
 
-  if (tile.selfFlipAfter && hero.hp > 0) {
+  if (tile.selfFlipAfter && isHeroAlive(hero)) {
     hero.facing = -hero.facing;
     events.push({ type: 'turn', entityId: hero.id, facing: hero.facing, free: true });
     events.push({
@@ -1131,7 +1220,7 @@ export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events 
     });
   }
 
-  if (tile.recoilBack && hero.hp > 0) {
+  if (tile.recoilBack && isHeroAlive(hero)) {
     const dest = hero.cell - hero.facing * tile.recoilBack;
     if (isValidCell(dest, state) && !getEntityAt(state, dest)) {
       const from = hero.cell;
@@ -1150,7 +1239,7 @@ export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events 
     }
   }
 
-  if (tile.reloadRangedTiles && hero.hp > 0) {
+  if (tile.reloadRangedTiles && isHeroAlive(hero)) {
     for (const t of state.hand) {
       if (t.type === 'ranged' && t.currentCooldown > 0) {
         t.currentCooldown = Math.max(0, t.currentCooldown - tile.reloadRangedTiles);
@@ -1200,7 +1289,7 @@ export function processReinforcements(state, events = []) {
 }
 
 export function checkBattleEnd(state, events = []) {
-  if (state.hero.hp <= 0) {
+  if (!isHeroAlive(state.hero)) {
     state.status = 'lost';
     events.push({ type: 'battle_lost' });
     return 'lost';
@@ -1209,6 +1298,22 @@ export function checkBattleEnd(state, events = []) {
   const anyPendingReinforcements = state.reinforcements.some((r) => !r.spawned);
   if (!anyLivingEnemies && !anyPendingReinforcements) {
     state.status = 'won';
+    if (state.hero && state.hero.hp <= 0 && isHeroAlive(state.hero)) {
+      state.hero.hp = 1;
+      state.hero.isReaperActive = false;
+      delete state.hero.reaperCountdown;
+      events.push({
+        type: 'reaper_cleared',
+        targetId: state.hero.id,
+        cell: state.hero.cell,
+        hp: 1,
+        text: `🕯️ Vítězství zahnalo Zubatou! ${state.hero.name} vyvázl s 1 HP.`
+      });
+      events.push({
+        type: 'log',
+        text: `🕯️ Vítězství zahnalo Zubatou! Všichni nepřátelé padli – ${state.hero.name} se vyškrábal z hrobu a jeho zdraví je stabilizováno na 1 HP.`
+      });
+    }
     events.push({ type: 'battle_won' });
     return 'won';
   }
@@ -1217,7 +1322,7 @@ export function checkBattleEnd(state, events = []) {
 
 export function consumeHeroStunIfPresent(state) {
   const hero = state?.hero;
-  if (!hero || hero.hp <= 0 || !(hero.statuses?.stun > 0)) return null;
+  if (!hero || !isHeroAlive(hero) || !(hero.statuses?.stun > 0)) return null;
   hero.statuses.stun -= 1;
   if (hero.statuses.stun <= 0) delete hero.statuses.stun;
   return {
@@ -1232,7 +1337,7 @@ export function consumeHeroStunIfPresent(state) {
 
 export function consumeHeroConfusionIfPresent(state) {
   const hero = state?.hero;
-  if (!hero || hero.hp <= 0 || !(hero.statuses?.confusion > 0)) return null;
+  if (!hero || !isHeroAlive(hero) || !(hero.statuses?.confusion > 0)) return null;
   hero.statuses.confusion -= 1;
   if (hero.statuses.confusion <= 0) delete hero.statuses.confusion;
   const events = [
@@ -1274,6 +1379,31 @@ export function advanceTurnAfterPlayerAction(state, events = [], extraCdReductio
     }
   }
 
+  if (state.heroStartedTurnInReaper && state.hero?.isReaperActive && state.hero.hp <= 0) {
+    state.hero.persistence = (state.hero.persistence || 5) - 1;
+    const countdown = state.hero.persistence + state.hero.hp;
+    state.hero.reaperCountdown = countdown;
+    events.push({
+      type: 'reaper_decay',
+      targetId: state.hero.id,
+      cell: state.hero.cell,
+      persistence: state.hero.persistence,
+      reaperCountdown: countdown,
+      text: `⏳ Zubatá utahuje smyčku! Verva klesá na ${state.hero.persistence} (Odpočet: ${countdown})`
+    });
+    events.push({
+      type: 'log',
+      text: `⏳ Zubatá utahuje smyčku! Verva lovce klesá na ${state.hero.persistence} (Odpočet Zubaté: ${countdown}).`
+    });
+    if (countdown <= 0) {
+      state.hero.deathResolved = true;
+      state.hero.isReaperActive = false;
+      resolveEntityDeath(state, state.hero, { reason: 'reaper_decay' }, events);
+      checkBattleEnd(state, events);
+      return events;
+    }
+  }
+
   if (checkBattleEnd(state, events) !== 'playing') return events;
   resolveEnemyPhase(state, events);
   if (checkBattleEnd(state, events) !== 'playing') return events;
@@ -1305,6 +1435,32 @@ export function advanceTurnAfterPlayerAction(state, events = [], extraCdReductio
       ent.statuses.shield = ent.defense;
       events.push({ type: 'shield_granted', targetId: ent.id, cell: ent.cell, amount: ent.defense });
     }
+    if (ent.hp > 0 && ent.entityType === 'hero' && ent.hunterId === 'ponocny') {
+      let lanternTargets = 0;
+      for (const e of state.enemies) {
+        if (e.hp > 0) {
+          const offset = (e.cell - ent.cell) * ent.facing;
+          if (offset === 1 || offset === 2) {
+            lanternTargets++;
+          }
+        }
+      }
+      if (lanternTargets > 0) {
+        ent.statuses = ent.statuses || {};
+        ent.statuses.shield = (ent.statuses.shield || 0) + lanternTargets;
+        events.push({
+          type: 'shield_granted',
+          targetId: ent.id,
+          cell: ent.cell,
+          amount: lanternTargets,
+          reason: 'ponocny_lantern_passive'
+        });
+        events.push({
+          type: 'log',
+          text: `🏮 Zákaz nočního vycházení! Lucerna ponocného odhalila noční havěť (${lanternTargets}) – Bartoloměj získává +${lanternTargets} Štít navíc!`
+        });
+      }
+    }
   }
 
   // 3. Next round begins: All actors accumulate their Bojové rozlícení
@@ -1319,12 +1475,28 @@ export function advanceTurnAfterPlayerAction(state, events = [], extraCdReductio
         currentFury: ent.currentFury
       });
       if (ent.entityType === 'hero') {
-        events.push({
-          type: 'log',
-          text: `💢 Bojové rozlícení! ${ent.name} se rozlítil o +${ent.fury} % (celkem +${ent.currentFury} % v boji)!`
-        });
+        if (ent.currentFury > 0) {
+          events.push({
+            type: 'log',
+            text: `💢 Bojové rozlícení! ${ent.name} se rozlítil o +${ent.fury} % (celkem +${ent.currentFury} % v boji)!`
+          });
+        } else if (ent.currentFury < 0) {
+          events.push({
+            type: 'log',
+            text: `🧊 Zchlazení! ${ent.name} se probouzí z letargie (+${ent.fury} %; zbývá zchlazení ${ent.currentFury} %)!`
+          });
+        } else {
+          events.push({
+            type: 'log',
+            text: `⚖️ ${ent.name} vyrovnal své Rozlícení na 0 %!`
+          });
+        }
       }
     }
+  }
+
+  if (state.hero) {
+    state.hero.movedThisTurn = false;
   }
 
   // Tick Butler lifespan
@@ -1407,6 +1579,7 @@ export function advanceTurnAfterPlayerAction(state, events = [], extraCdReductio
 
   processReinforcements(state, events);
   state.turn += 1;
+  state.heroStartedTurnInReaper = Boolean(state.hero?.isReaperActive && state.hero.hp <= 0);
   checkBattleEnd(state, events);
   assertBoardInvariants(state);
   return events;
@@ -1434,13 +1607,17 @@ export function resolveHeroBump(state, hero, enemy, dir, targetCell, hunterId, e
       durationMs: 2500
     });
   }
-  const heroFury = hero.currentFury || 0;
+  const rawFury = hero.currentFury || 0;
+  const heroFury = Math.max(-50, rawFury);
   const isFromBehind = enemy.facing === hero.facing;
   const isConfused = Boolean(enemy.statuses?.confusion > 0);
   const isSneak = isFromBehind || isConfused;
   const sneakPct = isSneak ? (hero.backstabBonus || 50) : 0;
   const totalBonusPct = heroFury + sneakPct;
-  const getBumpDmg = (base) => base + (totalBonusPct > 0 ? Math.round(base * (totalBonusPct / 100)) : 0);
+  const getBumpDmg = (base) => {
+    const calculated = base + Math.round(base * (totalBonusPct / 100));
+    return base > 0 ? Math.max(1, calculated) : 0;
+  };
 
   if (hunterId === 'honza') {
     hero.bumpCooldown = 3;
@@ -1468,11 +1645,11 @@ export function resolveHeroBump(state, hero, enemy, dir, targetCell, hunterId, e
     dealDamage(state, enemy, dmg, { reason: 'dragoon_bump', attackerId: hero.id }, events);
     if (enemy.hp > 0) {
       pushEntity(state, enemy, dir, 1, events, { pusher: hero });
-      addStatus(enemy, 'stun', 1, events);
+      addStatus(enemy, 'confusion', 1, events);
     }
     events.push({
       type: 'log',
-      text: `⚔️ Úder těžkým jílcem! Rittmeister Jaromír udeřil ${enemy.name} mosazným jílcem (${dmg} DMG), odhodil ho a omráčil!`
+      text: `⚔️ Úder těžkým jílcem! Rittmeister Jaromír udeřil ${enemy.name} mosazným jílcem (${dmg} DMG), odhodil ho a uvrhl do Zmatení (❓)!`
     });
   } else if (hunterId === 'zlodejka') {
     hero.bumpCooldown = 2;
@@ -1504,11 +1681,11 @@ export function resolveHeroBump(state, hero, enemy, dir, targetCell, hunterId, e
     dealDamage(state, enemy, dmg, { reason: 'ponocny_bump', attackerId: hero.id }, events);
     if (enemy.hp > 0) {
       pushEntity(state, enemy, dir, 1, events, { pusher: hero });
-      addStatus(enemy, 'stun', 1, events);
+      addStatus(enemy, 'confusion', 1, events);
     }
     events.push({
       type: 'log',
-      text: `🏮 Zarazení ratištěm! Ponocný Bartoloměj zarazil kované ratiště halapartny do ${enemy.name} (${dmg} DMG), odhodil ho a omráčil!`
+      text: `🏮 Zarazení ratištěm! Ponocný Bartoloměj zarazil kované ratiště halapartny do ${enemy.name} (${dmg} DMG), odhodil ho a uvrhl do Zmatení (❓)!`
     });
   } else if (hunterId === 'silak') {
     hero.bumpCooldown = 3;
@@ -1632,7 +1809,7 @@ export function resolveHeroBump(state, hero, enemy, dir, targetCell, hunterId, e
 
 export function stepHero(state, direction) {
   const events = [];
-  if (state.status !== 'playing' || state.hero.hp <= 0) return { ok: false, events };
+  if (state.status !== 'playing' || !isHeroAlive(state.hero)) return { ok: false, events };
   const stunRes = consumeHeroStunIfPresent(state);
   if (stunRes) return stunRes;
   const confRes = consumeHeroConfusionIfPresent(state);
@@ -1660,6 +1837,7 @@ export function stepHero(state, direction) {
   if (!occupant) {
     const from = hero.cell;
     hero.cell = targetCell;
+    hero.movedThisTurn = true;
     events.push({ type: 'move', entityId: hero.id, from, to: targetCell, facing: hero.facing });
     events.push({ type: 'log', text: `👣 ${hName} popošel na pole ${targetCell + 1}.` });
     triggerCellTerrainOnEnter(state, hero, targetCell, events);
@@ -1731,7 +1909,7 @@ export function stepHero(state, direction) {
 
 export function turnHero(state) {
   const events = [];
-  if (state.status !== 'playing' || state.hero.hp <= 0) return { ok: false, events };
+  if (state.status !== 'playing' || !isHeroAlive(state.hero)) return { ok: false, events };
   const stunRes = consumeHeroStunIfPresent(state);
   if (stunRes) return stunRes;
 
@@ -1817,7 +1995,7 @@ export function turnHero(state) {
 
 export function waitHero(state) {
   const events = [];
-  if (state.status !== 'playing' || state.hero.hp <= 0) return { ok: false, events };
+  if (state.status !== 'playing' || !isHeroAlive(state.hero)) return { ok: false, events };
   const stunRes = consumeHeroStunIfPresent(state);
   if (stunRes) return stunRes;
 
@@ -1836,7 +2014,7 @@ export function waitHero(state) {
 
 export function insertTileIntoQueue(state, instanceId) {
   const events = [];
-  if (state.status !== 'playing' || state.hero.hp <= 0) return { ok: false, events };
+  if (state.status !== 'playing' || !isHeroAlive(state.hero)) return { ok: false, events };
   const stunRes = consumeHeroStunIfPresent(state);
   if (stunRes) return stunRes;
 
@@ -1879,7 +2057,7 @@ export function insertTileIntoQueue(state, instanceId) {
 
 export function removeTileFromQueue(state, slotOrInstance) {
   const events = [];
-  if (state.status !== 'playing' || state.hero.hp <= 0) return { ok: false, events };
+  if (state.status !== 'playing' || !isHeroAlive(state.hero)) return { ok: false, events };
   const idx =
     typeof slotOrInstance === 'number'
       ? slotOrInstance
@@ -1899,7 +2077,7 @@ export function removeTileFromQueue(state, slotOrInstance) {
 
 export function reorderQueue(state, fromIdx, toIdx) {
   const events = [];
-  if (state.status !== 'playing' || state.hero.hp <= 0) return { ok: false, events };
+  if (state.status !== 'playing' || !isHeroAlive(state.hero)) return { ok: false, events };
   if (fromIdx === toIdx) return { ok: true, events };
   if (
     fromIdx < 0 ||
@@ -1997,8 +2175,12 @@ export function executeSingleQueueSlot(
 
 export function resolveHunterCombo3Bonus(state, hero, events) {
   const hunterId = hero.hunterId || hero.kind || 'venca';
-  const heroFury = hero?.currentFury || 0;
-  const getComboDmg = (base) => base + (heroFury > 0 ? Math.round(base * (heroFury / 100)) : 0);
+  const rawFury = hero?.currentFury || 0;
+  const heroFury = Math.max(-50, rawFury);
+  const getComboDmg = (base) => {
+    const calculated = base + (heroFury !== 0 ? Math.round(base * (heroFury / 100)) : 0);
+    return base > 0 ? Math.max(1, calculated) : 0;
+  };
   events.push({ type: 'hunter_combo3', hunterId, heroId: hero.id });
   const comboShout = getHunterDialogue(hunterId, 'combo_cries');
   if (comboShout?.text) {
@@ -2086,19 +2268,15 @@ export function resolveHunterCombo3Bonus(state, hero, events) {
     if (nearestInLine) {
       const dmg = getComboDmg(6);
       dealDamage(state, nearestInLine, dmg, { reason: 'silak_combo3', attackerId: hero.id }, events);
-      addStatus(nearestInLine, 'stun', 1, events);
+      addStatus(nearestInLine, 'confusion', 1, events);
+      events.push({
+        type: 'log',
+        text: `🏋️ Drtivý zásah činkou způsobil ${dmg} DMG a uvrhl postavu ${nearestInLine.name} do Zmatení (❓)!`
+      });
     }
   } else if (hunterId === 'anglicanka') {
-    hero.hp = Math.min(hero.maxHp || 18, hero.hp + 4);
+    applyHealToEntity(state, hero, 4, events);
     addStatus(hero, 'shield', 4, events);
-    events.push({
-      type: 'heal',
-      targetId: hero.id,
-      cell: hero.cell,
-      amount: 4,
-      hp: hero.hp,
-      remainingHp: hero.hp
-    });
     const dmg = getComboDmg(3);
     events.push({
       type: 'log',
@@ -2162,7 +2340,7 @@ export function finalizeComboAndAdvanceTurn(state, comboLength) {
   if (comboLength >= 2) {
     state.stats.combosExecuted = (state.stats.combosExecuted || 0) + 1;
   }
-  if (comboLength >= 3 && state.hero && state.hero.hp > 0) {
+  if (comboLength >= 3 && state.hero && isHeroAlive(state.hero)) {
     resolveHunterCombo3Bonus(state, state.hero, events);
   }
   delete state.comboResonanceBonusPush;

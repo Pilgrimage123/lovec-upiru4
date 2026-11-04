@@ -14,25 +14,25 @@ console.log('✓ Status definition for Bojové rozlícení verified');
 
 console.log('\n--- TEST 2: Initial Loadout Fury & Enemy Temperament ---');
 assert.strictEqual(STARTING_LOADOUTS.classic.fury, 10, 'Sokol Venca has 10% fury');
-assert.strictEqual(STARTING_LOADOUTS.honza.fury, 15, 'Chasník Honza has 15% fury');
+assert.strictEqual(STARTING_LOADOUTS.honza.fury, 25, 'Chasník Honza has 25% fury (Polní furiant)');
 assert.strictEqual(STARTING_LOADOUTS.dragoun.fury, 10, 'Rittmeister Jaromír has 10% fury');
 assert.strictEqual(STARTING_LOADOUTS.zlodejka.fury, 10, 'Káča has 10% fury');
 assert.strictEqual(STARTING_LOADOUTS.ponocny.fury, 5, 'Ponocný has 5% fury');
-assert.strictEqual(STARTING_LOADOUTS.silak.fury, 15, 'Silák Gustav has 15% fury');
+assert.strictEqual(STARTING_LOADOUTS.silak.fury, 10, 'Silák Gustav has 10% fury');
 assert.strictEqual(STARTING_LOADOUTS.anglicanka.fury, 5, 'Lady Gwendolyn has 5% fury');
 assert.strictEqual(STARTING_LOADOUTS.helsing.fury, 10, 'Sir Arthur has 10% fury');
 assert.strictEqual(STARTING_LOADOUTS.revident.fury, 5, 'Revident Šiml has 5% fury');
 
 const state = createBattleState({ encounterId: 'tutorial_1', hunterId: 'honza' });
-assert.strictEqual(state.hero.fury, 15);
-assert.strictEqual(state.hero.currentFury, 15, 'Initial currentFury matches base fury in round 1');
+assert.strictEqual(state.hero.fury, 25);
+assert.strictEqual(state.hero.currentFury, 25, 'Initial currentFury matches base fury in round 1');
 console.log('✓ All 9 hunters and hero battle state fury initialization verified');
 
 console.log('\n--- TEST 3: Round accumulation of Bojové rozlícení ---');
 // Advance round and verify accumulation
 const events = [];
 advanceTurnAfterPlayerAction(state, events);
-assert.strictEqual(state.hero.currentFury, 30, 'Accumulated to 30% after round 1 advance (15 + 15)');
+assert.strictEqual(state.hero.currentFury, 50, 'Accumulated to 50% after round 1 advance (25 + 25)');
 assert(events.some(e => e.type === 'fury_accumulated' && e.targetId === state.hero.id), 'Emitted fury_accumulated event');
 assert(events.some(e => e.type === 'log' && e.text.includes('Bojové rozlícení')), 'Logged Bojové rozlícení');
 console.log('✓ Bojové rozlícení accumulates each round and logs message');
