@@ -4,6 +4,58 @@ Veškeré významné změny v projektu Lovec upírů jsou zaznamenávány v tomt
 
 Formát vychází z [Keep a Changelog](https://keepachangelog.com/cs/1.0.0/).
 
+## [1.9.0] - 2026-11-04
+
+### Přidáno & Vyváženo (Added & Balanced)
+- **Vyvážení lovců podle benchmarku Sokola Venci a asymetrická Verva (ADR 0013)**:
+  - **Benchmark Sokola Venci**: Sokol Venca Česnek (20 HP, 1 Obrana, 10 % Rozlícení, 5 Verva, rotace Chladnutí 2–2–3, silná poziční kontrola) stanoven jako kanonický vyvažovací etalon hry.
+  - **Asymetrická Verva (škála 4 až 7)**:
+    - *Chasník Honza*: Verva **7** (ultimátní selský držák kompenzující 0 Obranu).
+    - *Ponocný Bartoloměj*: Verva **6** (starý noční strážce ošlehaný lety ve službě).
+    - *Kapsářka Káča*: Verva **6** (pouliční houževnatost jako záchranná síť pro nízkých 14 HP).
+    - *Revident Ignác*: Verva **5** (úřední vytrvalost).
+    - *Sokol Venca*: Verva **5** (zlatý střed a benchmark rovnováhy).
+    - *Silák Gustav*: Verva **5** (cirkusový silák).
+    - *Sir Arthur*: Verva **5** (koloniální veterán).
+    - *Lady Gwendolyn*: Verva **4** (aristokratická dáma spoléhající na komorníka).
+    - *Rittmeister Jaromír*: Verva **4** (důstojník spoléhající na výcvik a kryt čepelí).
+  - **Odstranění hluchých tahů Ponocného**:
+    - Destička *Půlnoční lucerna* zrychlena ze 4 na **Chladnutí 3** (poškození 2 DMG, zachováno Zmatení ❓ a −15 % Rozlícení nepřítele).
+    - Manévr *Zarazení ratištěm* (Krok do nepřítele) zrychlen ze 4 na **Chladnutí 3**.
+  - **Bojová renesance Revidenta Ignáce Šimla**:
+    - Destička *Mosazné razítko „ZAMÍTNUTO“* posílena z 1 na **2 DMG** (s pasivkou a kolkem uděluje až 4 DMG).
+    - Destička *Služební revolver Rast & Gasser* zkrácena z 5 na **Chladnutí 3**.
+    - Základní zdraví navýšeno z 16 na **18 HP**.
+  - **Zkrocení Rittmeistera Jaromíra Vraného**:
+    - Základní zdraví sníženo z 24 na **20 HP** (vyrovnáno s Vencou a Honzou), čímž byl odstraněn přehnaný polštář životů.
+  - **Zoufalý furiant (Chasník Honza)**:
+    - Při prvním vstupu do stavu Zubatá ($HP \le 0$) získá Honza okamžitý jednorázový nouzový nával **+25 % Bojového rozlícení**.
+  - **Správa a obnova Vervy v Hospodě U Svěcené pípy**:
+    - Pivo a guláš v hospodě plně doplňuje degradovanou Vervu zpět do maxima lovce.
+
+- **Prohloubení taktických rolí lovců a aktivní modulace Rozlícení (ADR 0012)**:
+  - **9 unikátních pasivních signatur**:
+    - *Chasník Honza (Selský furiant)*: +10 % Rozlícení při každém průrazu zranění do tělesného HP.
+    - *Silák Gustav (Cirkusová dominance)*: +1 kolizní DMG při nárazu nepřítele o zeď/entitu a +2 Štít pro Gustava.
+    - *Rittmeister Jaromír (Kavalírský nápřah)*: Po posunu vpřed uděluje útokem +2 DMG a ignoruje 1 bod nepřátelského Brnění.
+    - *Sir Arthur (Lovec trofejí)*: Zásah na dálku (2+ pole) do krvácejícího cíle uděluje +2 DMG a snižuje Chladnutí destičky o 1.
+    - *Ponocný Bartoloměj (Zákaz nočního vycházení)*: Na začátku kola získá +1 Štít za každého nepřítele v dosahu lucerny (1–2 pole).
+    - *Revident Ignác (C. k. daňová kontrola)*: Zásah cíle se stavem [OKOLKOVÁNO] uděluje +1 DMG a Revident získává +1 Štít.
+    - *Lady Gwendolyn (Noblesní sebeovládání)*: Destička *Královská etiketa* noblesně přetaví veškeré kladné Rozlícení na Štít (každých 5 % Rozlícení = +1 Štít).
+    - *Kapsářka Káča (Zákeřný úder)*: Mistrovský bonus +100 % k poškození ze zálohy nebo proti zmateným cílům.
+    - *Sokol Venca (Sokolský tělocvik)*: Akrobatické skoky, přitahování a Česnekový oblak pro definitivní dorážení upírů.
+  - **Aktivní modulace Rozlícení a stav Zchlazení 🧊**:
+    - Možnost dynamicky zvyšovat Rozlícení (*Nápřah* +20 %, *Zatnutí svalů* +10 %) i snižovat (*Povidlová buchta* −15 %, *Půlnoční lucerna* −15 % nepříteli).
+    - Pokles pod 0 % aktivuje stav **Zchlazení 🧊** (až do limitu −50 %), snižující útočné poškození při garanci minimálně 1 DMG.
+  - **Sjednocení a vymýcení nekanonických stavů**:
+    - Nekanonický stav a pojem „Omráčení“ byl 100% vymýcen ve prospěch jednotného stavu **Zmatení (❓)**.
+    - Startovní balíček Revidenta standardizován na 3 destičky (destička *Kontrola domovského listu* přesunuta do bazénu odměn).
+    - Mechanika **Švunk** nově zkracuje i Chladnutí manévru Krok do nepřítele.
+
+### Ověřeno (Verified)
+- Všech 15 testovacích modulů v `scratch_tests/` prochází se 100% úspěšností.
+- Kompletní produkční build Vite / TypeScript prošel bez chyb a varování za 920 ms.
+
 ## [1.8.0] - 2026-11-04
 
 ### Přidáno (Added)

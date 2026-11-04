@@ -1676,7 +1676,7 @@ export function resolveHeroBump(state, hero, enemy, dir, targetCell, hunterId, e
       text: `🧤 Kapsářská záměna! Káča Pavučina podklouzla ${enemy.name} pod nohama, prohodila si s ním místo a otočila ho zády k sobě!`
     });
   } else if (hunterId === 'ponocny') {
-    hero.bumpCooldown = 4;
+    hero.bumpCooldown = 3;
     const dmg = getBumpDmg(3);
     dealDamage(state, enemy, dmg, { reason: 'ponocny_bump', attackerId: hero.id }, events);
     if (enemy.hp > 0) {

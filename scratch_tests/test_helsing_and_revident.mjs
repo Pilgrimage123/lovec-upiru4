@@ -100,8 +100,8 @@ console.log('--- Testing Helsing & Revident Implementation ---');
 {
   const state = createBattleState({ hunterId: 'revident' });
   state.props = [];
-  assert.equal(state.hero.maxHp, 16, 'Revident should have exactly 16 HP');
-  assert.equal(state.hero.hp, 16, 'Revident should have 16 HP');
+  assert.equal(state.hero.maxHp, 18, 'Revident should have exactly 18 HP');
+  assert.equal(state.hero.hp, 18, 'Revident should have 18 HP');
   assert.equal(state.hero.defense, 2, 'Revident should have 2 defense');
   assert.equal(state.hero.statuses.shield, 2, 'Revident starts with 2 shield from dossier');
 
@@ -113,7 +113,7 @@ console.log('--- Testing Helsing & Revident Implementation ---');
     'brass_stamp_denied',
     'rast_gasser_revolver'
   ]);
-  console.log('✓ Revident HP (16), Defense (2), and 3 Starter Tiles verified');
+  console.log('✓ Revident HP (18), Defense (2), and 3 Starter Tiles verified');
 
   // Test Úřední předvolání (Signature Action):
   // When revident turns facing enemy at distance exactly 2:
@@ -148,12 +148,12 @@ console.log('--- Testing Helsing & Revident Implementation ---');
   console.log('✓ Revident Erární osikový kolík vz. 1884 verified');
 
   // Test brass_stamp_denied:
-  // 1 DMG (okolkovano already consumed by stake), push 1, delay enemy countdown by 1
+  // 2 DMG (okolkovano already consumed by stake), push 1, delay enemy countdown by 1
   enemy.cell = 3;
   enemy.countdown = 1;
   const stampTile = state.hand.find((t) => t.id === 'brass_stamp_denied');
   executeHeroTileEffect(state, stampTile, 0, 1, []);
-  assert.equal(enemy.hp, 5, 'Brass stamp deals 1 base DMG (6 - 1 = 5)');
+  assert.equal(enemy.hp, 4, 'Brass stamp deals 2 base DMG (6 - 2 = 4)');
   assert.equal(enemy.cell, 4, 'Enemy pushed back 1 cell');
   assert.equal(enemy.countdown, 2, 'Enemy countdown delayed by 1');
   console.log('✓ Revident Mosazné razítko „ZAMÍTNUTO“ verified');
@@ -165,7 +165,7 @@ console.log('--- Testing Helsing & Revident Implementation ---');
   enemy.cell = 4;
   const revTile = state.hand.find((t) => t.id === 'rast_gasser_revolver');
   executeHeroTileEffect(state, revTile, 0, 1, []);
-  assert.equal(enemy.hp, 3, 'Revolver deals 2 DMG (5 - 2 = 3)');
+  assert.equal(enemy.hp, 2, 'Revolver deals 2 DMG (4 - 2 = 2)');
   assert.equal(state.hero.cell, 1, 'Revident pushed back to cell 1 by recoil');
   console.log('✓ Revident Služební revolver Rast & Gasser (recoil back) verified');
 

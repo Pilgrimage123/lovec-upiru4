@@ -1152,34 +1152,34 @@ export const HERO_TILES = {
     icon: 'tile.watchman_lantern',
     type: 'attack',
     tags: ['holy'],
-    dmg: 3,
-    cooldown: 4,
+    dmg: 2,
+    cooldown: 3,
     quick: false,
     reduceTargetFury: 15,
     pattern: [
-      { offset: 1, dmg: 3, effects: [{ type: 'confusion', amount: 1 }] }
+      { offset: 1, dmg: 2, effects: [{ type: 'confusion', amount: 1 }] }
     ],
     resonance: null,
-    description: 'Žhnoucí olejová lucerna vrhne oslepující světlo na 1 pole vpřed za 3 DMG, uvrhne upíra do Zmatení (❓) na 1 tah a zchladí jeho běsnění (−15 % Rozlícení).',
+    description: 'Žhnoucí olejová lucerna vrhne oslepující světlo na 1 pole vpřed za 2 DMG, uvrhne upíra do Zmatení (❓) na 1 tah a zchladí jeho běsnění (−15 % Rozlícení) (Chladnutí 3).',
     flavor: '„V tomhle světle pozná každý noční tvor, jak vypadá hřích.“',
     starter: true,
     upgrades: [
       {
         level: 1,
         name: 'Posvěcená olejová lampa+',
-        dmg: 5,
-        cooldown: 4,
+        dmg: 4,
+        cooldown: 3,
         reduceTargetFury: 20,
         pattern: [
-          { offset: 1, dmg: 5, effects: [{ type: 'confusion', amount: 1 }] }
+          { offset: 1, dmg: 4, effects: [{ type: 'confusion', amount: 1 }] }
         ],
-        description: '5 DMG na 1 pole vpřed + Zmatení (❓) na 1 tah a zchlazení cíle (−20 % Rozlícení).'
+        description: '4 DMG na 1 pole vpřed + Zmatení (❓) na 1 tah a zchlazení cíle (−20 % Rozlícení) (Chladnutí 3).'
       },
       {
         level: 2,
         name: 'Věčné světlo strážce++',
         dmg: 6,
-        cooldown: 3,
+        cooldown: 2,
         reduceTargetFury: 25,
         pattern: [
           {
@@ -1191,7 +1191,7 @@ export const HERO_TILES = {
             ]
           }
         ],
-        description: 'CD 3! 6 DMG na 1 pole vpřed, Zmatení (❓) na 1 tah, zchlazení cíle (−25 % Rozlícení) a Česnekový oblak.'
+        description: 'CD 2! 6 DMG na 1 pole vpřed, Zmatení (❓) na 1 tah, zchlazení cíle (−25 % Rozlícení) a Česnekový oblak.'
       }
     ]
   },
@@ -1663,33 +1663,33 @@ export const HERO_TILES = {
     icon: 'tile.brass_stamp_denied',
     type: 'attack',
     tags: ['craft'],
-    dmg: 1,
+    dmg: 2,
     cooldown: 3,
     quick: false,
     delayEnemyCountdown: 1,
-    pattern: [{ offset: 1, dmg: 1, effects: [{ type: 'push', distance: 1 }] }],
+    pattern: [{ offset: 1, dmg: 2, effects: [{ type: 'push', distance: 1 }] }],
     resonance: null,
-    description: '1 políčko před sebe za 1 DMG. Odrazí nepřítele o 1 políčko dozadu a odloží jeho naplánovaný útok o 1 tah (+1 tah do odpočtu).',
+    description: '1 políčko před sebe za 2 DMG. Odrazí nepřítele o 1 políčko dozadu a odloží jeho naplánovaný útok o 1 tah (+1 tah do odpočtu).',
     flavor: '„Vaše žádost o vysátí krve byla zamítnuta pro formální nedostatky v kolkování!“',
     starter: true,
     upgrades: [
       {
         level: 1,
         name: 'Mosazné razítko „ZAMÍTNUTO“+',
-        dmg: 2,
+        dmg: 3,
         cooldown: 3,
         delayEnemyCountdown: 1,
-        pattern: [{ offset: 1, dmg: 2, effects: [{ type: 'push', distance: 1 }] }],
-        description: '2 DMG, odrazí o 1 pole a odloží útok nepřítele o 1 tah.'
+        pattern: [{ offset: 1, dmg: 3, effects: [{ type: 'push', distance: 1 }] }],
+        description: '3 DMG, odrazí o 1 pole a odloží útok nepřítele o 1 tah.'
       },
       {
         level: 2,
         name: 'Císařská pečeť „ZAMÍTNUTO“++',
-        dmg: 3,
+        dmg: 4,
         cooldown: 2,
         delayEnemyCountdown: 1,
-        pattern: [{ offset: 1, dmg: 3, effects: [{ type: 'push', distance: 2 }] }],
-        description: 'Chladnutí 2! 3 DMG, odrazí o 2 pole a odloží útok nepřítele o 1 tah.'
+        pattern: [{ offset: 1, dmg: 4, effects: [{ type: 'push', distance: 2 }] }],
+        description: 'Chladnutí 2! 4 DMG, odrazí o 2 pole a odloží útok nepřítele o 1 tah.'
       }
     ]
   },
@@ -1700,7 +1700,7 @@ export const HERO_TILES = {
     type: 'ranged',
     tags: ['craft', 'holy'],
     dmg: 2,
-    cooldown: 5,
+    cooldown: 3,
     quick: false,
     projectileRange: 5,
     recoilBack: 1,
@@ -1712,7 +1712,7 @@ export const HERO_TILES = {
       { offset: 5, dmg: 2, projectile: true }
     ],
     resonance: null,
-    description: 'Střelba v přímé linii za 2 DMG. Chladnutí 5 tahů (kvůli papírování s vyúčtováním stříbra), ale zpětný ráz posune revidenta o 1 políčko dozadu.',
+    description: 'Střelba v přímé linii za 2 DMG. Chladnutí 3 tahy, ale zpětný ráz posune revidenta o 1 políčko dozadu.',
     flavor: '„Osmiranný armádní revolver ráže 8 mm. Každou vystřelenou stříbrnou kulku musím písemně zdůvodnit.“',
     starter: true,
     upgrades: [
@@ -1720,7 +1720,7 @@ export const HERO_TILES = {
         level: 1,
         name: 'Služební revolver Rast & Gasser+',
         dmg: 3,
-        cooldown: 4,
+        cooldown: 3,
         projectileRange: 5,
         recoilBack: 1,
         pattern: [
@@ -1730,13 +1730,13 @@ export const HERO_TILES = {
           { offset: 4, dmg: 3, projectile: true },
           { offset: 5, dmg: 3, projectile: true }
         ],
-        description: 'Chladnutí 4, 3 DMG v linii, zpětný ráz 1 pole vzad.'
+        description: 'Chladnutí 3, 3 DMG v linii, zpětný ráz 1 pole vzad.'
       },
       {
         level: 2,
         name: 'Vyladěný revolver Rast & Gasser++',
         dmg: 4,
-        cooldown: 3,
+        cooldown: 2,
         projectileRange: 5,
         recoilBack: 1,
         pattern: [
@@ -1746,7 +1746,7 @@ export const HERO_TILES = {
           { offset: 4, dmg: 4, projectile: true },
           { offset: 5, dmg: 4, projectile: true }
         ],
-        description: 'Chladnutí 3! 4 DMG v linii, zpětný ráz 1 pole vzad.'
+        description: 'Chladnutí 2! 4 DMG v linii, zpětný ráz 1 pole vzad.'
       }
     ]
   },

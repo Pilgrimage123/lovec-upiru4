@@ -26,13 +26,13 @@ console.log('--- TEST 1: Ověření všech 9 loadoutů lovců a pasivních signa
 const expectedHunters = {
   honza: { fury: 25, defense: 0, armor: 1, hp: 20, passive: 'Selský furiant', tileCount: 3 },
   silak: { fury: 10, defense: 1, armor: 1, hp: 22, passive: 'Cirkusová dominance', tileCount: 3 },
-  dragoun: { fury: 10, defense: 2, armor: 0, hp: 24, passive: 'Kavalírský nápřah', tileCount: 3 },
+  dragoun: { fury: 10, defense: 2, armor: 0, hp: 20, passive: 'Kavalírský nápřah', tileCount: 3 },
   zlodejka: { fury: 10, defense: 2, armor: 0, hp: 14, passive: 'Zákeřný úder', tileCount: 3 },
   ponocny: { fury: 5, defense: 2, armor: 0, hp: 26, passive: 'Zákaz nočního vycházení', tileCount: 3 },
   anglicanka: { fury: 5, defense: 2, armor: 0, hp: 18, passive: 'Noblesní sebeovládání', tileCount: 3 },
   venca: { fury: 10, defense: 1, armor: 0, hp: 20, passive: 'Sokolský tělocvik', tileCount: 3 },
   helsing: { fury: 10, defense: 1, armor: 0, hp: 18, passive: 'Lovec trofejí', tileCount: 3 },
-  revident: { fury: 5, defense: 2, armor: 0, hp: 16, passive: 'C. k. daňová kontrola', tileCount: 3 }
+  revident: { fury: 5, defense: 2, armor: 0, hp: 18, passive: 'C. k. daňová kontrola', tileCount: 3 }
 };
 
 for (const [id, exp] of Object.entries(expectedHunters)) {

@@ -455,8 +455,25 @@ export function dealDamage(state, target, rawAmount, opts = {}, events = []) {
   });
 
   if (isHero && target.hp <= 0 && !isFatal) {
+    const enteredReaperNow = !target.isReaperActive;
     target.isReaperActive = true;
     target.reaperCountdown = reaperCountdown;
+
+    if (enteredReaperNow && target.hunterId === 'honza') {
+      const prevFury = target.currentFury || 0;
+      target.currentFury = prevFury + 25;
+      events.push({
+        type: 'fury_changed',
+        heroId: target.id,
+        delta: 25,
+        currentFury: target.currentFury
+      });
+      events.push({
+        type: 'log',
+        text: `🥖 Zoufalý furiant! Chasník Honza na prahu Zubaté pociťuje nával slepé zuřivosti (+25 % Bojového rozlícení, nyní: ${target.currentFury} %)!`
+      });
+    }
+
     if (state.queue && state.queue.length > 0) {
       for (const instanceId of state.queue) {
         const tile = state.hand?.find((t) => t.instanceId === instanceId);
@@ -467,11 +484,11 @@ export function dealDamage(state, target, rawAmount, opts = {}, events = []) {
         type: 'queue_cleared_reaper',
         targetId: target.id,
         cell: target.cell,
-        text: `💀 Zubatá! Šok z rány vyrazil ${target.name} zbraň z ruky a vyprázdnil frontu akcí!`
+        text: `💀 Zubatá! Šok z rány vyrazil lovci ${target.name} zbraň z ruky a vyprázdnil frontu akcí!`
       });
       events.push({
         type: 'log',
-        text: `💀 Zubatá! Zásah srazil hrdinu na práh smrti – fronta akcí byla okamžitě vyprázdněna a destičky vráceny na opasek!`
+        text: `💀 Zubatá! Zásah srazil lovce na práh smrti – fronta akcí byla okamžitě vyprázdněna a destičky vráceny na opasek!`
       });
     }
     events.push({
@@ -1107,21 +1124,8 @@ export function createBattleState(opts = {}) {
   const hunterId = opts.hunterId || opts.loadoutId || 'venca';
   const heroMaxHp =
     opts.heroMaxHp ||
-    (hunterId === 'ponocny'
-      ? 26
-      : hunterId === 'dragoun'
-      ? 24
-      : hunterId === 'silak'
-      ? 22
-      : hunterId === 'helsing'
-      ? 18
-      : hunterId === 'anglicanka'
-      ? 18
-      : hunterId === 'zlodejka'
-      ? 14
-      : hunterId === 'revident'
-      ? 16
-      : 20);
+    STARTING_LOADOUTS[hunterId]?.maxHp ||
+    20;
   const heroHp = Math.min(heroMaxHp, opts.heroHp ?? heroMaxHp);
 
   const defaultDecks = {

@@ -121,8 +121,12 @@ Kritický stav lovce, jemuž kleslo Zdraví na nulu či do záporných hodnot (`
 _Avoid_: Death's Door, Grim Reaper, Kmotra Smrt, Na prahu smrti, Agónie
 
 **Verva**:
-Trvalá expediční vlastnost lovce udávající maximální hloubku záporných životů, kterou lovec unese, než definitivně zhasne a zemře. Zbývající rezerva vyjadřuje Odpočet Zubaté (`Verva + HP`). Při dlouhém prodlévání v záporných životech Verva trvale degraduje, lze ji však vyspravit poctivým odpočinkem a občerstvením v Hospodě U Svěcené pípy.
+Trvalá expediční vlastnost lovce udávající maximální hloubku záporných životů, kterou lovec unese, než definitivně zhasne a zemře. Zbývající rezerva vyjadřuje Odpočet Zubaté (`Verva + HP`). Je asymetricky rozdělena v rozsahu 4 až 7 bodů podle tělesné konstituce a archetypu lovce (referenční středobodem je Sokol Venca s 5 body). Při dlouhém prodlévání v záporných životech Verva trvale degraduje, lze ji však vyspravit poctivým odpočinkem a občerstvením v Hospodě U Svěcené pípy.
 _Avoid_: Persistence, Willpower, Houževnatost, Vytrvalost, Odolnost, Životní síla
+
+**Benchmark Sokola Venci**:
+Kanonický etalon herní dynamiky, tempa a rovnováhy lovce (20 HP, 1 Obrana, 10 % Bojové rozlícení, 5 Verva, rotace Chladnutí 2–2–3). Všechny útočné, obranné i manévrovací schopnosti ostatních lovců jsou kalibrovány a poměřovány vůči této vyvážené šabloně.
+_Avoid_: Power level, Baseline, Referenční hrdina, Standardní postava
 
 
 
