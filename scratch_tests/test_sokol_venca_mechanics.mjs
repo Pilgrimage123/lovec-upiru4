@@ -172,20 +172,103 @@ console.log('--- TEST 4: Dialogues & Comic Bubbles for Sokol Venca ---');
   console.log('✓ Sokol Venca dialogues verified');
 }
 
-console.log('--- TEST 5: Free turn in Garlic Cloud ---');
+console.log('--- TEST 5: Free turn in Garlic Cloud (Venca only) ---');
 {
-  const state = createBattleState({ hunterId: 'venca' });
-  state.hero.cell = 2;
-  state.hero.facing = 1;
-  state.terrain[2] = { type: 'garlic_cloud', duration: 2 };
+  const stateVenca = createBattleState({ hunterId: 'venca' });
+  stateVenca.hero.cell = 2;
+  stateVenca.hero.facing = 1;
+  stateVenca.terrain[2] = { type: 'garlic_cloud', duration: 2 };
 
-  const turnRes = turnHero(state);
-  assert.equal(turnRes.ok, true);
-  assert.equal(state.hero.facing, -1, 'Turned around');
-  const turnEvt = turnRes.events.find((e) => e.type === 'turn');
-  assert.equal(turnEvt.free, true, 'Turn was FREE inside garlic cloud');
+  const turnResVenca = turnHero(stateVenca);
+  assert.equal(turnResVenca.ok, true);
+  assert.equal(stateVenca.hero.facing, -1, 'Turned around');
+  const turnEvtVenca = turnResVenca.events.find((e) => e.type === 'turn');
+  assert.equal(turnEvtVenca.free, true, 'Turn was FREE inside garlic cloud for Venca');
+  assert.equal(turnResVenca.freeTurn, true, 'Venca gets freeTurn: true');
 
-  console.log('✓ Free turn in garlic cloud verified');
+  // Other hunters do NOT get free turn in garlic cloud
+  const stateHonza = createBattleState({ hunterId: 'honza' });
+  stateHonza.hero.cell = 2;
+  stateHonza.hero.facing = 1;
+  stateHonza.terrain[2] = { type: 'garlic_cloud', duration: 2 };
+
+  const turnResHonza = turnHero(stateHonza);
+  assert.equal(turnResHonza.ok, true);
+  assert.equal(stateHonza.hero.facing, -1, 'Turned around');
+  const turnEvtHonza = turnResHonza.events.find((e) => e.type === 'turn');
+  assert.equal(turnEvtHonza.free, false, 'Turn was NOT free for Honza inside garlic cloud');
+  assert.equal(Boolean(turnResHonza.freeTurn), false, 'Honza freeTurn is false');
+
+  console.log('✓ Free turn in garlic cloud verified for Venca, normal turn for other hunters');
+}
+
+console.log('--- TEST 6: Venca Garlic Grenade on entering Zubatá ---');
+{
+  const state = createBattleState({ hunterId: 'classic', heroHp: 3, heroMaxHp: 20, persistence: 5 });
+  state.hero.cell = 3;
+  state.hero.statuses = {};
+
+  const enemyNear = {
+    id: 'test_enemy_1',
+    name: 'Netopýří zplozenec',
+    entityType: 'enemy',
+    kind: 'bat',
+    hp: 10,
+    maxHp: 10,
+    cell: 2,
+    facing: 1,
+    statuses: {}
+  };
+  const torpidVampire = {
+    id: 'test_vampire_1',
+    name: 'Hraběcí nohsled',
+    entityType: 'enemy',
+    kind: 'vampire',
+    hp: 0,
+    maxHp: 10,
+    cell: 4,
+    facing: -1,
+    isTorpid: true,
+    torporTurnsLeft: 2,
+    statuses: { torpor: 2 }
+  };
+  state.enemies = [enemyNear, torpidVampire];
+
+  const events = [];
+  dealDamage(state, state.hero, 5, { reason: 'test_hit' }, events);
+
+  assert.equal(state.hero.hp, -2, 'Hero dropped to -2 HP (Zubatá)');
+  assert.equal(state.hero.isReaperActive, true, 'Zubatá is active');
+
+  // Garlic cloud spawned on cell 2, 3, 4
+  assert.equal(state.terrain[2]?.type, 'garlic_cloud', 'Cell 2 has garlic cloud');
+  assert.equal(state.terrain[3]?.type, 'garlic_cloud', 'Cell 3 has garlic cloud');
+  assert.equal(state.terrain[4]?.type, 'garlic_cloud', 'Cell 4 has garlic cloud');
+
+  // Enemy on cell 2 is confused
+  assert.equal(hasStatus(enemyNear, 'confusion'), true, 'Enemy on cell 2 gained Zmatení');
+
+  // Torpid vampire on cell 4 was finished
+  assert.equal(torpidVampire.isTorpid, false, 'Torpid vampire was finished');
+  assert.equal(torpidVampire.deathResolved, true, 'Torpid vampire death resolved');
+
+  // Log event emitted
+  const hasLog = events.some((e) => e.type === 'log' && e.text.includes('Česnekový granát'));
+  assert.equal(hasLog, true, 'Log announced garlic grenade detonation on Zubatá');
+
+  console.log('✓ Garlic grenade detonation on entering Zubatá verified');
+}
+
+console.log('--- TEST 7: All hunters immune to Garlic Cloud ---');
+{
+  for (const hunterId of ['venca', 'honza', 'dragoun', 'zlodejka', 'ponocny', 'silak', 'anglicanka', 'helsing', 'revident']) {
+    const state = createBattleState({ hunterId, heroHp: 10 });
+    const events = [];
+    const dmg = dealDamage(state, state.hero, 5, { reason: 'garlic_cloud' }, events);
+    assert.equal(dmg, 0, `${hunterId} took 0 dmg from garlic_cloud`);
+    assert.equal(state.hero.hp, 10, `${hunterId} HP unchanged`);
+  }
+  console.log('✓ All 9 hunters verified immune to garlic cloud damage');
 }
 
 console.log('\n=============================================');

@@ -1018,7 +1018,7 @@ export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events 
         events.push({ type: 'terrain_spawn', terrainType: 'garlic_cloud', cell: c });
       }
       const ent = getEntityAt(state, c);
-      if (ent && ent.id !== hero.id) {
+      if (ent && ent.id !== hero.id && ent.entityType !== 'hero') {
         addStatus(ent, 'confusion', 1, events);
         if (ent.isTorpid) {
           dealDamage(state, ent, 2, { reason: 'garlic_grenade', isFinisher: true, canFinishVampires: true }, events);
@@ -1107,7 +1107,7 @@ export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events 
       if (!isValidCell(c, state)) break;
       endCell = c;
       const ent = getEntityAt(state, c);
-      if (ent && ent.id !== hero.id) {
+      if (ent && ent.id !== hero.id && ent.entityType !== 'hero') {
         hitTarget = ent;
         hitStep = p;
         break;
@@ -1938,7 +1938,8 @@ export function turnHero(state) {
   const hero = state.hero;
   const hName = hero.givenName || hero.name || 'Venca';
   hero.facing = -hero.facing;
-  const inGarlic = state.terrain[hero.cell]?.type === 'garlic_cloud';
+  const isVenca = hero.hunterId === 'venca' || hero.hunterId === 'classic' || hero.kind === 'venca';
+  const inGarlic = Boolean(isVenca && state.terrain[hero.cell]?.type === 'garlic_cloud');
   events.push({ type: 'turn', entityId: hero.id, facing: hero.facing, free: inGarlic });
 
   if (hero.hunterId === 'revident') {
@@ -2004,7 +2005,7 @@ export function turnHero(state) {
   if (inGarlic) {
     events.push({
       type: 'log',
-      text: '🧄 Otočení v Česnekovém oblaku je ZDARMA (nestojí tah)!'
+      text: '🧄 Sokolský tělocvik: Otočení v Česnekovém oblaku je pro Vencu ZDARMA (nestojí tah)!'
     });
     return { ok: true, freeTurn: true, events };
   }

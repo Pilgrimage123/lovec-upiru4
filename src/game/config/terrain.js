@@ -34,7 +34,7 @@ export const TERRAIN_TYPES = {
     id: 'garlic_cloud',
     name: 'Česnekový oblak',
     icon: 'terrain.garlic_cloud',
-    description: 'Štiplavý dým (2 tahy). Na začátku tahu udělí 1 DMG (upírům 2 DMG a dorazí ochromené). Lovec se v něm otáčí zdarma (0 tahů).'
+    description: 'Štiplavý dým (2 tahy). Na začátku tahu udělí nepřátelům 1 DMG (upírům 2 DMG a dorazí ochromené). Všichni lovci jsou proti oblaku imunní. Venca se v něm navíc otáčí zdarma (0 tahů).'
   },
   holy_water_puddle: {
     id: 'holy_water_puddle',

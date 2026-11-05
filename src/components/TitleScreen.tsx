@@ -88,7 +88,7 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
     fury: 10,
     persistence: 5,
     passiveName: "Sokolský tělocvik",
-    passiveDesc: "Skoky přes překážky a Česnekový oblak (otáčení zdarma, 2 DMG upírům a jejich dorážení).",
+    passiveDesc: "V Česnekovém oblaku se otáčí zdarma (0 tahů). Při vstupu do Zubaté (HP ≤ 0) na jeho poli okamžitě vybuchne Česnekový granát.",
     icon: "🦅",
     heraldicColor: "from-emerald-950 via-stone-900 to-amber-950",
     heraldicBorder: "border-emerald-500",
@@ -474,9 +474,9 @@ const HUNTER_ABILITY_TIPS: Record<
 > = {
   classic: {
     passiveMechanics:
-      "V Česnekovém oblaku se Venca otáčí klávesou W za 0 tahů (zdarma). Každý nepřítel, který v oblaku začíná svůj tah, utrpí 1 DMG (upíři 2 DMG) a oblak dokáže definitivně dorazit upíra v Ochromení (💤) i bez kolíku.",
+      "V Česnekovém oblaku se Venca otáčí klávesou W za 0 tahů (zdarma). Jakmile jeho životy klesnou na 0 nebo méně a vstoupí do stavu Zubatá na krku (💀), na jeho poli okamžitě vybuchne Česnekový granát (zahalí okolí do oblaku a zmate nepřátele). Všichni lovci jsou proti česnekovému oblaku plně imunní.",
     passiveTip:
-      "Vytvoř pod sebou Česnekový oblak (nárazem nebo Skokem přes kozu) — získáš bezplatné otáčení čelem vzad na obě strany chodby a pasivní dorážení upírů.",
+      "Otáčení v oblaku zdarma ti umožní bleskově měnit směr bez ztráty tahu. Pokud tě nepřátelé srazí do Zubaté, vybuchlý granát zmate okolní potvory a dá ti šanci vyváznout!",
     bumpMechanics:
       "Aktivuje se krokem (A / D) do sousedního nepřítele. Způsobí 1 DMG, odhodí cíl o 1 pole vzad a na jeho původním poli zanechá Česnekový oblak na 2 kola. Chladnutí: 3 tahy.",
     bumpTip:
@@ -755,6 +755,8 @@ function buildSmartInspectData(
         synergy:
           hunter.id === "honza"
             ? "Honza má nejvyšší Vervu (7) a při pádu do Zubaté okamžitě získá +25 % Rozlícení (Zoufalý furiant)!"
+            : (hunter.id === "classic" || hunter.id === "venca")
+            ? "Při vstupu do Zubaté vybuchne na Vencově poli Česnekový granát, zahalí okolí oblakem a zmate nepřátele!"
             : "V Zubaté tě jakýkoliv přímý zásah znovu vyhodí ze soustředění (vyprázdní frontu), proto se rychle vyleč nebo doraz posledního upíra.",
       };
 

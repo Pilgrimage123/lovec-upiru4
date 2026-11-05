@@ -11,7 +11,8 @@ export function renderTileBar(container, state, callbacks = {}) {
 
   const canStepLeft = canHeroMoveDir(state, -1);
   const canStepRight = canHeroMoveDir(state, 1);
-  const inGarlic = state.terrain[state.hero.cell]?.type === 'garlic_cloud';
+  const isVenca = state.hero?.hunterId === 'venca' || state.hero?.hunterId === 'classic' || state.hero?.kind === 'venca';
+  const inGarlic = Boolean(isVenca && state.terrain[state.hero.cell]?.type === 'garlic_cloud');
   const hasQueued = state.queue.length > 0;
 
   const hero = state.hero || {};

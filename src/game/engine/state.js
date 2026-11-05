@@ -289,6 +289,10 @@ export function triggerCellTerrainOnEnter(state, entity, cell, events = []) {
 
 export function dealDamage(state, target, rawAmount, opts = {}, events = []) {
   if (!target || rawAmount <= 0) return 0;
+  const isTargetHero = target.entityType === 'hero' || target.id === state.hero?.id;
+  if (isTargetHero && (opts.reason === 'garlic_cloud' || opts.reason === 'garlic_grenade')) {
+    return 0; // All hunters are immune to garlic cloud and garlic grenade damage
+  }
   if (target.hp <= 0 && target.entityType !== 'hero') {
     if (target.isTorpid && target.entityType === 'enemy') {
       if (canDamageFinishVampires(opts)) {
@@ -472,6 +476,27 @@ export function dealDamage(state, target, rawAmount, opts = {}, events = []) {
         type: 'log',
         text: `🥖 Zoufalý furiant! Chasník Honza na prahu Zubaté pociťuje nával slepé zuřivosti (+25 % Bojového rozlícení, nyní: ${target.currentFury} %)!`
       });
+    }
+
+    if (enteredReaperNow && (target.hunterId === 'venca' || target.hunterId === 'classic' || target.kind === 'venca')) {
+      events.push({
+        type: 'log',
+        text: `💣 Poslední záchrana! Sokol Venca na prahu Zubaté odpálil Česnekový granát přímo pod nohama!`
+      });
+      const radiusCells = [target.cell - 1, target.cell, target.cell + 1].filter((c) => isValidCell(c, state));
+      for (const c of radiusCells) {
+        if (state.terrain[c]?.type !== 'pit') {
+          state.terrain[c] = { type: 'garlic_cloud', duration: 2 };
+          events.push({ type: 'terrain_spawn', terrainType: 'garlic_cloud', cell: c });
+        }
+        const ent = getEntityAt(state, c);
+        if (ent && ent.id !== target.id && ent.entityType !== 'hero') {
+          addStatus(ent, 'confusion', 1, events);
+          if (ent.isTorpid) {
+            dealDamage(state, ent, 2, { reason: 'garlic_grenade', isFinisher: true, canFinishVampires: true }, events);
+          }
+        }
+      }
     }
 
     if (state.queue && state.queue.length > 0) {

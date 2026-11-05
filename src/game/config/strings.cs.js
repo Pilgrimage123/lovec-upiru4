@@ -27,7 +27,7 @@ export const STRINGS = {
   ],
   tutorialHints: [
     'TIP 1 (Kroky): Klávesami A / D popojdeš o 1 pole. Krokem do nepřítele provedeš svůj manévr (Krok do nepřítele).',
-    'TIP 2 (Otočení a Česnek): Klávesou W se otočíš čelem vzad. V Česnekovém oblaku je otočení ZDARMA (0 tahů)!',
+    'TIP 2 (Otočení a Česnek): Klávesou W se otočíš čelem vzad. V Česnekovém oblaku se Sokol Venca otáčí ZDARMA (0 tahů) a všichni lovci jsou proti oblaku imunní!',
     'TIP 3 (Fronta a Kombo): Klávesami 1–4 vložíš destičku do Fronty (1 tah, Rychlovka 0 tahů). Mezerníkem odpálíš celou frontu najednou!',
     'TIP 4 (Záměry a Friendly Fire): Nepřítel se značkou 🚨 1 AKCE po tvém tahu odpálí své kombo. Když ho odstrčíš nebo prohodíš, zasáhne vlastního kumpána!'
   ]
