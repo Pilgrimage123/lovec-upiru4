@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { startGame, startNewRun, appState } from "@/game/main.js";
 import { openRulesModal, openCastleArchiveModal } from "@/game/ui/modal.js";
+import { toggleFullscreen } from "@/game/ui/fullscreen.js";
 import { TacticalAnimationDemo } from "@/components/TacticalAnimationDemo";
 import { TitleScreen } from "@/components/TitleScreen";
 import "@/game/styles/main.css";
@@ -17,6 +18,29 @@ export function Home() {
 
   useEffect(() => {
     void startGame();
+  }, []);
+
+  useEffect(() => {
+    const handleGlobalFullscreenKey = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+      const target = e.target as HTMLElement | null;
+      const tag = target?.tagName || document.activeElement?.tagName || "";
+      if (
+        tag === "INPUT" ||
+        tag === "TEXTAREA" ||
+        tag === "SELECT" ||
+        target?.isContentEditable
+      ) {
+        return;
+      }
+      if (e.key === "f" || e.key === "F") {
+        e.preventDefault();
+        void toggleFullscreen();
+      }
+    };
+
+    window.addEventListener("keydown", handleGlobalFullscreenKey);
+    return () => window.removeEventListener("keydown", handleGlobalFullscreenKey);
   }, []);
 
   useEffect(() => {

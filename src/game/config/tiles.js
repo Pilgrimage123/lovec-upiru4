@@ -24,7 +24,7 @@ export const HERO_TILES = {
       { offset: 2, dmg: 4, effects: [{ type: 'pull' }] }
     ],
     resonance: null,
-    description: 'Dosah 1–2 pole dopředu: 4 DMG (+2 DMG, pokud je cíl člověk) a přitáhne cíl o 1 pole k lovci. Chladnutí 2.',
+    description: 'Dosah 1–2 pole: 4 DMG (+2 DMG lidem) a přitáhne cíl o 1 pole.',
     flavor: '„Pevný sokolský úchop vytáhne každého hříšníka na světlo boží!“',
     starter: true,
     upgrades: [
@@ -37,7 +37,7 @@ export const HERO_TILES = {
           { offset: 1, dmg: 5, effects: [{ type: 'pull' }] },
           { offset: 2, dmg: 5, effects: [{ type: 'pull' }] }
         ],
-        description: 'Dosah 1–2 pole: 5 DMG (+2 DMG proti lidem = 7 DMG) a přitáhne o 1 pole.'
+        description: 'Dosah 1–2 pole: 5 DMG (+2 DMG lidem) a přitáhne o 1 pole.'
       },
       {
         level: 2,
@@ -48,7 +48,7 @@ export const HERO_TILES = {
           { offset: 1, dmg: 6, effects: [{ type: 'pull' }, { type: 'bleed', amount: 2 }] },
           { offset: 2, dmg: 6, effects: [{ type: 'pull' }, { type: 'bleed', amount: 2 }] }
         ],
-        description: 'Dosah 1–2 pole: 6 DMG (+2 DMG proti lidem = 8 DMG), přitáhne o 1 pole a udělí Krvácení (2).'
+        description: 'Dosah 1–2 pole: 6 DMG (+2 DMG lidem), přitáhne o 1 pole a Krvácení (2).'
       }
     ]
   },
@@ -66,7 +66,7 @@ export const HERO_TILES = {
     canFinishVampires: true,
     pattern: [],
     resonance: null,
-    description: 'Přistane o 3 pole dál (zarazí se o zeď). V dosahu 1 od dopadu vytvoří Česnekový oblak (2 kola), který zasažené zmate (❓). Kdo v něm začíná tah, utrpí 1 DMG (upíři 2 DMG). Může dorazit upíra! Chladnutí 3.',
+    description: 'Hod o 3 pole (v okolí ±1): Česnekový oblak na 2 kola a Zmatení (❓). Oblak dává 1 DMG za tah (upírům 2 DMG a doráží je).',
     flavor: '„Domácí česneková třaskavina v pivní lahvi. Upíři po ní lapají po dechu.“',
     starter: true,
     upgrades: [
@@ -79,7 +79,7 @@ export const HERO_TILES = {
         lobDistance: 3,
         canFinishVampires: true,
         cloudDuration: 3,
-        description: 'Česnekový oblak má prodloužené trvání na 3 kola a okamžitě zmate zasažené (❓).'
+        description: 'Česnekový oblak trvá 3 kola a okamžitě zmate zasažené (❓).'
       },
       {
         level: 2,
@@ -90,7 +90,7 @@ export const HERO_TILES = {
         lobDistance: 3,
         canFinishVampires: true,
         cloudDuration: 3,
-        description: 'Chladnutí 2, přímý výbuch za 2 DMG, oblak na 3 kola se Zmatením. Doráží upíry!'
+        description: 'CD 2, výbuch za 2 DMG, oblak na 3 kola se Zmatením (❓). Doráží upíry!'
       }
     ]
   },
@@ -109,9 +109,9 @@ export const HERO_TILES = {
     pattern: [{ offset: 2, dmg: 0, isMoveTarget: true, effects: [] }],
     resonance: {
       nextTileCdReduction: 1,
-      description: 'Rezonance: další destička ve frontě má po odehrání CD −1.'
+      description: 'Rezonance: další destička ve frontě má CD −1.'
     },
-    description: 'Sokolský přeskok o 2 pole vpřed (přeskočí překážku i nepřítele na poli 1, nepříteli se nic nestane). Na výchozím poli a v okolí (±1 pole) zanechá Česnekový oblak (2 kola, 1 DMG za tah, upíři 2 DMG, bez zmatení). Chladnutí 2.',
+    description: 'Přeskok o 2 pole vpřed přes překážku či nepřítele. V místě odrazu (±1 pole) zanechá Česnekový oblak (2 kola).',
     flavor: '„Pevný odraz z podlahy a ladný let! Sokolský tělocvik v praxi!“',
     starter: true,
     upgrades: [
@@ -127,7 +127,7 @@ export const HERO_TILES = {
           nextTileCdReduction: 2,
           description: 'Rezonance: další destička ve frontě má CD −2.'
         },
-        description: 'Přeskok o 2 pole vpřed, 3-polový Česnekový oblak a Rezonance sníží CD další destičky o 2.'
+        description: 'Přeskok o 2 pole, 3-polový Česnekový oblak a Rezonance CD −2.'
       },
       {
         level: 2,
@@ -141,7 +141,7 @@ export const HERO_TILES = {
           nextTileCdReduction: 2,
           description: 'Rezonance: další destička ve frontě má CD −2.'
         },
-        description: 'Chladnutí 1: ladný sokolský skok přes 2 pole a Česnekový oblak na 3 kola.'
+        description: 'CD 1: skok přes 2 pole a Česnekový oblak na 3 kola.'
       }
     ]
   },
@@ -879,9 +879,10 @@ export const HERO_TILES = {
     dmg: 6,
     cooldown: 3,
     quick: false,
+    lungeForward: 1,
     pattern: [{ offset: 1, dmg: 6, effects: [] }],
     resonance: null,
-    description: 'Přesný a smrtící vojenský sek šavlí za 6 DMG na 1 pole vpřed.',
+    description: 'Výpad o 1 pole vpřed (je-li volno, aktivuje Kavalírský nápřah) a sek šavlí za 6 DMG.',
     flavor: '„Broušeno na císařských bruskách ve Vídni. Řeže kosti jak máslo.“',
     starter: true,
     upgrades: [
@@ -890,16 +891,18 @@ export const HERO_TILES = {
         name: 'Zdobená gardová šavle+',
         dmg: 8,
         cooldown: 3,
+        lungeForward: 1,
         pattern: [{ offset: 1, dmg: 8, effects: [{ type: 'bleed', amount: 2 }] }],
-        description: '8 DMG na 1 pole vpřed + Krvácení (2).'
+        description: 'Výpad o 1 pole vpřed a sek za 8 DMG + Krvácení (2).'
       },
       {
         level: 2,
         name: 'Generálská čepel++',
         dmg: 10,
         cooldown: 2,
+        lungeForward: 1,
         pattern: [{ offset: 1, dmg: 10, effects: [{ type: 'bleed', amount: 4 }] }],
-        description: 'CD 2, 10 DMG na 1 pole vpřed + silné Krvácení (4).'
+        description: 'CD 2, výpad o 1 pole vpřed a sek za 10 DMG + silné Krvácení (4).'
       }
     ]
   },
@@ -1333,7 +1336,7 @@ export const HERO_TILES = {
     selfEffect: { type: 'empower', amount: 1 },
     pattern: [],
     resonance: null,
-    description: 'Předvede bicepsy publiku: Získá +5 Štít, +10 % k Bojovému rozlícení a Zesílení (+2 DMG k příštímu úderu).',
+    description: 'Získá +5 Štít, +10 % k Bojovému rozlícení a Zesílení (+1 DMG k příštímu úderu).',
     flavor: '„Ocelové svaly, ocelové nervy. Upíří zub se na mém rameni jenom zlomí!“',
     starter: true,
     upgrades: [
@@ -1346,7 +1349,7 @@ export const HERO_TILES = {
         furyChange: 15,
         selfEffect: { type: 'empower', amount: 1 },
         pattern: [],
-        description: 'Získá +7 Štít, +15 % k Rozlícení a Zesílení (+2 DMG).'
+        description: 'Získá +7 Štít, +15 % k Rozlícení a Zesílení (+1 DMG).'
       },
       {
         level: 2,
@@ -1357,7 +1360,7 @@ export const HERO_TILES = {
         furyChange: 20,
         selfEffect: { type: 'empower', amount: 2 },
         pattern: [],
-        description: 'Chladnutí 2! Získá +8 Štít, +20 % k Rozlícení a velké Zesílení (+4 DMG).'
+        description: 'CD 2! Získá +8 Štít, +20 % k Rozlícení a Zesílení (+2 DMG).'
       }
     ]
   },
@@ -1695,7 +1698,7 @@ export const HERO_TILES = {
   },
   rast_gasser_revolver: {
     id: 'rast_gasser_revolver',
-    name: 'Služební revolver Rast & Gasser (Stříbrná munice)',
+    name: 'Revolver Rast & Gasser',
     icon: 'tile.rast_gasser_revolver',
     type: 'ranged',
     tags: ['craft', 'holy'],
@@ -1712,7 +1715,7 @@ export const HERO_TILES = {
       { offset: 5, dmg: 2, projectile: true }
     ],
     resonance: null,
-    description: 'Střelba v přímé linii za 2 DMG. Chladnutí 3 tahy, ale zpětný ráz posune revidenta o 1 políčko dozadu.',
+    description: 'Střelba v přímé linii (dosah 5) za 2 DMG. Zpětný ráz posune revidenta o 1 pole vzad.',
     flavor: '„Osmiranný armádní revolver ráže 8 mm. Každou vystřelenou stříbrnou kulku musím písemně zdůvodnit.“',
     starter: true,
     upgrades: [

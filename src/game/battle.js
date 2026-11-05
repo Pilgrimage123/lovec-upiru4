@@ -13,7 +13,8 @@ import {
   finalizeComboAndAdvanceTurn,
   advanceTurnAfterPlayerAction,
   checkBattleEnd,
-  consumeHeroStunIfPresent
+  consumeHeroStunIfPresent,
+  consumeHeroConfusionIfPresent
 } from './engine/combat.js';
 import { generateBattleRewards, advanceToNextActOrWin } from './engine/run.js';
 import { playEngineEvents as playCombatEventsAnimation, sleep } from './ui/renderer.js';
@@ -156,7 +157,7 @@ export function createBattleActions(deps) {
     const comboLength = queueSnapshot.length;
     const turnNum = state.turn;
 
-    const stunRes = consumeHeroStunIfPresent(state);
+    const stunRes = consumeHeroStunIfPresent(state) || consumeHeroConfusionIfPresent(state);
     if (stunRes) {
       appendEventsToLog(state, stunRes.events, turnNum);
       await playCombatEventsAnimation(

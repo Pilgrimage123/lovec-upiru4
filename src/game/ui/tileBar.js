@@ -1,5 +1,5 @@
-import { STARTING_LOADOUTS } from '../config/loadouts.js';
 // @ts-nocheck
+import { STARTING_LOADOUTS } from '../config/loadouts.js';
 import { isHeroAlive } from '../engine/state.js';
 import { getAssetUrl } from './assets.js';
 import { showTooltip, hideTooltip } from './tooltips.js';
@@ -57,7 +57,7 @@ export function renderTileBar(container, state, callbacks = {}) {
                 ${disabled ? 'disabled' : ''}>
           <div class="tile-card-top">
             <span class="tile-hotkey">[${hotkey}]</span>
-            <span class="tile-cd-stat" title="Chladnutí destičky">⏳ ${onCd ? `${tile.currentCooldown}/${tile.maxCooldown}` : `Chladnutí ${tile.maxCooldown}`}</span>
+            <span class="tile-cd-stat" title="Chladnutí destičky">⏳ ${onCd ? `${tile.currentCooldown}/${tile.maxCooldown}` : `${tile.maxCooldown}t`}</span>
           </div>
           <div class="tile-card-art">
             <img src="${iconUrl}" alt="${tile.name}" class="tile-art-img" referrerpolicy="no-referrer" />
@@ -102,8 +102,8 @@ export function renderTileBar(container, state, callbacks = {}) {
 
   container.innerHTML = `
     <div class="action-maneuver-bar ${bumpOnCd ? 'maneuver-bar-cooling' : 'maneuver-bar-ready'}" title="${loadout?.bumpDesc || 'Manévr při kroku do sousedního nepřítele'}">
-      <span class="maneuver-tag">👢 Manévr kroku: ${bumpName}</span>
-      <span class="maneuver-status-badge ${bumpOnCd ? 'status-cooling' : 'status-ready'}">${bumpOnCd ? `⏳ Chladne (${bumpCd} ${czechTurns(bumpCd)})` : '✅ Připraven (Krok do nepřítele)'}</span>
+      <span class="maneuver-tag">👢 ${bumpName}</span>
+      <span class="maneuver-status-badge ${bumpOnCd ? 'status-cooling' : 'status-ready'}">${bumpOnCd ? `⏳ Chladne (${bumpCd} ${czechTurns(bumpCd)})` : '⚔️ Připraven k úderu'}</span>
     </div>
     <div class="action-controls-row">
       <button type="button" class="btn-action btn-act-move" id="btn-act-left" ${!canStepLeft ? 'disabled' : ''} title="Krok vlevo (Klávesa A nebo ⬅)">
@@ -212,13 +212,22 @@ function formatTileRangeLabel(tile) {
 export function buildTileTooltipHtml(tile, hero = null) {
   const heroFury = hero?.currentFury || 0;
   const furyBonus = heroFury > 0 && (tile.dmg || 0) > 0 ? Math.round((tile.dmg || 0) * (heroFury / 100)) : 0;
+  const tagPills = (tile.tags || [])
+    .map((t) =>
+      TILE_TAGS[t]
+        ? `<span style="display:inline-block;padding:1px 6px;margin:2px 4px 2px 0;border-radius:4px;background:#451a03;border:1px solid #fbbf24;font-size:0.78em;color:#fffbeb;font-weight:800;">${TILE_TAGS[t].icon} ${TILE_TAGS[t].name}</span>`
+        : ''
+    )
+    .filter(Boolean)
+    .join('');
+
   return `
     <div class="tt-title">${tile.name}</div>
     <div class="tt-stat-row">
-      ⚔️ Základní DMG: <strong>${tile.dmg ?? 0}</strong>${furyBonus > 0 ? ` <span style="color:#2ecc71; font-weight:bold;">(+${furyBonus} Bojové rozlícení)</span>` : ''} · ⏳ Chladnutí: <strong>${tile.maxCooldown} ${czechTurns(tile.maxCooldown)}</strong>
-      ${tile.quick ? ' · ⚡ <strong>Rychlovka (0 tahů)</strong>' : ''}
+      ⚔️ DMG: <strong style="color:#ffffff;">${tile.dmg ?? 0}</strong>${furyBonus > 0 ? ` <span style="color:#4ade80; font-weight:800;">(+${furyBonus} Rozlícení)</span>` : ''} · ⏳ CD: <strong style="color:#ffffff;">${tile.maxCooldown} ${czechTurns(tile.maxCooldown)}</strong>
+      ${tile.quick ? ' · ⚡ <strong style="color:#fde047;">Rychlovka (0t)</strong>' : ''}
     </div>
-    ${tile.tags?.length ? `<div class="tt-tags" style="font-size:0.85em; color:#d4af37; margin-bottom:4px;">${tile.tags.map(t => TILE_TAGS[t] ? `${TILE_TAGS[t].icon} ${TILE_TAGS[t].name}` : '').filter(Boolean).join(' · ')}</div>` : ''}
+    ${tagPills ? `<div style="margin-bottom:6px;">${tagPills}</div>` : ''}
     <div class="tt-desc">${tile.description}</div>
     ${tile.resonance ? `<div class="tt-bonus">✨ <strong>${tile.resonance.description}</strong></div>` : ''}
     ${tile.flavor ? `<div class="tt-flavor">${tile.flavor}</div>` : ''}

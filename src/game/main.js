@@ -131,6 +131,9 @@ async function bootstrap(token) {
     window.addEventListener('lovec-assets', () => {
       if (!appState.isAnimating && appState.battleState) renderAll();
     });
+    document.addEventListener('fullscreenchange', () => {
+      if (!appState.isAnimating && appState.runState) renderAll();
+    });
   }
 
   initKeyboardInput({

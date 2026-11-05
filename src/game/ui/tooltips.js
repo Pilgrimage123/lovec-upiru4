@@ -19,7 +19,7 @@ export function initTooltips() {
     (e) => {
       if (!tooltipEl || tooltipEl.classList.contains('hidden')) return;
       const target = e.target instanceof Element ? e.target : null;
-      if (target && target.closest('[data-enemy-id], [data-talisman-id], .terrain-decal-wrapper, .diegetic-gate-portal')) {
+      if (target && target.closest('[data-enemy-id], [data-talisman-id], [data-smart-info], .terrain-decal-wrapper, .diegetic-gate-portal')) {
         return;
       }
       hideTooltip();

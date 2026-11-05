@@ -43,7 +43,7 @@ export const NIGHT_CURSES = [
     shortName: 'Kletba IV',
     icon: '🩸',
     fangMultiplier: 2,
-    description: 'Venca začíná výpravu s −2 maximálními HP (8 HP místo 10).'
+    description: 'Lovec začíná výpravu s −2 maximálními HP.'
   },
   {
     level: 5,

@@ -45,9 +45,10 @@ export function renderMapScreen(container, runState, callbacks = {}) {
         })
         .join("");
 
+      const tierRoman = ["Etapa I", "Etapa II", "Etapa III", "Etapa IV", "Etapa V", "Etapa VI"][tierIdx] || `Etapa ${tierIdx + 1}`;
       return `
         <div class="map-tier-column">
-          <div class="map-tier-label">Patro ${tierIdx + 1}</div>
+          <div class="map-tier-label">${tierRoman}</div>
           <div class="map-tier-nodes">${nodesHtml}</div>
         </div>
       `;
@@ -58,15 +59,18 @@ export function renderMapScreen(container, runState, callbacks = {}) {
     <div class="map-screen-wrapper">
       <div class="map-header-banner">
         <div>
+          <div style="font-family: var(--font-display, serif); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.12em; color: var(--stamp-red, #991b1b); text-transform: uppercase; margin-bottom: 2px;">
+            ⚜️ C. a k. Katastrální revírní mapa výpravy ⚜️
+          </div>
           <h2 class="map-act-heading">${STRINGS.acts[runState.act] || `Akt ${runState.act}`}</h2>
           ${runState.curseLevel > 0 ? `<div class="map-curse-pill">🌙 ${getCurseDefinition(runState.curseLevel).name}</div>` : ""}
           <p class="map-act-subtitle">${
             callbacks.canReturnToBattle
-              ? `${runState.hunterName || "Lovec"} má rozdělanou bitvu! K dokončení střetnutí se vrať tlačítkem zpět do probíhající bitvy.`
-              : `Vyber další zastávku výpravy (${runState.hunterName || "Venca Česnekáč"}) hradním labyrintem. Zvýrazněné uzly jsou dostupné.`
+              ? `Šarvátka právě probíhá — pokračuj úředním rozkazem vpravo.`
+              : `Zvol další revír cesty k zámku Nochtice (${runState.hunterName || "Lovec"}).`
           }</p>
         </div>
-        ${callbacks.canReturnToBattle ? `<button type="button" class="btn-parchment" id="btn-return-battle">⚔️ Zpět do probíhající bitvy</button>` : ""}
+        ${callbacks.canReturnToBattle ? `<button type="button" class="btn-parchment" id="btn-return-battle">⚔️ Zpět do šarvátky</button>` : ""}
       </div>
 
       <div class="map-tiers-grid">

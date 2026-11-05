@@ -177,7 +177,7 @@ export function renderEnemyIntentStripHtml(enemy, initiativeRank) {
       } else {
         slotsHtml.push(`
           <div class="intent-slot intent-slot-queuing-gray"
-               title="[QUEUING #ŠEDÁ] Slot #${slotIdx + 1}: ${tileDef.name} (${badgeText}) - Nepřítel ještě nabíjí kombo (nevystřelí)">
+               title="[NABÍJÍ] Slot #${slotIdx + 1}: ${tileDef.name} (${badgeText}) — v tomto tahu ještě nevystřelí">
             <div class="intent-slot-icon-box">${iconSvg}</div>
             <span class="intent-slot-name">${badgeText}</span>
           </div>
@@ -272,22 +272,22 @@ export function buildEnemyTooltipHtml(enemy, initiativeRank) {
   if (isArmedRed) {
     stateDesc = `
       <div class="tt-status-box tt-status-armed">
-        🚨 <strong>STAV: ARMED_RED (ZAMČENO K ODPALU)</strong><br/>
-        Po tvé nejbližší normální akci odpálí frontu (${actionQueue.length} ${actionQueue.length === 1 ? 'destička' : actionQueue.length >= 2 && actionQueue.length <= 4 ? 'destičky' : 'destiček'}). Do té doby se neotočí ani neuhne.
+        🚨 <strong>PŘIPRAVEN K ODPALU (1 AKCE)</strong><br/>
+        Po tvé další akci odpálí frontu (${actionQueue.length} ${actionQueue.length === 1 ? 'destička' : actionQueue.length >= 2 && actionQueue.length <= 4 ? 'destičky' : 'destiček'}). Do té doby se neotočí ani neuhne.
       </div>
     `;
   } else if (actionQueue.length > 0) {
     stateDesc = `
       <div class="tt-status-box tt-status-queuing">
-        ⚪ <strong>STAV: QUEUING_GRAY (NABÍJÍ KOMBO)</strong><br/>
-        Ve frontě má ${actionQueue.length}/${enemy.comboCapacity || 2} destiček. V nadcházejícím tahu ještě NEVYSTŘELÍ.
+        ⚪ <strong>NABÍJÍ KOMBO (${actionQueue.length}/${enemy.comboCapacity || 2})</strong><br/>
+        V nadcházejícím tahu ještě nevystřelí.
       </div>
     `;
   } else {
     stateDesc = `
       <div class="tt-status-box tt-status-empty">
-        ⚪ <strong>STAV: EMPTY (POZICOVÁNÍ)</strong><br/>
-        Fronta je prázdná. Chystá se na manévr nebo vložení první destičky.
+        ⚪ <strong>POZICOVÁNÍ</strong><br/>
+        Fronta je prázdná. Chystá se na pohyb, otočení nebo vložení první destičky.
       </div>
     `;
   }
@@ -295,14 +295,14 @@ export function buildEnemyTooltipHtml(enemy, initiativeRank) {
   let nextActionDesc = '';
   if (enemy.nextAction) {
     if (enemy.nextAction.type === 'turn') {
-      nextActionDesc = `Příští tah: Otočení směrem ${enemy.nextAction.dir === 1 ? 'vpravo ▶' : 'vlevo ◀'}.`;
+      nextActionDesc = `Otočení směrem ${enemy.nextAction.dir === 1 ? 'vpravo ▶' : 'vlevo ◀'}.`;
     } else if (enemy.nextAction.type === 'step') {
-      nextActionDesc = `Příští tah: Krok o 1 pole ${enemy.nextAction.dir === 1 ? 'doprava ➔' : 'doleva ◀'}.`;
+      nextActionDesc = `Krok o 1 pole ${enemy.nextAction.dir === 1 ? 'doprava ➔' : 'doleva ◀'}.`;
     } else if (enemy.nextAction.type === 'queue_tile') {
       const qTile = ENEMY_TILES[enemy.nextAction.tileId];
-      nextActionDesc = `Příští tah: Vloží do fronty „${qTile?.name || enemy.nextAction.tileId}“.`;
+      nextActionDesc = `Vloží do fronty „${qTile?.name || enemy.nextAction.tileId}“.`;
     } else if (enemy.nextAction.type === 'execute_queue') {
-      nextActionDesc = `Příští tah: GARANTOVANÝ ODPAL CELÉHO KOMBA!`;
+      nextActionDesc = `Okamžitý odpal celého komba!`;
     }
   }
 
@@ -313,18 +313,18 @@ export function buildEnemyTooltipHtml(enemy, initiativeRank) {
       <span class="tt-sub">(Iniciativa #${initiativeRank})</span>
     </div>
     <div class="tt-stat-row">
-      ❤️ Zdraví: <strong>${enemy.hp}/${enemy.maxHp} HP</strong> · 🛡️ Obrana: <strong>${enemy.defense || 0}</strong> · Směr: <strong>${enemy.facing === 1 ? 'Vpravo ▶' : 'Vlevo ◀'}</strong> · Archetyp: <strong>${enemy.archetype || 'základní'}</strong>
+      ❤️ <strong>${enemy.hp}/${enemy.maxHp} HP</strong> · 🛡️ Obrana: <strong>${enemy.defense || 0}</strong> · Směr: <strong>${enemy.facing === 1 ? 'Vpravo ▶' : 'Vlevo ◀'}</strong>
     </div>
-    ${enemy.frontShield ? '<div class="tt-next-intent-line">🛡️ Zepředu krytý štítem. Úder musí přijít zezadu, odhozením nebo po otočení.</div>' : ''}
-    ${enemy.mirrorCloak ? '<div class="tt-next-intent-line">🪞 Zrcadlový plášť: druhý zásah komba ze stejné strany ho prohodí se sudem nebo netopýrem.</div>' : ''}
-    ${enemy.bloodThorns ? '<div class="tt-next-intent-line">🌹 Krajkové trny: kdo ji sekne, dostane 1 DMG zpět.</div>' : ''}
-    ${enemy.lordSynergy ? '<div class="tt-next-intent-line">👑 Upíří nadvláda: dokud Hrabě stojí, ostatní upíři dávají +1 DMG.</div>' : ''}
+    ${enemy.frontShield ? '<div class="tt-next-intent-line">🛡️ Zepředu krytý štítem. Zraň ho zezadu, odhozením nebo po otočení.</div>' : ''}
+    ${enemy.mirrorCloak ? '<div class="tt-next-intent-line">🪞 Zrcadlový plášť: 2. zásah komba ze stejné strany ho prohodí se sudem či netopýrem.</div>' : ''}
+    ${enemy.bloodThorns ? '<div class="tt-next-intent-line">🌹 Krajkové trny: útok zblízka vrací 1 DMG.</div>' : ''}
+    ${enemy.lordSynergy ? '<div class="tt-next-intent-line">👑 Upíří nadvláda: ostatní upíři dávají +1 DMG.</div>' : ''}
 
     ${stateDesc}
-    ${nextActionDesc ? `<div class="tt-next-intent-line"><strong>Záměr:</strong> ${nextActionDesc}</div>` : ''}
+    ${nextActionDesc ? `<div class="tt-next-intent-line"><strong>Příští tah:</strong> ${nextActionDesc}</div>` : ''}
 
     <hr class="tt-divider" />
-    <div class="tt-section-title">🎒 ZÁSOBA AKCÍ (ACTION POOL):</div>
+    <div class="tt-section-title">🎒 Zásoba akcí:</div>
     <div class="tt-pool-list">
       ${poolHtml}
     </div>

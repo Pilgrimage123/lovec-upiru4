@@ -23,39 +23,39 @@ export function openRulesModal(modalRoot) {
     <div class="modal-backdrop">
       <div class="modal-card modal-lg">
         <div class="modal-header">
-          <h3>📖 Pravidla lovu upírů (Manuál Venci Česnekáče)</h3>
+          <h3>📜 C. k. Vyhláška a pravidla lovu upírů · L. P. 1899</h3>
           <button type="button" class="btn-parchment btn-xs" id="btn-modal-close">✖ Zavřít</button>
         </div>
         <div class="modal-body rules-grid">
           <div class="rule-block">
-            <h4>1. 1D Bojiště (7–9 polí) a Ekonomika tahu</h4>
-            <p>Na každém ze 7–9 kamenných polí smí stát nejvýše jedna postava nebo sud. Jeden tvůj <strong>TAH</strong> je právě jedna z akcí:</p>
+            <h4>1. 1D Bojiště a Tah lovce</h4>
+            <p>Na každém poli smí stát nejvýše jedna postava nebo překážka. Jeden tvůj <strong>TAH</strong> je jedna z akcí:</p>
             <ul>
-              <li><strong>Krok vlevo / vpravo (A / D):</strong> Posun o 1 pole bez změny směru pohledu do volného pole. Krok do sousedního nepřítele provede tvůj podpisový <strong>Krok do nepřítele</strong> (Česnekové žduchnutí, Selský beran, Úder těžkým jílcem, Kapsářská záměna), pokud manévr nechladne. Do sudu vstoupit nelze (přeskočí jej pouze <em>Hospodský přemet</em>).</li>
-              <li><strong>Otočení (W):</strong> Změní směr pohledu (◀ / ▶). Stojíš-li v <strong>Česnekovém oblaku</strong>, je otočení <strong>ZDARMA (0 tahů)</strong>!</li>
-              <li><strong>Čekání (S):</strong> Stojí 1 tah, zkrátí Chladnutí tvých destiček i manévru o 1 tah.</li>
-              <li><strong>Vložení destičky do Fronty (1–4 / klik):</strong> Stojí 1 tah (vyjma destiček s vlastností <em>Rychlovka</em>, jejichž vložení stojí 0 tahů). Vyjmutí i libovolné přerovnání destiček ve frontě je vždy zdarma.</li>
-              <li><strong>PROVÉST KOMBO (Mezerník / Space):</strong> Okamžitý odpal! Všechny destičky ve frontě se provedou zleva doprava bez nutnosti přípravného nápřahu za <strong>JEDEN tah</strong>! Zřetězení 3 destiček spustí mocné 3-Kombo lovce!</li>
+              <li><strong>Krok (A / D):</strong> Posun o 1 pole bez změny směru. Krok do sousedního nepřítele provede tvůj manévr <strong>Krok do nepřítele</strong>, pokud nechladne.</li>
+              <li><strong>Otočení (W):</strong> Změní směr pohledu (◀ / ▶). V <strong>Česnekovém oblaku</strong> je otočení <strong>ZDARMA (0 tahů)</strong>!</li>
+              <li><strong>Čekání (S):</strong> Stojí 1 tah, zkrátí Chladnutí destiček i manévru o 1.</li>
+              <li><strong>Vložení destičky do Fronty (1–4):</strong> Stojí 1 tah (<em>Rychlovka</em> 0 tahů). Vyjmutí a přerovnání ve frontě je zdarma.</li>
+              <li><strong>ODPÁLIT KOMBO (Mezerník):</strong> Všechny destičky ve frontě se provedou zleva doprava za <strong>1 tah</strong>. Zřetězení 3 destiček spustí <strong>3-Kombo Finišer</strong> lovce!</li>
             </ul>
           </div>
 
           <div class="rule-block">
-            <h4>2. Fronty nepřátel, Záměry a Friendly Fire</h4>
+            <h4>2. Záměry nepřátel a Friendly Fire</h4>
             <ul>
-              <li>Nad každým upírem vidíš jeho <strong>pořadí iniciativy (#1, #2, #3 zleva doprava)</strong> a pás jeho destiček akcí.</li>
-              <li>První zvýrazněná destička má <strong>odpočet (⏳)</strong>. Na konci každého tvého tahu klesne odpočet o 1.</li>
-              <li>Při odpočtu <strong>0</strong> upír provede akci do polí podle své <strong>AKTUÁLNÍ polohy a otočení</strong>!</li>
-              <li><strong>FRIENDLY FIRE:</strong> Pokud upíra poodstrčíš, přitáhneš nebo otočíš hasičskou stříkačkou, při odpočtu 0 napálí plnou silou vlastního kolegu nebo sud!</li>
+              <li>Nepřátelé jednají podle iniciativy (<strong>#1, #2, #3</strong> zleva doprava).</li>
+              <li>Stav <strong>⚪ NABÍJÍ</strong> či šipka pohybu znamená, že se nepřítel přesouvá nebo vkládá destičku do komba — v tomto tahu nevystřelí.</li>
+              <li>Stav <strong>🚨 1 AKCE</strong> (červeně pulzující pole) znamená, že po tvé další akci nepřítel odpálí své kombo!</li>
+              <li><strong>FRIENDLY FIRE:</strong> Nepřítel se značkou 🚨 1 AKCE se už před výstřelem neotočí. Když ho odstrčíš nebo prohodíš, zasáhne plnou silou vlastního kumpána!</li>
             </ul>
           </div>
 
           <div class="rule-block">
-            <h4>3. Obrana, Kolize, Terén a Švunk</h4>
+            <h4>3. Obrana, Kolize, Rozlícení a Švunk</h4>
             <ul>
-              <li><strong>Obrana a Štít:</strong> Každá postava s Obranou získá na začátku kola dočasný Štít. Štít pohlcuje zranění bod po bodu před zásahem do HP a odráží omráčení i krvácení. Na konci nepřátelského kola veškerý nevyužitý Štít zcela vyprchá na 0!</li>
-              <li><strong>Odhození (Push) a Kolize:</strong> Narazí-li odhozená postava do zdi nebo jiné postavy, utrpí obě <strong>2 kolizní DMG</strong>. Vhození do sudu se zelím sud rozbije (<strong>4 DMG + Zmatení</strong>).</li>
-              <li><strong>Terén:</strong> <em>Propast</em> = okamžitá smrt (vyjma létajících potvor). <em>Kůly</em> = 4 DMG. <em>Prohnilé prkno</em> = 1. stoupnutí zapraská, 2. stoupnutí se prolomí za 4 DMG. <em>Posvěcená louže</em> = 2 DMG (3 tahy).</li>
-              <li><strong>Švunk:</strong> Zabiješ-li nepřítele kombem 2+ destiček kdykoliv během bitvy, zkrátí se Chladnutí první (otevírací) destičce tohoto komba o počet destiček v kombu!</li>
+              <li><strong>Obrana, Brnění a Zubatá:</strong> Obrana dává na začátku kola dočasný <em>Štít</em>. <em>Brnění</em> tlumí každé pronikající zranění do HP. Klesnou-li HP na 0, drží tě při životě <em>Verva</em> (odpočet Zubaté 💀).</li>
+              <li><strong>Odhození (Push) a Kolize:</strong> Náraz do zdi nebo jiné postavy udělí oběma <strong>1 DMG za každé neprojité pole</strong>. Srážka se sudem zelí jej rozbije (<strong>4 DMG + Zmatení ❓</strong>).</li>
+              <li><strong>Bojové rozlícení (💢):</strong> Každé kolo roste hněv (+% ke zranění útoků i kolizí). Upíry v <em>Ochromení (💤)</em> dorazíš kolíkem, česnekem nebo srážkou.</li>
+              <li><strong>Švunk:</strong> Zabiješ-li nepřítele kombem 2+ destiček, zkrátí se Chladnutí první destičce komba i manévru kroku o délku komba!</li>
             </ul>
           </div>
         </div>
@@ -116,7 +116,7 @@ export function openFullLogModal(modalRoot, logs = []) {
     <div class="modal-backdrop">
       <div class="modal-card modal-lg">
         <div class="modal-header">
-          <h3>📜 Kompletní deník bojových událostí (${logs.length} záznamů)</h3>
+          <h3>📜 C. k. Četnický deník a svodka šarvátky (${logs.length} záznamů)</h3>
           <button type="button" class="btn-parchment btn-xs" id="btn-modal-close">✖ Zavřít</button>
         </div>
         <div class="modal-body full-log-scroll" id="full-log-scroll-area">
@@ -159,7 +159,7 @@ export function openSettingsModal(modalRoot, settings, metaStats, callbacks = {}
           </div>
 
           <div class="setting-row">
-            <label for="chk-sound"><strong>Zvukové efekty (WebAudio syntéza):</strong></label>
+            <label for="chk-sound"><strong>Zvukové efekty:</strong></label>
             <input type="checkbox" id="chk-sound" ${settings.soundEnabled ? 'checked' : ''} />
           </div>
 
@@ -177,13 +177,13 @@ export function openSettingsModal(modalRoot, settings, metaStats, callbacks = {}
           <hr class="tt-divider" />
           <div class="setting-row" style="margin-top: 0.5rem;">
             <button type="button" class="btn-parchment w-full" id="btn-settings-return-title" style="width: 100%; justify-content: center; font-weight: 700;">
-              🏰 Zpět do výběru lovců (Titulní strana)
+              🏰 Zpět do výběru lovců
             </button>
           </div>
 
           <hr class="tt-divider" />
           <div class="meta-stats-box">
-            <h4>🏆 Nejlepší výsledky (localStorage)</h4>
+            <h4>🏆 Nejlepší výsledky</h4>
             <p>Nejvyšší dosažený akt: <strong>${metaStats.bestAct || 1}</strong> · Vítězné výpravy: <strong>${metaStats.victories || 0}</strong> · Celkem poraženo upírů: <strong>${metaStats.totalKills || 0}</strong></p>
           </div>
         </div>
@@ -242,10 +242,10 @@ export function openBattleRewardModal(modalRoot, runState, choices, onComplete) 
     <div class="modal-backdrop">
       <div class="modal-card modal-lg">
         <div class="modal-header">
-          <h3>🏆 Bitva vyhrána! Vyber si 1 ze 3 odměn</h3>
+          <h3>🏆 C. k. Polní kořist: Výběr 1 ze 3 trofejí</h3>
         </div>
         <div class="modal-body">
-          <p class="modal-lead">${hunterName} vytřel podlahu s upíří patrolou a prohledává kapsy poražených:</p>
+          <p class="modal-lead">${hunterName} vykázal upíří hlídku z revíru a četnický protokol umožňuje zabavit jednu položku:</p>
           <div class="reward-choices-grid">
             ${cardsHtml}
           </div>
@@ -320,15 +320,15 @@ export function openPubModal(modalRoot, runState, onLeavePub, onUpdate) {
       <div class="modal-backdrop">
         <div class="modal-card modal-lg">
           <div class="modal-header">
-            <h3>🍺 Hospoda U Svěcené pípy (Měšec: 💰 ${runState.gold} dukátů · ❤️ ${runState.heroHp}/${runState.heroMaxHp} HP)</h3>
-            <button type="button" class="btn-parchment btn-sm" id="btn-leave-pub">Opustit hospodu ➡</button>
+            <h3>🍺 Hostinský výčepní lístek „U Svěcené pípy“ (Měšec: 💰 ${runState.gold} dukátů · ❤️ ${runState.heroHp}/${runState.heroMaxHp} HP)</h3>
+            <button type="button" class="btn-parchment btn-sm" id="btn-leave-pub">Opustit hostinec ➡</button>
           </div>
           <div class="modal-body pub-grid">
             <div class="pub-section">
-              <h4>1. Teplá dršťková a ležák</h4>
-              <p>Hospodský ti natočí poctivý džbánek na kuráž.</p>
+              <h4>1. Teplá dršťková polévka & čepovaný ležák</h4>
+              <p>Hostinský natočí poctivý džbánek na kuráž a zklidnění mysli.</p>
               <button type="button" class="btn-parchment" id="btn-pub-heal" ${healedInThisVisit || (runState.heroHp >= runState.heroMaxHp && (runState.persistence || 5) >= (runState.maxPersistence || 5)) ? 'disabled' : ''}>
-                🍺 Dát si pivo a guláš (+2 HP a obnovení Vervy ZDARMA)
+                🍺 Dát si pivo a guláš (+2 HP a plné obnovení Vervy ZDARMA)
               </button>
             </div>
 
@@ -457,11 +457,11 @@ export function openWorkshopModal(modalRoot, runState, onLeaveWorkshop, onUpdate
       <div class="modal-backdrop">
         <div class="modal-card modal-lg">
           <div class="modal-header">
-            <h3>⚒️ Kolářská a kovářská dílna (💰 ${runState.gold} dukátů)</h3>
+            <h3>⚒️ Cechovní kniha mistra koláře a kováře (Měšec: 💰 ${runState.gold} dukátů)</h3>
             <button type="button" class="btn-parchment btn-sm" id="btn-leave-workshop">Pokračovat na mapu ➡</button>
           </div>
           <div class="modal-body">
-            <p class="modal-lead">Mistr kolář ti první destičku přiostří zadarmo, další pak za ${upgradeCost} dukátů:</p>
+            <p class="modal-lead">Cechovní mistr ti první destičku okove a přiostří zadarmo, další pak za ${upgradeCost} dukátů:</p>
             <div class="reward-choices-grid">${cardsHtml}</div>
           </div>
         </div>
@@ -513,7 +513,7 @@ export function openEventModal(modalRoot, runState, eventDef, onComplete, onUpda
     <div class="modal-backdrop">
       <div class="modal-card">
         <div class="modal-header">
-          <h3>❓ ${eventDef.title}</h3>
+          <h3>📜 C. k. Mimořádná událost: ${eventDef.title}</h3>
         </div>
         <div class="modal-body">
           <p class="event-narrative-text">${eventDef.text}</p>
@@ -695,19 +695,19 @@ export function openCastleArchiveModal(modalRoot, appState, onUpdate = null, onS
         <div class="loadout-card-header">
           ${
             loadout.portrait
-              ? `<img src="${loadout.portrait}" alt="${loadout.name}" style="width: 88px; height: 108px; object-fit: contain; object-position: bottom; border-radius: 10px; background: rgba(15, 10, 6, 0.75); border: 1px solid rgba(217, 119, 6, 0.45); padding: 4px; flex-shrink: 0;" />`
+              ? `<img src="${loadout.portrait}" alt="${loadout.name}" style="width: 96px; height: 116px; object-fit: contain; object-position: bottom; border-radius: 10px; background: #140b07; border: 2px solid #b45309; padding: 2px; flex-shrink: 0;" />`
               : `<span class="loadout-card-icon">${loadout.icon}</span>`
           }
           <div>
-            <h4 class="loadout-card-title">${loadout.name} <span class="badge-hp">❤️ ${loadout.maxHp || 20} HP</span> <span class="badge-defense" style="margin-left: 4px; padding: 1px 6px; border-radius: 4px; background: rgba(30, 64, 175, 0.4); border: 1px solid rgba(59, 130, 246, 0.5); font-size: 0.78rem; color: #bfdbfe;">🛡️ ${loadout.defense ?? 0} Obrana</span>${loadout.armor ? ` <span class="badge-armor" style="margin-left: 4px; padding: 1px 6px; border-radius: 4px; background: rgba(180, 83, 9, 0.4); border: 1px solid rgba(245, 158, 11, 0.5); font-size: 0.78rem; color: #fde68a;">🦺 ${loadout.armor} Brnění</span>` : ''}${loadout.fury ? ` <span class="badge-fury" style="margin-left: 4px; padding: 1px 6px; border-radius: 4px; background: rgba(185, 28, 28, 0.4); border: 1px solid rgba(239, 68, 68, 0.5); font-size: 0.78rem; color: #fca5a5;">💢 +${loadout.fury} %</span>` : ''}</h4>
+            <h4 class="loadout-card-title">${loadout.name} <span class="badge-hp">❤️ ${loadout.maxHp || 20} HP</span> <span class="badge-defense" style="margin-left: 4px; padding: 1px 6px; border-radius: 4px; background: #1e3a8a; border: 1px solid #1d4ed8; font-size: 0.78rem; color: #eff6ff;">🛡️ ${loadout.defense ?? 0} Obrana</span>${loadout.armor ? ` <span class="badge-armor" style="margin-left: 4px; padding: 1px 6px; border-radius: 4px; background: #065f46; border: 1px solid #047857; font-size: 0.78rem; color: #ecfdf5;">🦺 ${loadout.armor} Brnění</span>` : ''}${loadout.fury ? ` <span class="badge-fury" style="margin-left: 4px; padding: 1px 6px; border-radius: 4px; background: #7f1d1d; border: 1px solid #b91c1c; font-size: 0.78rem; color: #fef2f2;">💢 +${loadout.fury} %</span>` : ''}</h4>
             <div class="loadout-card-epithet">${loadout.epithet}</div>
           </div>
         </div>
         <p class="loadout-card-desc">${loadout.description}</p>
-        <div class="loadout-card-abilities" style="margin: 0.35rem 0; font-size: 0.85rem; line-height: 1.35; color: #e2e8f0;">
-          ${loadout.passiveName ? `<div style="margin-bottom: 0.2rem;"><strong style="color: #fb7185;">✨ Pasivita (${loadout.passiveName}):</strong> ${loadout.passiveDesc}</div>` : ''}
-          ${loadout.bumpName ? `<div style="margin-bottom: 0.2rem;"><strong style="color: #f59e0b;">💥 ${loadout.bumpName}:</strong> ${loadout.bumpDesc}</div>` : ''}
-          ${loadout.comboName ? `<div><strong style="color: #38bdf8;">✨ 3-Kombo:</strong> ${loadout.comboDesc}</div>` : ''}
+        <div class="loadout-card-abilities" style="margin: 0.35rem 0; font-size: 0.85rem; line-height: 1.4; color: #1c140e; background: rgba(255, 255, 255, 0.55); padding: 6px 8px; border-radius: 6px; border: 1px solid rgba(28, 20, 14, 0.25);">
+          ${loadout.passiveName ? `<div style="margin-bottom: 0.2rem;"><strong style="color: #9f1239;">✨ Pasivita (${loadout.passiveName}):</strong> ${loadout.passiveDesc}</div>` : ''}
+          ${loadout.bumpName ? `<div style="margin-bottom: 0.2rem;"><strong style="color: #92400e;">💥 ${loadout.bumpName}:</strong> ${loadout.bumpDesc}</div>` : ''}
+          ${loadout.comboName ? `<div><strong style="color: #075985;">✨ 3-Kombo:</strong> ${loadout.comboDesc}</div>` : ''}
         </div>
         <div class="loadout-card-deck">
           <strong>Startovní destičky:</strong>
@@ -800,15 +800,15 @@ export function openCastleArchiveModal(modalRoot, appState, onUpdate = null, onS
             </div>
           </div>
 
-          <h4 class="archive-section-title">Startovní arzenály Venci Česnekáče</h4>
+          <h4 class="archive-section-title">Startovní arzenály lovců</h4>
           <div class="archive-loadouts-grid">
             ${loadoutCardsHtml}
           </div>
 
-          <h4 class="archive-section-title">🌙 Kletby noci (Stupně obtížnosti I–V)</h4>
+          <h4 class="archive-section-title">🌙 Kletby noci (Obtížnost I–V)</h4>
           ${cursesCardsHtml}
 
-          <h4 class="archive-section-title">🏆 Síň slávy Vencových vítězství</h4>
+          <h4 class="archive-section-title">🏆 Síň slávy vítězství</h4>
           ${hallOfFameHtml}
         </div>
         <div class="modal-footer">

@@ -16,7 +16,6 @@ export function computeSingleEnemyTileHits(state, enemy, tileDef, context = null
   const origin = tileDef.lungeForward
     ? simulateLungeTargetCell(state, enemy, enemy.cell, enemy.facing, tileDef.lungeForward)
     : enemy.cell;
-  const garlicPenalty = state.terrain[origin]?.type === 'garlic_cloud' ? 1 : 0;
   const empowerBonus = getStatusStacks(enemy, 'empower');
   const lordSynergyBonus =
     context && typeof context.synergy === 'number'
@@ -32,7 +31,7 @@ export function computeSingleEnemyTileHits(state, enemy, tileDef, context = null
     for (const p of tileDef.pattern) {
       const c = origin + enemy.facing * p.offset;
       if (!isValidCell(c, state)) continue;
-      const dmg = Math.max(0, (p.dmg || 0) + empowerBonus - garlicPenalty + lordSynergyBonus);
+      const dmg = Math.max(0, (p.dmg || 0) + empowerBonus + lordSynergyBonus);
       hits.push({
         cell: c,
         dmg,
@@ -47,7 +46,7 @@ export function computeSingleEnemyTileHits(state, enemy, tileDef, context = null
     for (const p of tileDef.pattern) {
       const c = origin + enemy.facing * p.offset;
       if (!isValidCell(c, state)) continue;
-      const dmg = Math.max(0, (p.dmg || 0) + empowerBonus - garlicPenalty + lordSynergyBonus);
+      const dmg = Math.max(0, (p.dmg || 0) + empowerBonus + lordSynergyBonus);
       hits.push({
         cell: c,
         dmg,
@@ -186,6 +185,12 @@ function computePreviewBonus(state, tile, slotIdx, simCtx) {
   }
   if ((simCtx.empower || 0) > 0 && (tile.dmg > 0 || bonus > 0)) {
     bonus += simCtx.empower;
+  }
+  const baseDmg = tile.dmg || 0;
+  const rawFury = state.hero?.currentFury || 0;
+  if (rawFury !== 0 && baseDmg > 0) {
+    const clampedFury = Math.max(-50, rawFury);
+    bonus += Math.round(baseDmg * (clampedFury / 100));
   }
   return bonus;
 }

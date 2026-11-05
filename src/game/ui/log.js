@@ -42,12 +42,12 @@ export function renderChronicleLog(container, state, onOpenFullLog) {
       <div class="chronicle-header">
         <div class="chronicle-title-group">
           <span class="chronicle-icon">📜</span>
-          <span class="chronicle-title">Hradní kronikář (Bojový zápis)</span>
+          <span class="chronicle-title">Bojový deník</span>
           <span class="chronicle-turn-counter">Kolo ${state.turn}</span>
-          <span class="chronicle-count-pill">${logs.length} záznamů</span>
+          <span class="chronicle-count-pill">${logs.length} zázn.</span>
         </div>
         <button type="button" class="btn-parchment btn-xs" id="btn-open-full-log">
-          📖 <span class="btn-label-full">Celý deník výpravy</span><span class="btn-label-short">Deník (${state.turn}.k)</span>
+          📖 <span class="btn-label-full">Celý deník</span><span class="btn-label-short">Deník (${state.turn}.k)</span>
         </button>
       </div>
       <div class="chronicle-body-row">

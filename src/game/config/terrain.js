@@ -34,13 +34,13 @@ export const TERRAIN_TYPES = {
     id: 'garlic_cloud',
     name: 'Česnekový oblak',
     icon: 'terrain.garlic_cloud',
-    description: 'Štiplavý moravský česnek (2 tahy). Nepřátelé v oblaku dávají o 1 DMG méně; lovec se v něm otáčí zdarma (0 tahů).'
+    description: 'Štiplavý dým (2 tahy). Na začátku tahu udělí 1 DMG (upírům 2 DMG a dorazí ochromené). Lovec se v něm otáčí zdarma (0 tahů).'
   },
   holy_water_puddle: {
     id: 'holy_water_puddle',
     name: 'Posvěcená louže',
     icon: 'terrain.holy_water_puddle',
-    description: 'Rozlitá svěcená voda z kropenky (3 tahy). Nemrtvý, který na ni vstoupí nebo na ní stojí, utrží 2 DMG.'
+    description: 'Svěcená voda (3 tahy). Nemrtvý při vstupu nebo stání utrží 2 DMG.'
   }
 };
 
@@ -51,7 +51,7 @@ export const PROPS = {
     icon: 'terrain.barrel',
     maxHp: 4,
     destructible: true,
-    description: 'Těžký dubový sud (4 HP). Blokuje pohyb, lze jej přeskočit. Při vhození postavy do sudu nebo rozbití praskne a způsobí 4 DMG + Zmatení.'
+    description: 'Dubový sud (4 HP). Blokuje krok, lze jej přeskočit. Při rozbití či srážce udělí 4 DMG + Zmatení (❓).'
   },
   holy_font: {
     id: 'holy_font',
@@ -59,7 +59,7 @@ export const PROPS = {
     icon: 'prop.holy_font',
     maxHp: 2,
     destructible: true,
-    description: 'Kamenná nádoba se svěcenou vodou (2 HP). Při zásahu útokem, střelou či kolizi se roztříští: udělí 4 DMG nemrtvým na svém a sousedních polích a zanechá posvěcenou louži.'
+    description: 'Nádoba se svěcenou vodou (2 HP). Při rozbití udělí 4 DMG nemrtvým v okolí a zanechá posvěcenou louži.'
   },
   mirror: {
     id: 'mirror',
@@ -68,7 +68,7 @@ export const PROPS = {
     maxHp: 6,
     destructible: false,
     reflectsProjectiles: true,
-    description: 'Starobylé stříbrné zrcadlo. Nelze zničit běžnými střelami. Odrazí letící dálkové projektily o 180° zpět po ose Bojiště!'
+    description: 'Stříbrné zrcadlo. Odráží letící dálkové střely o 180° zpět po ose Bojiště!'
   }
 };
 

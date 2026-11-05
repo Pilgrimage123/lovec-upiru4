@@ -40,7 +40,7 @@ export default tseslint.config(
     rules: {
       ...js.configs.recommended.rules,
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-      'no-undef': 'off',
+      'no-undef': 'error',
     },
   }
 );

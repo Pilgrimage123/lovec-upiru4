@@ -1,9 +1,10 @@
-import { STARTING_LOADOUTS } from '../config/loadouts.js';
 // @ts-nocheck
+import { STARTING_LOADOUTS } from '../config/loadouts.js';
 import { TALISMANS } from '../config/talismans.js';
 import { STRINGS } from '../config/strings.cs.js';
 import { getCurseDefinition } from '../config/curses.js';
 import { showTooltip, hideTooltip } from './tooltips.js';
+import { toggleFullscreen, isFullscreenActive } from './fullscreen.js';
 
 export function renderHud(container, runState, battleState, callbacks = {}) {
   if (!container || !runState) return;
@@ -62,6 +63,7 @@ export function renderHud(container, runState, battleState, callbacks = {}) {
   const isReaper = Boolean(battleState?.hero?.isReaperActive);
   const reaperCountdown = isReaper ? (battleState.hero.persistence + battleState.hero.hp) : null;
   const heroDisplayName = battleState?.hero?.name || runState?.hunterName || 'Venca Česnekáč';
+  const fsActive = isFullscreenActive();
 
   container.innerHTML = `
     <div class="hud-bar">
@@ -74,52 +76,52 @@ export function renderHud(container, runState, battleState, callbacks = {}) {
           <span class="hud-location" title="${locationTitle}">${locationTitle}</span>${curseHtml}
         </div>
         <div class="hud-vitals">
-          <div class="hud-hp-group ${isReaper ? 'hud-hp-in-reaper' : ''}" title="Zdraví lovce (${heroDisplayName})${isReaper ? ` · Zubatá na krku! (${reaperCountdown} zbývá do skonu)` : ''}">
+          <div class="hud-hp-group ${isReaper ? 'hud-hp-in-reaper' : ''}" title="Zdraví lovce (${heroDisplayName})${isReaper ? ` · Zubatá na krku (${reaperCountdown} do skonu)` : ''}">
             <span class="hud-vital-label">Zdraví:</span>
             <div class="hud-hearts">${heartsHtml}</div>
-            <span class="hud-hp-numbers ${isReaper ? 'hud-hp-danger' : ''}"><span class="hud-hp-icon" aria-hidden="true">${isReaper ? '💀' : '❤️'}</span>${hp}/${maxHp}${isReaper ? ` (💀 ${reaperCountdown})` : ''}<span class="hud-unit-suffix"> HP</span></span>
+            <span class="hud-hp-numbers ${isReaper ? 'hud-hp-danger' : ''}"><span class="hud-hp-icon" aria-hidden="true">${isReaper ? '💀' : '❤️'}</span>${hp}/${maxHp}<span class="hud-unit-suffix"> HP</span></span>
           </div>
           ${isReaper ? `
             <span class="hud-separator">·</span>
-            <div class="hud-reaper-badge pulse-reaper" title="Zubatá na krku! Lovec se drží při životě jen silou vůle. Zbývající odpočet do definitivního skonu: ${reaperCountdown}">
-              💀 <strong>${reaperCountdown}</strong> <span class="hud-reaper-title">Zubatá na krku!</span>
+            <div class="hud-reaper-badge pulse-reaper" title="Zubatá na krku! Odpočet do skonu: ${reaperCountdown}">
+              💀 <strong>${reaperCountdown}</strong> <span class="hud-reaper-title">Zubatá</span>
             </div>
           ` : `
             <span class="hud-separator">·</span>
-            <div class="hud-persistence" title="Verva lovce (${heroPersistence}/${heroMaxPersistence}): určuje, jak hluboko do záporných životů může lovec klesnout, než definitivně podlehne Zubaté.">
+            <div class="hud-persistence" title="Verva (${heroPersistence}/${heroMaxPersistence}): limit záporných HP před definitivním skonem">
               🪦 <strong>${heroPersistence}</strong><span class="hud-unit-suffix"> Verva</span>
             </div>
           `}
           <span class="hud-separator">·</span>
-          <div class="hud-defense" title="Obrana lovce (${heroDef}): na začátku každého kola získá ${heroDef} Štítu">
+          <div class="hud-defense" title="Obrana (${heroDef}): na začátku kola přidá +${heroDef} Štít">
             🛡️ <strong>${battleState?.hero?.statuses?.shield ? `${battleState.hero.statuses.shield} Štít` : `${heroDef} Obrana`}</strong>
           </div>${maneuverHtml}${heroArmor > 0 ? `
             <span class="hud-separator">·</span>
-            <div class="hud-armor" title="Brnění lovce (${heroArmor}): snižuje každé pronikající fyzické zranění (po proražení štítu) o ${heroArmor}">
+            <div class="hud-armor" title="Brnění (${heroArmor}): tlumí každé pronikající zranění do těla o ${heroArmor}">
               🦺 <strong>${heroArmor} Brnění</strong>
             </div>
           ` : ''}${(battleState?.hero?.currentFury || 0) > 0 ? `
             <span class="hud-separator">·</span>
-            <div class="hud-fury" title="Bojové rozlícení lovce (+${battleState.hero.currentFury} %): Zvyšuje veškeré poškození v boji (+${battleState.hero.fury || 10} % za kolo)">
+            <div class="hud-fury" title="Bojové rozlícení (+${battleState.hero.currentFury} %): zvyšuje zranění útoků i kolizí (+${battleState.hero.fury || 10} % za kolo)">
               💢 <strong>+${battleState.hero.currentFury} %</strong><span class="hud-unit-suffix"> Rozlícení</span>
             </div>
           ` : (battleState?.hero?.currentFury || 0) < 0 ? `
             <span class="hud-separator">·</span>
-            <div class="hud-fury hud-fury-cold" style="color: #60a5fa;" title="Zchlazení lovce (${battleState.hero.currentFury} %): Snižuje poškození útoků v boji (nasycení, rozvaha či letargie, min. 1 DMG). Vyprchá přirozeným růstem Rozlícení (+${battleState.hero.fury || 10} % za kolo).">
+            <div class="hud-fury hud-fury-cold" style="color: #60a5fa;" title="Zchlazení (${battleState.hero.currentFury} %): tlumí poškození útoků (min. 1 DMG)">
               🧊 <strong>${battleState.hero.currentFury} %</strong><span class="hud-unit-suffix"> Zchlazení</span>
             </div>
           ` : ''}
           <span class="hud-separator">·</span>
-          <div class="hud-gold" title="Hradní dukáty na útratu v hospodě a dílně">
+          <div class="hud-gold" title="Hradní dukáty">
             💰 <strong>${runState.gold}</strong><span class="hud-unit-suffix"> dukátů</span>
           </div>
           <span class="hud-separator">·</span>
-          <div class="hud-fangs" title="Upíří tesáky pro trvalá vylepšení v Hradním archivu">
+          <div class="hud-fangs" title="Upíří tesáky (Hradní archiv)">
             🦷 <strong>${callbacks.metaStats?.fangs || 0}</strong>
           </div>
           <span class="hud-separator hud-seed-sep">·</span>
-          <div class="hud-seed" title="Deterministický seed výpravy">
-            🎲 Seed: <strong>${runState.seed}</strong>
+          <div class="hud-seed" title="Seed výpravy">
+            🎲 <strong>${runState.seed}</strong>
           </div>
         </div>
       </div>
@@ -144,6 +146,9 @@ export function renderHud(container, runState, battleState, callbacks = {}) {
         </button>
         <button type="button" class="btn-parchment btn-sm" id="btn-hud-rules" title="Pravidla a nápověda (F1)" aria-label="Pravidla a nápověda (F1)">
           <span class="btn-icon">📖</span><span class="btn-text"> Pravidla</span>
+        </button>
+        <button type="button" class="btn-parchment btn-sm" id="btn-hud-fullscreen" title="Přepnout celou obrazovku (Klávesa F)" aria-label="Celá obrazovka (Klávesa F)">
+          <span class="btn-icon">${fsActive ? '🗗' : '⛶'}</span><span class="btn-text"> [F]</span>
         </button>
         <button type="button" class="btn-parchment btn-sm" id="btn-hud-settings" title="Nastavení rychlosti, zvuku a seedu" aria-label="Nastavení rychlosti, zvuku a seedu">
           <span class="btn-icon">⚙️</span><span class="btn-text"> Nastavení</span>
@@ -177,6 +182,10 @@ export function renderHud(container, runState, battleState, callbacks = {}) {
     window.dispatchEvent(new CustomEvent('open-animation-lab'));
   });
   container.querySelector('#btn-hud-rules')?.addEventListener('click', () => callbacks.onOpenRules?.());
+  container.querySelector('#btn-hud-fullscreen')?.addEventListener('click', () => {
+    void toggleFullscreen();
+  });
   container.querySelector('#btn-hud-settings')?.addEventListener('click', () => callbacks.onOpenSettings?.());
 }
+
 

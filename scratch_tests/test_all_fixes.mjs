@@ -155,6 +155,33 @@ console.log('\n--- TEST 8: Queue Preview Tracks RecoilBack and Domicile Inspecti
   console.log('✓ computePlayerQueuePreview accurately tracks recoilBack and domicile_inspection swap');
 }
 
+console.log('\n--- TEST 9: Stepping into Wall / Prop & Hero Confusion Handling ---');
+{
+  const state = createBattleState({ hunterId: 'classic', encounterId: 'tutorial_1' });
+  state.props = [{ id: 'prop_barrel', name: 'Sud', cell: 1, hp: 3, maxHp: 3, entityType: 'prop' }];
+  state.hero.cell = 0;
+
+  // Step left into wall (cell -1) -> should return { ok: false } without ReferenceError
+  const wallRes = stepHero(state, -1);
+  assert.strictEqual(wallRes.ok, false, 'Stepping into wall returns ok: false');
+  assert.strictEqual(state.hero.cell, 0, 'Hero stays at cell 0');
+
+  // Step right into prop (cell 1) -> should return { ok: false } without ReferenceError
+  const propRes = stepHero(state, 1);
+  assert.strictEqual(propRes.ok, false, 'Stepping into prop returns ok: false');
+  assert.strictEqual(state.hero.cell, 0, 'Hero stays at cell 0');
+
+  // Confused hero attempting to step -> consumes confusion and returns ok: true without double-advancing turn inside stepHero
+  state.hero.statuses.confusion = 1;
+  const turnsBefore = state.stats.turnsTaken || 0;
+  const confRes = stepHero(state, 1);
+  assert.strictEqual(confRes.ok, true, 'Confused step returns ok: true (turn consumed)');
+  assert.strictEqual(confRes.confused, true, 'Confused flag set on result');
+  assert.strictEqual(Boolean(state.hero.statuses.confusion), false, 'Confusion status consumed');
+  assert.strictEqual(state.stats.turnsTaken || 0, turnsBefore, 'stepHero itself does not advance turn before battle controller');
+  console.log('✓ Stepping into wall/prop and hero confusion handling work without ReferenceError or double turn advance');
+}
+
 console.log('\n=============================');
 console.log('ALL FIX TESTS PASSED SUCCESSFULLY!');
 console.log('=============================');

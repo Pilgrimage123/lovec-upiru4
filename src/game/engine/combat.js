@@ -27,7 +27,6 @@ import {
   genEntityId,
   isVampireEntity,
   isHumanEntity,
-  canDamageFinishVampires,
   resolveEntityDeath,
   isHeroAlive,
   applyHealToEntity
@@ -714,9 +713,12 @@ export function resolveHeroHitOnTarget(
 
   let dragounBonus = 0;
   let armorIgnore = 0;
-  if (hero.hunterId === 'dragoun' && hero.movedThisTurn) {
+  if (hero.hunterId === 'dragoun' && (hero.movedThisTurn || Boolean(hero.statuses?.kavalirsky_naprah))) {
     dragounBonus = 2;
     armorIgnore = 1;
+    if (hero.statuses?.kavalirsky_naprah) {
+      consumeStatus(hero, 'kavalirsky_naprah', 1);
+    }
     events.push({
       type: 'log',
       text: `⚔️ Kavalírský nápřah! Útočný výpad z pohybu proráží formaci (+2 DMG, ignoruje 1 Brnění)!`
@@ -963,6 +965,31 @@ export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events 
         type: 'log',
         text: `📋 Kontrola domovského listu: Před revidentem nestojí žádný nepřítel!`
       });
+    }
+  }
+
+  if (tile.lungeForward && isHeroAlive(hero)) {
+    const nextCell = hero.cell + hero.facing * tile.lungeForward;
+    if (isValidCell(nextCell, state) && !getEntityAt(state, nextCell)) {
+      const from = hero.cell;
+      hero.cell = nextCell;
+      hero.movedThisTurn = true;
+      if (hero.hunterId === 'dragoun') {
+        addStatus(hero, 'kavalirsky_naprah', 1, events);
+      }
+      events.push({
+        type: 'move',
+        entityId: hero.id,
+        from,
+        to: nextCell,
+        facing: hero.facing
+      });
+      events.push({
+        type: 'log',
+        text: `🐎 Výpad šavlí! ${hero.name} vyrazil vpřed na pole ${nextCell + 1}!`
+      });
+      triggerCellTerrainOnEnter(state, hero, nextCell, events);
+      assertBoardInvariants(state);
     }
   }
 
@@ -1344,7 +1371,6 @@ export function consumeHeroConfusionIfPresent(state) {
     { type: 'hero_confusion_skipped', targetId: hero.id, cell: hero.cell },
     { type: 'log', text: `❓ ${hero.givenName || hero.name} má nad hlavou otazník, zmateně stojí a vynechává tah!` }
   ];
-  advanceTurnAfterPlayerAction(state, events);
   return {
     ok: true,
     confused: true,
@@ -1822,13 +1848,6 @@ export function stepHero(state, direction) {
 
   const targetCell = hero.cell + dir;
   if (!isValidCell(targetCell, state)) {
-    if (confused) {
-      events.push({
-        type: 'log',
-        text: `🧱 Zmatený ${hName} narazil do hradní zdi a ztratil tah.`
-      });
-      return { ok: true, events };
-    }
     events.push({ type: 'invalid_action', reason: 'Tam už je hradní zeď!' });
     return { ok: false, events };
   }
@@ -1838,6 +1857,13 @@ export function stepHero(state, direction) {
     const from = hero.cell;
     hero.cell = targetCell;
     hero.movedThisTurn = true;
+    if (hero.hunterId === 'dragoun' && dir === hero.facing) {
+      addStatus(hero, 'kavalirsky_naprah', 1, events);
+      events.push({
+        type: 'log',
+        text: `🐎 Kavalírský nápřah! Dragoun se rozjel vpřed – příští útok získá +2 DMG a ignoruje 1 Brnění!`
+      });
+    }
     events.push({ type: 'move', entityId: hero.id, from, to: targetCell, facing: hero.facing });
     events.push({ type: 'log', text: `👣 ${hName} popošel na pole ${targetCell + 1}.` });
     triggerCellTerrainOnEnter(state, hero, targetCell, events);
@@ -1889,12 +1915,6 @@ export function stepHero(state, direction) {
       }
     }
     resolveHeroBump(state, hero, occupant, dir, targetCell, hunterId, events);
-  } else if (confused) {
-    events.push({
-      type: 'log',
-      text: `🧱 Zmatený ${hName} se zamotal do překážky a ztratil tah.`
-    });
-    return { ok: true, events };
   } else {
     events.push({
       type: 'invalid_action',
@@ -1912,6 +1932,8 @@ export function turnHero(state) {
   if (state.status !== 'playing' || !isHeroAlive(state.hero)) return { ok: false, events };
   const stunRes = consumeHeroStunIfPresent(state);
   if (stunRes) return stunRes;
+  const confRes = consumeHeroConfusionIfPresent(state);
+  if (confRes) return confRes;
 
   const hero = state.hero;
   const hName = hero.givenName || hero.name || 'Venca';
@@ -1998,6 +2020,8 @@ export function waitHero(state) {
   if (state.status !== 'playing' || !isHeroAlive(state.hero)) return { ok: false, events };
   const stunRes = consumeHeroStunIfPresent(state);
   if (stunRes) return stunRes;
+  const confRes = consumeHeroConfusionIfPresent(state);
+  if (confRes) return confRes;
 
   const hName = state.hero?.givenName || state.hero?.name || 'Venca';
   const extraCd = state.talismans?.includes('pocket_watch') ? 1 : 0;
@@ -2017,6 +2041,8 @@ export function insertTileIntoQueue(state, instanceId) {
   if (state.status !== 'playing' || !isHeroAlive(state.hero)) return { ok: false, events };
   const stunRes = consumeHeroStunIfPresent(state);
   if (stunRes) return stunRes;
+  const confRes = consumeHeroConfusionIfPresent(state);
+  if (confRes) return confRes;
 
   if (state.queue.length >= state.maxQueueSlots) {
     events.push({ type: 'invalid_action', reason: 'Fronta akcí už je plná!' });

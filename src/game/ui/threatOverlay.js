@@ -12,7 +12,7 @@ export function renderCellThreatAndPreviewHtml(cellIndex, cellThreat, queuePrevi
 
     parts.push(`
       <div class="ground-crosshair-badge animate-pulse-crosshair"
-           title="Zatelegrafovaná zóna dopadu! ARMED nepřítel zde v příštím tahu odpálí útok za ${totalDmg} DMG!">
+           title="Zóna dopadu! Připravený nepřítel zde v příštím tahu odpálí útok za ${totalDmg} DMG!">
         <div class="crosshair-header">
           <span class="crosshair-target-icon">🎯</span>
           <span class="crosshair-tag badge-verbose-text">CÍL ÚTOKU</span>
@@ -47,7 +47,7 @@ export function renderCellThreatAndPreviewHtml(cellIndex, cellThreat, queuePrevi
   if (cellThreat && cellThreat.isInspectReach) {
     const inspectCount = cellThreat.inspectSources?.length || 1;
     parts.push(`
-      <div class="inspect-reach-badge" title="Pole v dosahu útoků inspectovaného nepřítele (${inspectCount} schopností)">
+      <div class="inspect-reach-badge" title="Pole v dosahu útoků vybraného nepřítele (${inspectCount} schopností)">
         <span>👁️<span class="badge-verbose-text"> Dosah</span></span>
       </div>
     `);

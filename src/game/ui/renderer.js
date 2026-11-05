@@ -222,7 +222,7 @@ export function renderBattleBoard(container, state, uiState = {}, callbacks = {}
   const queueSlotsHtml = Array.from({ length: state.maxQueueSlots }, (_, slotIdx) => {
     const instanceId = state.queue[slotIdx];
     const tile = instanceId ? state.hand.find((t) => t.instanceId === instanceId) : null;
-    const roleLabel = `Slot #${slotIdx + 1}`;
+    const roleLabel = `#${slotIdx + 1}`;
 
     if (!tile) {
       return `
@@ -231,7 +231,7 @@ export function renderBattleBoard(container, state, uiState = {}, callbacks = {}
             <span class="queue-slot-role">${roleLabel}</span>
           </div>
           <div class="queue-slot-content">
-            <span class="queue-slot-placeholder">Prázdný slot</span>
+            <span class="queue-slot-placeholder">Volný slot</span>
           </div>
         </div>
       `;
@@ -333,7 +333,7 @@ export function renderBattleBoard(container, state, uiState = {}, callbacks = {}
           <strong>⚡ Fronta komba</strong>
           ${resonancesHtml}
         </div>
-        <span class="hero-queue-hint">(1 tah vložení · Odpálení okamžité!)</span>
+        <span class="hero-queue-hint">Vložení: 1 tah · Odpal: Mezerník</span>
       </div>
       <div class="hero-queue-slots" style="--queue-slots: ${state.maxQueueSlots};">
         ${queueSlotsHtml}
@@ -481,7 +481,7 @@ export function renderBattleBoard(container, state, uiState = {}, callbacks = {}
     const cellIdx = Number(cellEl.getAttribute('data-cell-index'));
     const terrainObj = state.terrain[cellIdx];
     const durationInfo = terrainObj?.duration
-      ? `<div class="tt-meta" style="color:#b45309;font-weight:800;margin:2px 0;">⏳ Zbývá: <strong>${terrainObj.duration} ${czechTurns(terrainObj.duration)}</strong></div>`
+      ? `<div class="tt-meta">⏳ Zbývá: <strong>${terrainObj.duration} ${czechTurns(terrainObj.duration)}</strong></div>`
       : '';
     const html = `<div class="tt-title"><strong>${def.name}</strong></div>${durationInfo}<div class="tt-desc">${def.description}</div>`;
     floorEl.addEventListener('mouseenter', (ev) => {
@@ -505,9 +505,9 @@ export function renderBattleBoard(container, state, uiState = {}, callbacks = {}
     if (reinf) {
       const enemyDef = ENEMIES?.[reinf.enemyId] || null;
       const enemyName = enemyDef?.name || 'Upíří posila';
-      tooltipHtml += `<div class="tt-meta" style="color:#b91c1c;font-weight:800;margin:3px 0;">⚠️ Příchod posily za <strong>${reinf.turnsRemaining} ${czechTurns(reinf.turnsRemaining)}</strong></div><div class="tt-desc">Zpoza brány se blíží: <strong>${enemyName}</strong> (Max HP: ${enemyDef?.maxHp || '?'}).</div>`;
+      tooltipHtml += `<div class="tt-warn">⚠️ Příchod posily za <strong>${reinf.turnsRemaining} ${czechTurns(reinf.turnsRemaining)}</strong></div><div class="tt-desc" style="margin-top:5px;">Zpoza brány se blíží: <strong>${enemyName}</strong> (Max HP: ${enemyDef?.maxHp || '?'}).</div>`;
     } else {
-      tooltipHtml += `<div class="tt-desc" style="color:#57402a;">V této bráně je momentálně klid. Žádná posila se neblíží.</div>`;
+      tooltipHtml += `<div class="tt-desc">V této bráně je momentálně klid. Žádná posila se neblíží.</div>`;
     }
     gateEl.addEventListener('mouseenter', (ev) => {
       showTooltip(tooltipHtml, ev.clientX, ev.clientY);

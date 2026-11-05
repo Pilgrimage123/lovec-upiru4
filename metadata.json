@@ -1,6 +1,6 @@
 {
   "name": "lovec upírů",
-  "description": "1D tahová taktická roguelite. Venca Česnekáč v boji proti hradním upírům a nočním stvůrám.",
+  "description": "Satirická 1D tahová taktická roguelite z Čech l. p. 1899. Sokol Venca a 9 bijců v c. k. tažení proti upířímu Hraběti von Nochtic.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
