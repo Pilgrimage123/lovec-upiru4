@@ -1196,6 +1196,23 @@
   flex-shrink: 0;
 }
 
+.intent-confused-tag {
+  background: #fef08a;
+  color: #713f12;
+  font-family: var(--font-display, serif);
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1.5px solid #a16207;
+  white-space: nowrap;
+  line-height: 1.1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .intent-armed-tag {
   background: rgba(185, 28, 28, 0.95);
   color: #fffbeb;

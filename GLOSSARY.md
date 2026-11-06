@@ -128,6 +128,31 @@ _Avoid_: Persistence, Willpower, Houževnatost, Vytrvalost, Odolnost, Životní 
 Kanonický etalon herní dynamiky, tempa a rovnováhy lovce (20 HP, 1 Obrana, 10 % Bojové rozlícení, 5 Verva, rotace Chladnutí 2–2–3). Všechny útočné, obranné i manévrovací schopnosti ostatních lovců jsou kalibrovány a poměřovány vůči této vyvážené šabloně.
 _Avoid_: Power level, Baseline, Referenční hrdina, Standardní postava
 
+**Fronta akcí**:
+Vyhrazená sekvence taktických destiček připravených lovcem či nepřítelem k postupnému vykonání v jednom tahu.
+_Avoid_: Action Queue, Zásobník, Slot bar, Combo lane
+
+**Odpálení fronty**:
+Bojová akce spotřebovávající jeden tah, při níž postava v nepřerušené sérii provede všechny destičky zařazené ve své frontě.
+_Avoid_: Trigger, Firing, Execute, Spuštění komba
+
+**Nabíjení fronty**:
+Fáze přípravy, kdy postava vkládá do své fronty destičky akcí bez zvláštního vizuálního odznaku a bezprostředně nehrozí spuštěním útoku.
+_Avoid_: Queuing, Plnění fronty, Nabíjení
+
+**Příprava k odpálení**:
+Kritický výstražný stav označený symbolem (🚨), kdy má postava frontu plně sestavenu a v následujícím tahu ji bez milosti odpálí.
+_Avoid_: Armed, Red state, Zčervenání, Nápřah
+
+**Přátelská palba**:
+Zásah nepřítele útokem jiného nepřítele způsobený nuceným přemístěním, odhozením nebo záměnou pozic po manévru lovce.
+_Avoid_: Friendly Fire, Zásah vlastního, Sebezranění
+
+**Zdržení Zmatením**:
+Dočasný posun připraveného odpálení fronty o jeden tah vyvolaný stavem Zmatení (❓); postava zobrazuje pouze standardní otazník a rozpracovaná fronta zůstává na pozadí beze změny zachována.
+_Avoid_: Stun delay, Odklad, Přerušení
+
+
 
 
 

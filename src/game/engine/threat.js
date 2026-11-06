@@ -88,7 +88,8 @@ export function computeBoardThreats(state, hoveredEnemyId = null) {
     const initiativeRank = idx + 1;
     const synergy = lordIds.some((id) => id !== enemy.id) ? 1 : 0;
     const ctx = { occupancy, synergy };
-    const isArmed = enemy.queueState === 'ARMED_RED';
+    const isConfused = Boolean(enemy.statuses?.confusion > 0);
+    const isArmed = !isConfused && enemy.queueState === 'ARMED_RED';
     const queue = enemy.actionQueue || [];
 
     const addQueueHits = (tileIds, { armed = false, imminent = false } = {}) => {

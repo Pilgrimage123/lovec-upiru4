@@ -119,13 +119,20 @@ function getActionTileBadge(tileDef) {
 export function renderEnemyIntentStripHtml(enemy, initiativeRank) {
   if (!enemy || enemy.hp <= 0) return '';
 
-  const isArmedRed = enemy.queueState === 'ARMED_RED';
+  const isConfused = Boolean(enemy.statuses?.confusion > 0);
+  const isArmedRed = !isConfused && enemy.queueState === 'ARMED_RED';
   const actionQueue = enemy.actionQueue || [];
   const nextAction = enemy.nextAction;
 
   // Render unified status or positioning badge in the header so height never changes
   let headerStatusHtml = '';
-  if (isArmedRed) {
+  if (isConfused) {
+    headerStatusHtml = `
+      <span class="intent-confused-tag" title="Zmaten: V tomto tahu nic neudělá a vynechává akci. Útok odložen o 1 tah.">
+        <span class="intent-status-icon">❓</span><span class="intent-tag-label"> ZMATEN</span>
+      </span>
+    `;
+  } else if (isArmedRed) {
     headerStatusHtml = `
       <span class="intent-armed-tag" title="Po tvé další normální akci odpálí frontu. Žádná blesková reakce.">
         <span class="intent-status-icon">🚨</span><span class="intent-tag-label"> 1 AKCE</span>
@@ -147,11 +154,8 @@ export function renderEnemyIntentStripHtml(enemy, initiativeRank) {
       </span>
     `;
   } else {
-    headerStatusHtml = `
-      <span class="intent-queuing-tag" title="Nepřítel nabíjí kombo">
-        <span class="intent-status-icon">⚪</span><span class="intent-tag-label"> NABÍJÍ</span>
-      </span>
-    `;
+    // Stav Nabíjí se nijak neindikuje
+    headerStatusHtml = '';
   }
 
   // 3 Slots for the Intent Bar (left to right: Slot 1, Slot 2, Slot 3)
@@ -177,7 +181,7 @@ export function renderEnemyIntentStripHtml(enemy, initiativeRank) {
       } else {
         slotsHtml.push(`
           <div class="intent-slot intent-slot-queuing-gray"
-               title="[NABÍJÍ] Slot #${slotIdx + 1}: ${tileDef.name} (${badgeText}) — v tomto tahu ještě nevystřelí">
+               title="Slot #${slotIdx + 1}: ${tileDef.name} (${badgeText}) — v tomto tahu ještě nevystřelí">
             <div class="intent-slot-icon-box">${iconSvg}</div>
             <span class="intent-slot-name">${badgeText}</span>
           </div>
@@ -223,7 +227,8 @@ export function renderEnemyIntentStripHtml(enemy, initiativeRank) {
 }
 
 export function buildEnemyTooltipHtml(enemy, initiativeRank) {
-  const isArmedRed = enemy.queueState === 'ARMED_RED';
+  const isConfused = Boolean(enemy.statuses?.confusion > 0);
+  const isArmedRed = !isConfused && enemy.queueState === 'ARMED_RED';
   const actionQueue = enemy.actionQueue || [];
   const actionPool = enemy.actionPool || [];
 
@@ -269,18 +274,25 @@ export function buildEnemyTooltipHtml(enemy, initiativeRank) {
 
   // Queue status string
   let stateDesc = '';
-  if (isArmedRed) {
+  if (isConfused) {
+    stateDesc = `
+      <div class="tt-status-box tt-status-confused">
+        ❓ <strong>ZMATEN</strong><br/>
+        Postava zmateně stojí a vynechává akci. Rozpracovaná fronta zůstává zachována.
+      </div>
+    `;
+  } else if (isArmedRed) {
     stateDesc = `
       <div class="tt-status-box tt-status-armed">
         🚨 <strong>PŘIPRAVEN K ODPALU (1 AKCE)</strong><br/>
-        Po tvé další akci odpálí frontu (${actionQueue.length} ${actionQueue.length === 1 ? 'destička' : actionQueue.length >= 2 && actionQueue.length <= 4 ? 'destičky' : 'destiček'}). Do té doby se neotočí ani neuhne.
+        Po tvé další akci odpálí frontu (${actionQueue.length} ${actionQueue.length === 1 ? 'destička' : actionQueue.length >= 2 && actionQueue.length <= 4 ? 'destičky' : 'destiček'}).
       </div>
     `;
   } else if (actionQueue.length > 0) {
     stateDesc = `
       <div class="tt-status-box tt-status-queuing">
-        ⚪ <strong>NABÍJÍ KOMBO (${actionQueue.length}/${enemy.comboCapacity || 2})</strong><br/>
-        V nadcházejícím tahu ještě nevystřelí.
+        <strong>FRONTA AKCÍ (${actionQueue.length}/${enemy.comboCapacity || 2})</strong><br/>
+        V nadcházejícím tahu nevystřelí.
       </div>
     `;
   } else {

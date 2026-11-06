@@ -4,6 +4,33 @@ Veškeré významné změny v projektu Lovec upírů jsou zaznamenávány v tomt
 
 Formát vychází z [Keep a Changelog](https://keepachangelog.com/cs/1.0.0/).
 
+## [2.1.0] - 2026-11-06
+
+### Přidáno & Změněno (Added & Changed)
+- **Časování akcí nepřátel, odpalování fronty a dynamické přesměrování útoků (ADR 0014)**:
+  - **Kanonický model nepřátel bez číselných odpočtů**:
+    - Odstraněny matoucí číselné odpočty u nepřátel ve prospěch fázového modelu: nepřátelé sestavují vlastní vícepoložkovou frontu destiček (kapacita 1–3 dle archetypu).
+    - Fáze nabíjení fronty se nijak neindikuje textovým odznakem (žádný nápis „⚪ NABÍJÍ“; hráč vidí pouze destičky ve slotech bez zbytečného balastu).
+    - Pokud hráč ustoupí během nabíjení, nepřítel ho pronásleduje krokem a rozpracované destičky si ve frontě ponechává.
+    - Telegrafovaný pohyb (`👣 Krok`) i otočení (`🔄 Otočení`) dává hráči prostor na reakci stejným způsobem jako stav Příprava k odpálení (`🚨 1 AKCE`).
+  - **Příprava k odpálení (🚨) a Kiting do prázdna**:
+    - Po naplnění kapacity fronty nepřítel zčervená (`ARMED_RED` / `🚨 1 AKCE`). Hráč má garantován přesně 1 tah na reakci.
+    - Pokud hráč v tomto tahu ustoupí mimo dosah, nepřítel sekne do prázdna, fronta se vyprázdní a použité destičky začnou chladnout.
+  - **Dynamický přepočet palebné dráhy a Přátelská palba**:
+    - Přežije-li nepřítel v `🚨` kombo hráče, jeho útok se neruší – dynamicky se vyhodnotí z jeho nové pozice a směru pohledu.
+    - Zásah jiného nepřítele v nové dráze korektně uděluje poškození i vedlejší efekty a loguje kanonickou hlášku `🧛‍♂️💥 PŘÁTELSKÁ PALBA!`.
+    - Pořadí hromadného odpalu se řídí Iniciativou; padne-li nepřítel zásahem spojence, jeho útok již neproběhne.
+  - **Zdržení Zmatením (❓)**:
+    - Stav Zmatení (❓) nepřátelskou frontu nemaže, nýbrž odkládá odpal o 1 tah.
+    - U zmateného nepřítele se neindikuje výstraha nápřahu (`🚨`), nýbrž svítí čistý žlutý odznak `❓ ZMATEN`.
+  - **Ekonomika tahů lovce**:
+    - Vložení standardní destičky = 1 tah (rychlovky = 0 tahů).
+    - Odpálení fronty = 1 tah (všechny zařazené destičky vyletí v sérii před nepřátelskou fází).
+    - Vyjmutí a přerovnání destiček ve frontě = 0 tahů (zdarma).
+  - **Doménová dokumentace a testy**:
+    - Aktualizován `GLOSSARY.md` a sepsán architektonický záznam `docs/adr/0014-casovani-akci-nepratel-a-odpalovani-fronty.md`.
+    - Vytvořena komplexní testovací sada `scratch_tests/test_enemy_timing_and_queue.mjs` (všech 6 testů prochází na 100 %).
+
 ## [2.0.0] - 2026-11-05
 
 ### Přidáno (Added)

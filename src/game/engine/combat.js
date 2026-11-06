@@ -247,7 +247,7 @@ export function resolveEnemyHitOnTarget(
       });
       events.push({
         type: 'log',
-        text: `🧛‍♂️💥 FRIENDLY FIRE! ${enemy.name} zasáhl vlastního kumpána (${target.name})! ${quote}`
+        text: `🧛‍♂️💥 PŘÁTELSKÁ PALBA! ${enemy.name} zasáhl vlastního kumpána (${target.name})! ${quote}`
       });
     } else {
       const sneakText = isSneakAttack ? ` [🗡️ Zákeřný úder ${isFromBehind ? 'do zad' : 'v omámení'} +${sneakBonusPct}%]` : '';

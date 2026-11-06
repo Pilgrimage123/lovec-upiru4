@@ -995,10 +995,17 @@ export function checkArmingCondition(state, enemy, events = []) {
   const remainingReady = (enemy.actionPool || []).filter(
     (p) => p.currentCooldown === 0 && !enemy.actionQueue.includes(p.tileId)
   );
+  const heroCell = state.hero?.cell;
+  const dist = typeof heroCell === 'number' ? Math.abs(heroCell - enemy.cell) : 999;
+  const canAdvance =
+    typeof heroCell === 'number' &&
+    dist > 1 &&
+    canEnemyStepTo(state, enemy, enemy.cell + enemy.facing);
+
   if (
     enemy.actionQueue.length >= cap ||
     (enemy.archetype === 'fodder' && enemy.actionQueue.length >= 1) ||
-    remainingReady.length === 0
+    (remainingReady.length === 0 && !canAdvance)
   ) {
     shouldArm = true;
   }
