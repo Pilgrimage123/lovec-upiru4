@@ -110,11 +110,75 @@ function getActBossTitle(act) {
 }
 
 /**
- * Procedural DAG Map Generator with Threat Budget & Tactical Synergy Archetypes.
- * Generates an interconnected 6-tier graph per Act with deterministic seed RNG.
+ * Checks whether adding directed edge (u -> v) between tier t and tier t+1
+ * would cross any existing edge (u2 -> v2) in the same tier transition.
+ */
+function wouldCrossExistingEdge(u, v, curNodes, nxtNodes) {
+  const nxtById = new Map(nxtNodes.map((n) => [n.id, n]));
+  for (const u2 of curNodes) {
+    if (u2.id === u.id) continue;
+    for (const v2Id of u2.next) {
+      const v2 = nxtById.get(v2Id);
+      if (!v2) continue;
+      if (
+        (u.lane < u2.lane && v.lane > v2.lane) ||
+        (u.lane > u2.lane && v.lane < v2.lane)
+      ) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+/**
+ * Enforces Markov path-pacing invariants across the DAG:
+ * - No two consecutive identical non-combat utility nodes (e.g. PUB -> PUB, WORKSHOP -> WORKSHOP).
+ * - Guarantees every root-to-boss path encounters at least 2 combat rooms.
+ */
+function enforcePathPacingInvariants(allNodes, rng) {
+  const nodeById = new Map(allNodes.map((n) => [n.id, n]));
+  const nonCombatTypes = new Set([
+    NODE_TYPES.PUB,
+    NODE_TYPES.WORKSHOP,
+    NODE_TYPES.EVENT,
+    NODE_TYPES.TREASURE
+  ]);
+
+  for (const node of allNodes) {
+    if (node.tier === 0 || node.tier === 5) continue;
+    if (!nonCombatTypes.has(node.type)) continue;
+
+    const parentTypes = node.prev
+      .map((pid) => nodeById.get(pid)?.type)
+      .filter(Boolean);
+
+    // Prevent consecutive identical utility node types along any edge (e.g. PUB -> PUB)
+    if (parentTypes.includes(node.type)) {
+      if (node.tier <= 3) {
+        node.type = NODE_TYPES.BATTLE;
+      } else {
+        // In Tier 4, alternate between WORKSHOP and PUB
+        node.type = node.type === NODE_TYPES.PUB ? NODE_TYPES.WORKSHOP : NODE_TYPES.PUB;
+      }
+    }
+
+    // Prevent 3 consecutive non-combat nodes by checking grandparents
+    const allParentsNonCombat =
+      parentTypes.length > 0 && parentTypes.every((t) => nonCombatTypes.has(t));
+    if (allParentsNonCombat && node.tier <= 3 && rng.nextFloat() < 0.85) {
+      node.type = NODE_TYPES.BATTLE;
+    }
+  }
+}
+
+/**
+ * Procedural DAG Map Generator with Planar Topology, Markov Path-Pacing Solver,
+ * Threat Budget Scaling, and Parent-Aware Tactical Synergy Archetypes.
  */
 export function generateActMap(run, act) {
   const rng = run.rng || createRng(`${run.seed}_act${act}`);
+  const curseLevel = Math.max(0, Math.min(5, Number(run?.curseLevel) || 0));
   const tiers = [[], [], [], [], [], []];
   const usedEncounterIds = [];
 
@@ -124,20 +188,21 @@ export function generateActMap(run, act) {
 
   // TIER 0: Entry Point
   if (act === 1) {
-    // Act 1 starts with a single entry gate
     tiers[0].push({
       lane: 1,
       type: NODE_TYPES.BATTLE,
       isTutorial: !run.stats || run.stats.battlesWon === 0
     });
   } else {
-    // Acts 2 & 3 give an immediate strategic lane choice (Left Vanguard vs Right Bypass)
     tiers[0].push({ lane: 0, type: NODE_TYPES.BATTLE });
     tiers[0].push({ lane: 2, type: NODE_TYPES.BATTLE });
   }
 
-  // TIER 1: First Branching Exploration (2 lanes)
+  // TIER 1: First Branching Exploration (2 to 3 lanes)
   tiers[1].push({ lane: 0, type: NODE_TYPES.BATTLE });
+  if (rng.nextFloat() < 0.35) {
+    tiers[1].push({ lane: 1, type: NODE_TYPES.BATTLE });
+  }
   const t1RightType = rng.nextFloat() < 0.6 ? NODE_TYPES.EVENT : NODE_TYPES.BATTLE;
   tiers[1].push({ lane: 2, type: t1RightType });
 
@@ -151,7 +216,6 @@ export function generateActMap(run, act) {
   // TIER 3: High-Stakes Trial (Lane 0 guaranteed Elite; Lane 2 Treasure or Battle)
   tiers[3].push({ lane: 0, type: NODE_TYPES.ELITE });
   if (rng.nextFloat() < 0.65) {
-    // Occasional 3-lane expansion in Tier 3
     const t3CenterType = rng.nextFloat() < 0.5 ? NODE_TYPES.BATTLE : NODE_TYPES.EVENT;
     tiers[3].push({ lane: 1, type: t3CenterType });
   }
@@ -180,7 +244,6 @@ export function generateActMap(run, act) {
 
   const allNodes = [];
   tiers.forEach((tierList, tierIdx) => {
-    // Sort tier nodes by lane so rendering is clean and predictable
     tierList.sort((a, b) => a.lane - b.lane);
     tierList.forEach((node, nodeIdx) => {
       node.id = `a${act}_t${tierIdx}_n${nodeIdx}`;
@@ -192,14 +255,14 @@ export function generateActMap(run, act) {
   });
 
   // =========================================================================
-  // 3. DIRECTED ACYCLIC GRAPH (DAG) FORWARD & BACKWARD EDGE ROUTING
+  // 3. PLANAR DIRECTED ACYCLIC GRAPH (DAG) EDGE ROUTING
   // =========================================================================
 
   for (let t = 0; t < 5; t++) {
     const curNodes = tiers[t];
     const nxtNodes = tiers[t + 1];
 
-    // Connect nodes based on lane proximity (|laneA - laneB| <= 1, or single convergence)
+    // Step 3a: Primary planar connections by lane proximity
     curNodes.forEach((nodeA) => {
       nxtNodes.forEach((nodeB) => {
         const canConnect =
@@ -207,57 +270,59 @@ export function generateActMap(run, act) {
           nxtNodes.length === 1 ||
           Math.abs(nodeA.lane - nodeB.lane) <= 1;
 
-        if (canConnect) {
+        if (canConnect && !wouldCrossExistingEdge(nodeA, nodeB, curNodes, nxtNodes)) {
           if (!nodeA.next.includes(nodeB.id)) nodeA.next.push(nodeB.id);
           if (!nodeB.prev.includes(nodeA.id)) nodeB.prev.push(nodeA.id);
         }
       });
     });
 
-    // Invariant Check 1: Ensure every node in current tier has at least 1 outgoing edge
+    // Step 3b: Invariant 1 — Every node in tier t must have out-degree >= 1
     curNodes.forEach((nodeA) => {
       if (nodeA.next.length === 0) {
-        let closest = nxtNodes[0];
-        let minDist = 999;
-        nxtNodes.forEach((nodeB) => {
-          const dist = Math.abs(nodeA.lane - nodeB.lane);
-          if (dist < minDist) {
-            minDist = dist;
-            closest = nodeB;
-          }
-        });
-        nodeA.next.push(closest.id);
-        if (!closest.prev.includes(nodeA.id)) closest.prev.push(nodeA.id);
+        const sortedTargets = [...nxtNodes].sort(
+          (a, b) => Math.abs(nodeA.lane - a.lane) - Math.abs(nodeA.lane - b.lane)
+        );
+        const chosen =
+          sortedTargets.find((b) => !wouldCrossExistingEdge(nodeA, b, curNodes, nxtNodes)) ||
+          sortedTargets[0];
+        nodeA.next.push(chosen.id);
+        if (!chosen.prev.includes(nodeA.id)) chosen.prev.push(nodeA.id);
       }
     });
 
-    // Invariant Check 2: Ensure every node in next tier has at least 1 incoming edge
+    // Step 3c: Invariant 2 — Every node in tier t+1 must have in-degree >= 1
     nxtNodes.forEach((nodeB) => {
       if (nodeB.prev.length === 0) {
-        let closest = curNodes[0];
-        let minDist = 999;
-        curNodes.forEach((nodeA) => {
-          const dist = Math.abs(nodeA.lane - nodeB.lane);
-          if (dist < minDist) {
-            minDist = dist;
-            closest = nodeA;
-          }
-        });
-        nodeB.prev.push(closest.id);
-        if (!closest.next.includes(nodeB.id)) closest.next.push(nodeB.id);
+        const sortedSources = [...curNodes].sort(
+          (a, b) => Math.abs(a.lane - nodeB.lane) - Math.abs(b.lane - nodeB.lane)
+        );
+        const chosen =
+          sortedSources.find((a) => !wouldCrossExistingEdge(a, nodeB, curNodes, nxtNodes)) ||
+          sortedSources[0];
+        nodeB.prev.push(chosen.id);
+        if (!chosen.next.includes(nodeB.id)) chosen.next.push(nodeB.id);
       }
     });
   }
 
   // =========================================================================
-  // 4. THREAT BUDGET & TACTICAL ENCOUNTER ALLOCATION
+  // 4. MARKOV PATH-PACING CONSTRAINT SOLVER
   // =========================================================================
+
+  enforcePathPacingInvariants(allNodes, rng);
+
+  // =========================================================================
+  // 5. THREAT BUDGET & PARENT-AWARE TACTICAL ENCOUNTER ALLOCATION
+  // =========================================================================
+
+  const nodeMap = new Map(allNodes.map((n) => [n.id, n]));
 
   allNodes.forEach((node) => {
     const route = ROUTE_ARCHETYPES[node.lane] || ROUTE_ARCHETYPES[1];
     node.routeTag = route.tag;
 
-    // Base threat target curves by Act and Tier depth
+    // Base threat target curve by Act and Tier depth + Curse scaling
     let baseThreat = 1;
     if (act === 1) {
       baseThreat = node.tier <= 1 ? 1 : node.tier <= 2 ? 2 : 3;
@@ -266,6 +331,12 @@ export function generateActMap(run, act) {
     } else {
       baseThreat = node.tier <= 1 ? 3 : node.tier <= 2 ? 4 : 5;
     }
+    const curseThreatBump = Math.floor(curseLevel / 3);
+
+    // Gather parent archetypes to avoid monotonous back-to-back combat repetitions
+    const parentArchetypes = node.prev
+      .map((pid) => nodeMap.get(pid)?.archetype)
+      .filter(Boolean);
 
     if (node.type === NODE_TYPES.ELITE) {
       node.threatRating = act === 1 ? 4 : 5;
@@ -274,6 +345,7 @@ export function generateActMap(run, act) {
         isElite: true,
         threatTarget: node.threatRating,
         preferredArchetype: 'elite',
+        avoidArchetypes: parentArchetypes,
         rng,
         excludeIds: usedEncounterIds
       });
@@ -282,6 +354,7 @@ export function generateActMap(run, act) {
       node.archetype = enc.archetype;
       node.archetypeName = enc.archetypeName;
       node.tacticalHint = enc.tacticalHint;
+      node.expectedGoldReward = (enc.goldReward || 30) + (node.lane === 0 ? 4 : 0);
       usedEncounterIds.push(enc.id);
     } else if (node.type === NODE_TYPES.BOSS) {
       node.threatRating = act === 1 ? 5 : 6;
@@ -291,10 +364,13 @@ export function generateActMap(run, act) {
       node.archetype = enc.archetype;
       node.archetypeName = enc.archetypeName;
       node.tacticalHint = enc.tacticalHint;
+      node.expectedGoldReward = enc.goldReward || 50;
       usedEncounterIds.push(enc.id);
     } else if (node.type === NODE_TYPES.BATTLE) {
-      // Adjust threat by route personality
-      const adjustedThreat = Math.max(1, Math.min(5, baseThreat + route.threatModifier));
+      const adjustedThreat = Math.max(
+        1,
+        Math.min(5, baseThreat + route.threatModifier + curseThreatBump)
+      );
       node.threatRating = adjustedThreat;
 
       let enc;
@@ -307,6 +383,7 @@ export function generateActMap(run, act) {
           isBoss: false,
           threatTarget: adjustedThreat,
           preferredArchetype: route.preferredArchetype,
+          avoidArchetypes: parentArchetypes,
           rng,
           excludeIds: usedEncounterIds
         });
@@ -317,12 +394,13 @@ export function generateActMap(run, act) {
       node.archetype = enc.archetype;
       node.archetypeName = enc.archetypeName;
       node.tacticalHint = enc.tacticalHint;
+      node.expectedGoldReward = (enc.goldReward || 18) + (node.lane === 0 ? 3 : 0);
       usedEncounterIds.push(enc.id);
     } else {
-      // Non-combat utility nodes
       node.encounterId = null;
       node.threatRating = 0;
       node.archetype = null;
+      node.expectedGoldReward = 0;
 
       if (node.type === NODE_TYPES.PUB) {
         node.title = node.lane === 2 ? 'Hostinec U Zlatého kříže' : 'Hospoda U Svěcené pípy';

@@ -10,6 +10,7 @@ import {
   reduceTileCooldownInRun
 } from '../engine/run.js';
 import { resolveEventChoice } from '../engine/events.js';
+import { czechTurns } from '../config/strings.cs.js';
 
 export function closeModal(modalRoot) {
   if (!modalRoot) return;
@@ -132,84 +133,6 @@ export function openFullLogModal(modalRoot, logs = []) {
       scrollArea.scrollTop = scrollArea.scrollHeight;
     }, 20);
   }
-
-  modalRoot.querySelector('#btn-modal-close')?.addEventListener('click', () => closeModal(modalRoot));
-  modalRoot.querySelector('.modal-backdrop')?.addEventListener('click', (e) => {
-    if (e.target.classList.contains('modal-backdrop')) closeModal(modalRoot);
-  });
-}
-
-export function openLoadoutAndTalismansModal(modalRoot, runState, battleState = null) {
-  if (!modalRoot || !runState) return;
-  modalRoot.classList.remove('hidden');
-
-  const hero = battleState?.hero || null;
-  const hunterKey = hero?.hunterId || hero?.kind || runState.hunterId || runState.loadoutId || 'classic';
-  const loadout =
-    STARTING_LOADOUTS[hunterKey] ||
-    Object.values(STARTING_LOADOUTS).find((l) => l.hunterId === hunterKey) ||
-    STARTING_LOADOUTS.classic;
-
-  const bumpName = loadout?.bumpName || 'Krok do nepřítele';
-  const bumpDesc = loadout?.bumpDesc || 'Manévr při kroku do sousedního nepřítele.';
-  const bumpCd = hero?.bumpCooldown || 0;
-  const bumpStatusHtml =
-    bumpCd > 0
-      ? `<span class="maneuver-status-badge status-cooling">⏳ Chladne (${bumpCd} t.)</span>`
-      : `<span class="maneuver-status-badge status-ready">⚔️ Připraven k úderu</span>`;
-
-  const talismansListHtml =
-    !runState.talismans || runState.talismans.length === 0
-      ? `<p class="hud-muted-text" style="padding: 8px 0;">Zatím nemáš žádné talismany. Získáš je z bitev, truhlic nebo v hostinci.</p>`
-      : `<div class="reward-choices-grid" style="margin-top: 8px;">` +
-        runState.talismans
-          .map((id) => {
-            const t = TALISMANS[id];
-            if (!t) return '';
-            return `
-              <div class="reward-choice-card" style="padding: 10px;">
-                <div class="reward-card-title">${t.badge} ${t.name}</div>
-                <p class="reward-card-desc">${t.description}</p>
-              </div>
-            `;
-          })
-          .join('') +
-        `</div>`;
-
-  modalRoot.innerHTML = `
-    <div class="modal-backdrop">
-      <div class="modal-card modal-lg">
-        <div class="modal-header">
-          <h3>🧿 C. k. Osobní výstroj, manévr a talismany: ${loadout?.name || 'Lovec'}</h3>
-          <button type="button" class="btn-parchment btn-xs" id="btn-modal-close">✖ Zavřít</button>
-        </div>
-        <div class="modal-body rules-grid">
-          <div class="rule-block">
-            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:6px;">
-              <h4 style="margin:0; border:0; padding:0;">👢 Osobní manévr: ${bumpName}</h4>
-              ${bumpStatusHtml}
-            </div>
-            <p>${bumpDesc}</p>
-            ${
-              loadout?.passiveName
-                ? `<p style="margin-top:6px;"><strong>✨ Pasivní schopnost (${loadout.passiveName}):</strong> ${loadout.passiveDesc}</p>`
-                : ''
-            }
-            ${
-              loadout?.comboName
-                ? `<p style="margin-top:6px;"><strong>🔥 3-Kombo Finišer (${loadout.comboName}):</strong> ${loadout.comboDesc}</p>`
-                : ''
-            }
-          </div>
-
-          <div class="rule-block">
-            <h4>🧿 Aktivní talismany (${runState.talismans?.length || 0})</h4>
-            ${talismansListHtml}
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
 
   modalRoot.querySelector('#btn-modal-close')?.addEventListener('click', () => closeModal(modalRoot));
   modalRoot.querySelector('.modal-backdrop')?.addEventListener('click', (e) => {
@@ -773,11 +696,11 @@ export function openCastleArchiveModal(modalRoot, appState, onUpdate = null, onS
         <div class="loadout-card-header">
           ${
             loadout.portrait
-              ? `<img src="${loadout.portrait}" alt="${loadout.name}" style="width: 96px; height: 116px; object-fit: contain; object-position: bottom; border-radius: 10px; background: #140b07; border: 2px solid #b45309; padding: 2px; flex-shrink: 0;" />`
+              ? `<img src="${loadout.portrait}" alt="${loadout.name}" style="width: 96px; height: 116px; object-fit: contain; object-position: bottom; border-radius: 10px; background: radial-gradient(circle at 50% 58%, rgba(250, 224, 148, 0.32) 0%, rgba(212, 175, 55, 0.14) 52%, #140b07 85%); border: 2px solid #b45309; padding: 3px; flex-shrink: 0; filter: ${loadout.id === 'zlodejka' ? 'brightness(1.24) contrast(1.1) saturate(1.12)' : 'brightness(1.08) contrast(1.06) saturate(1.06)'} drop-shadow(0 0 2px rgba(255, 248, 220, 0.9)) drop-shadow(0 3px 6px rgba(0, 0, 0, 0.85));" />`
               : `<span class="loadout-card-icon">${loadout.icon}</span>`
           }
           <div>
-            <h4 class="loadout-card-title">${loadout.name} <span class="badge-hp">❤️ ${loadout.maxHp || 20} HP</span> <span class="badge-defense" style="margin-left: 4px; padding: 1px 6px; border-radius: 4px; background: #1e3a8a; border: 1px solid #1d4ed8; font-size: 0.78rem; color: #eff6ff;">🛡️ ${loadout.defense ?? 0} Obrana</span>${loadout.armor ? ` <span class="badge-armor" style="margin-left: 4px; padding: 1px 6px; border-radius: 4px; background: #065f46; border: 1px solid #047857; font-size: 0.78rem; color: #ecfdf5;">🦺 ${loadout.armor} Brnění</span>` : ''}${loadout.fury ? ` <span class="badge-fury" style="margin-left: 4px; padding: 1px 6px; border-radius: 4px; background: #7f1d1d; border: 1px solid #b91c1c; font-size: 0.78rem; color: #fef2f2;">💢 +${loadout.fury} %</span>` : ''}</h4>
+            <h4 class="loadout-card-title">${loadout.name} <span class="badge-hp">❤️ ${loadout.maxHp || 20} HP</span> <span class="badge-defense" style="margin-left: 4px; padding: 1px 6px; border-radius: 4px; background: #1e3a8a; border: 1px solid #1d4ed8; font-size: 0.78rem; color: #eff6ff;">🛡️ ${loadout.defense ?? 0} Obrana</span>${loadout.armor ? ` <span class="badge-armor" style="margin-left: 4px; padding: 1px 6px; border-radius: 4px; background: #065f46; border: 1px solid #047857; font-size: 0.78rem; color: #ecfdf5;">🦺 ${loadout.armor} Brnění</span>` : ''}${loadout.fury ? ` <span class="badge-fury" style="margin-left: 4px; padding: 1px 6px; border-radius: 4px; background: #7f1d1d; border: 1px solid #b91c1c; font-size: 0.78rem; color: #fef2f2;">💢 +${loadout.fury} %</span>` : ''} <span class="badge-persistence" style="margin-left: 4px; padding: 1px 6px; border-radius: 4px; background: #27272a; border: 1px solid #52525b; font-size: 0.78rem; color: #f4f4f5;" title="Verva (Odolnost vůči Zubaté)">💀 ${loadout.persistence ?? 5} Verva</span></h4>
             <div class="loadout-card-epithet">${loadout.epithet}</div>
           </div>
         </div>
@@ -959,3 +882,116 @@ export function openCastleArchiveModal(modalRoot, appState, onUpdate = null, onS
     });
   });
 }
+
+export function openLoadoutAndTalismansModal(modalRoot, runState, battleState) {
+  if (!modalRoot || !runState) return;
+  modalRoot.classList.remove('hidden');
+
+  const hero = battleState?.hero || {};
+  const hunterKey = hero.hunterId || hero.kind || runState.hunterId || runState.loadoutId || 'classic';
+  const loadout =
+    STARTING_LOADOUTS[hunterKey] ||
+    Object.values(STARTING_LOADOUTS).find((l) => l.hunterId === hunterKey) ||
+    STARTING_LOADOUTS.classic;
+
+  const bumpName = loadout?.bumpName || 'Krok do nepřítele';
+  const bumpDesc = loadout?.bumpDesc || 'Speciální manévr při kroku do sousedního nepřítele.';
+  const bumpCd = hero.bumpCooldown || 0;
+  const bumpStatusHtml =
+    bumpCd > 0
+      ? `<span class="maneuver-status-badge status-cooling">⏳ Chladne (${bumpCd} ${czechTurns(bumpCd)})</span>`
+      : `<span class="maneuver-status-badge status-ready">⚔️ Připraven k okamžitému použití</span>`;
+
+  const passiveSectionHtml = loadout?.passiveName
+    ? `
+      <div class="rule-block" style="margin-bottom: 8px;">
+        <h4>✨ Pasivní signatura: ${loadout.passiveName}</h4>
+        <p>${loadout.passiveDesc || ''}</p>
+      </div>
+    `
+    : '';
+
+  const comboSectionHtml = loadout?.comboName
+    ? `
+      <div class="rule-block" style="margin-bottom: 8px;">
+        <h4>🔥 3-Kombo Finišer: ${loadout.comboName}</h4>
+        <p>${loadout.comboDesc || ''}</p>
+      </div>
+    `
+    : '';
+
+  const talismansListHtml =
+    !runState.talismans || runState.talismans.length === 0
+      ? `<p class="modal-lead" style="margin-bottom: 0;">Zatím nemáš žádné talismany. Získáš je za porážku elitních protivníků, v truhlách a v hospodě.</p>`
+      : `<div class="reward-choices-grid" style="margin: 6px 0 0 0;">
+          ${runState.talismans
+            .map((id) => {
+              const t = TALISMANS[id];
+              if (!t) return '';
+              return `
+                <div class="reward-choice-card" style="padding: 8px 10px; gap: 4px;">
+                  <div class="reward-card-title">${t.badge} ${t.name}</div>
+                  <div class="reward-card-desc">${t.description}</div>
+                </div>
+              `;
+            })
+            .join('')}
+        </div>`;
+
+  const deckTiles = battleState?.hand || runState?.deck || [];
+  const deckListHtml =
+    deckTiles.length > 0
+      ? `<div class="loadout-deck-pills" style="margin-top: 6px;">
+          ${deckTiles
+            .map(
+              (tile) =>
+                `<span class="loadout-tile-pill" style="background:#2d1e12;border:1px solid #8c6320;color:#fff8e8;">⚔️ ${tile.name} (${tile.dmg ?? 0} DMG · ⏳ ${tile.maxCooldown ?? tile.cooldown ?? 1}t)</span>`
+            )
+            .join('')}
+        </div>`
+      : '';
+
+  modalRoot.innerHTML = `
+    <div class="modal-backdrop">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>🧿 Výbava, manévr a talismany (${loadout?.name || 'Lovec'})</h3>
+          <button type="button" class="btn-parchment btn-xs" id="btn-modal-close">✖ Zavřít</button>
+        </div>
+        <div class="modal-body">
+          <div class="rule-block" style="margin-bottom: 8px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:4px;">
+              <h4 style="margin:0;border:0;padding:0;">👢 Osobní manévr: ${bumpName}</h4>
+              ${bumpStatusHtml}
+            </div>
+            <p>${bumpDesc}</p>
+          </div>
+          ${passiveSectionHtml}
+          ${comboSectionHtml}
+          <div class="rule-block" style="margin-bottom: 8px;">
+            <h4>🧿 Aktivní talismany (${runState.talismans?.length || 0})</h4>
+            ${talismansListHtml}
+          </div>
+          ${
+            deckListHtml
+              ? `<div class="rule-block">
+                  <h4>🃏 Destičky v ruce (${deckTiles.length})</h4>
+                  ${deckListHtml}
+                </div>`
+              : ''
+          }
+        </div>
+        <div class="modal-footer-actions">
+          <button type="button" class="btn-parchment" id="btn-loadout-info-done">Zpět do boje</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  modalRoot.querySelector('#btn-modal-close')?.addEventListener('click', () => closeModal(modalRoot));
+  modalRoot.querySelector('#btn-loadout-info-done')?.addEventListener('click', () => closeModal(modalRoot));
+  modalRoot.querySelector('.modal-backdrop')?.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal-backdrop')) closeModal(modalRoot);
+  });
+}
+

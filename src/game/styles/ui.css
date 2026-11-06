@@ -2603,6 +2603,41 @@
   width: 100%;
 }
 
+.player-tile-card.tile-card-disabled {
+  cursor: help;
+}
+
+.player-tile-card.tile-card-disabled:hover {
+  transform: none;
+  box-shadow: 3px 3px 0 var(--ink-dark);
+  border-color: var(--ink-dark);
+}
+
+.tile-info-trigger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--ink-dark);
+  color: var(--moon);
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 900;
+  line-height: 1;
+  border: 1px solid var(--brass);
+  cursor: pointer;
+  z-index: 8;
+  flex-shrink: 0;
+}
+
+@media (hover: none), (max-width: 720px) {
+  .tile-info-trigger {
+    display: inline-flex;
+  }
+}
+
 @media (max-width: 720px) {
   #btn-hud-loadout-info {
     display: inline-flex;
@@ -2625,11 +2660,22 @@
     display: inline !important;
   }
 
+  .tile-info-trigger {
+    display: inline-flex !important;
+    width: 14px;
+    height: 14px;
+    font-size: 0.56rem;
+  }
+
+  .tile-hotkey {
+    display: none !important;
+  }
+
   /* 1. Ultra-clean single-row Top HUD Bar */
   .hud-bar {
     flex-wrap: nowrap;
-    min-height: 32px;
-    max-height: 34px;
+    min-height: 30px;
+    max-height: 32px;
     padding: 2px 8px;
     gap: 6px;
     border-width: 2px;
@@ -2715,12 +2761,12 @@
   .hud-actions .btn-parchment.btn-sm {
     padding: 2px 6px;
     min-width: 28px;
-    min-height: 26px;
-    height: 26px;
+    min-height: 25px;
+    height: 25px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.74rem;
+    font-size: 0.72rem;
     border-width: 1.5px;
     box-shadow: 1.5px 1.5px 0 var(--ink-dark);
   }
@@ -2736,21 +2782,21 @@
     display: none !important;
   }
 
-  /* 3. Split Bottom Battle Dock: Tiles on Left (~58%), Action Grid on Right (~42%) */
+  /* 3. Split Bottom Battle Dock: 4-Tile Grid on Left (~58%), Action Grid on Right (~42%) */
   .bottom-battle-dock {
     display: grid;
-    grid-template-columns: minmax(0, 1.38fr) minmax(236px, 1fr);
+    grid-template-columns: minmax(0, 1.42fr) minmax(226px, 1fr);
     gap: 6px;
     align-items: stretch;
     width: 100%;
-    height: 74px;
-    min-height: 74px;
-    max-height: 76px;
+    height: 70px;
+    min-height: 70px;
+    max-height: 72px;
   }
 
   .tile-hand-Dock {
     order: 1;
-    padding: 3px 5px;
+    padding: 3px 4px;
     border-width: 2px;
     border-radius: 9px;
     display: flex;
@@ -2759,38 +2805,35 @@
     height: 100%;
   }
 
+  /* 4-column non-scrolling grid so all 4 tiles in hand are 100% visible at once */
   .tile-hand-strip {
     width: 100%;
     height: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
     align-items: stretch;
-    justify-content: flex-start;
-    gap: 5px;
-    overflow-x: auto;
+    overflow: hidden;
     padding-bottom: 0;
-    scrollbar-width: none;
   }
 
-  .tile-hand-strip::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* Compact 2-column horizontal tile cards for landscape thumb ergonomics */
+  /* Compact horizontal tile cards for landscape thumb ergonomics */
   .player-tile-card {
-    flex: 1 1 104px;
-    min-width: 96px;
-    max-width: 152px;
-    width: auto;
-    height: 64px;
-    min-height: 64px;
-    max-height: 64px;
-    padding: 3px 5px;
+    flex: initial;
+    min-width: 0;
+    max-width: none;
+    width: 100%;
+    height: 60px;
+    min-height: 60px;
+    max-height: 60px;
+    padding: 2px 4px;
     border-width: 2px;
     border-radius: 7px;
     box-shadow: 2px 2px 0 var(--ink-dark);
     display: grid;
-    grid-template-columns: 28px minmax(0, 1fr);
-    grid-template-rows: 12px 1fr 13px;
-    column-gap: 5px;
+    grid-template-columns: 24px minmax(0, 1fr);
+    grid-template-rows: 13px 1fr 13px;
+    column-gap: 4px;
     row-gap: 1px;
     align-items: center;
     text-align: left;
@@ -2799,35 +2842,36 @@
   .tile-card-top {
     grid-column: 1 / -1;
     grid-row: 1;
-    height: 12px;
-    font-size: 0.56rem;
+    height: 13px;
+    font-size: 0.54rem;
+    justify-content: space-between;
   }
 
   .tile-card-art {
     grid-column: 1;
     grid-row: 2 / 4;
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     border-radius: 5px;
     border-width: 1.5px;
   }
 
   .cd-number {
-    font-size: 0.88rem;
+    font-size: 0.82rem;
   }
 
   .cd-label {
-    font-size: 0.46rem;
+    font-size: 0.44rem;
   }
 
   .tile-queued-overlay {
-    font-size: 0.56rem;
+    font-size: 0.54rem;
   }
 
   .tile-card-name {
     grid-column: 2;
     grid-row: 2;
-    font-size: 0.62rem;
+    font-size: 0.58rem;
     line-height: 1.05;
     height: auto;
     min-height: 0;
@@ -2839,7 +2883,7 @@
     grid-column: 2;
     grid-row: 3;
     height: 13px;
-    font-size: 0.56rem;
+    font-size: 0.52rem;
     padding-top: 1px;
   }
 
@@ -2865,7 +2909,7 @@
     min-width: 0;
     min-height: 0;
     padding: 2px 4px;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     border-width: 2px;
     border-radius: 7px;
     box-shadow: 2px 2px 0 var(--ink-dark);
@@ -2884,9 +2928,9 @@
     grid-column: 2 / 5;
   }
 
-  /* 4. Map Screen in Mobile Landscape: keep 6 horizontal columns */
+  /* 4. DAG Map Screen in Mobile Landscape: fit all 6 tiers x 3 lanes without vertical overflow */
   .map-screen-wrapper {
-    padding: 8px 10px;
+    padding: 6px 10px;
     border-width: 2.5px;
     border-top-width: 4px;
     border-radius: 10px;
@@ -2901,64 +2945,117 @@
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     padding-bottom: 4px;
   }
 
-  .map-act-heading {
-    font-size: 1rem;
+  .map-header-kicker,
+  .map-act-subtitle,
+  .map-route-legend {
+    display: none !important;
   }
 
-  .map-act-subtitle {
-    font-size: 0.72rem;
+  .map-act-heading {
+    font-size: 0.95rem;
+    display: inline;
+    margin-right: 8px;
+  }
+
+  .map-curse-pill {
     margin-top: 0;
+    font-size: 0.66rem;
+    padding: 1px 6px;
+  }
+
+  .map-tiers-container {
+    flex: 1 1 0%;
+    min-height: 0;
+    padding: 2px 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .map-scroll-plane {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
   }
 
   .map-tiers-grid {
-    grid-template-columns: repeat(6, minmax(96px, 1fr));
-    gap: 6px;
-    flex: 1 1 auto;
+    grid-template-columns: repeat(6, minmax(128px, 1fr));
+    gap: 8px;
+    flex: 1 1 0%;
+    height: 100%;
     min-height: 0;
-    overflow-x: auto;
-    overflow-y: auto;
   }
 
   .map-tier-column {
+    min-height: 0 !important;
+    height: 100%;
     padding: 4px;
     gap: 4px;
     border-radius: 7px;
   }
 
-  .map-tier-label {
-    font-size: 0.66rem;
+  .map-tier-header {
     padding-bottom: 2px;
+  }
+
+  .map-tier-label {
+    font-size: 0.64rem;
+    padding-bottom: 0;
+  }
+
+  .map-tier-sub {
+    display: none !important;
   }
 
   .map-tier-nodes {
     flex-direction: column;
     flex-wrap: nowrap;
-    gap: 5px;
-    justify-content: center;
+    gap: 4px;
+    justify-content: space-around;
+    flex: 1 1 0%;
+    min-height: 0;
   }
 
   .map-node-card {
     flex: 0 1 auto;
-    padding: 4px 4px;
+    padding: 3px 5px;
     gap: 2px;
     border-radius: 6px;
   }
 
+  .map-node-top-meta {
+    font-size: 0.56rem;
+    padding-bottom: 1px;
+  }
+
+  .map-node-threat-text {
+    font-size: 0.54rem;
+  }
+
+  .map-node-body {
+    gap: 5px;
+  }
+
   .map-node-icon {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
   }
 
   .map-node-title {
-    font-size: 0.68rem;
+    font-size: 0.66rem;
   }
 
+  .map-node-archetype,
   .map-node-sub {
-    font-size: 0.58rem;
+    font-size: 0.56rem;
+  }
+
+  .map-node-hint-preview {
+    display: none !important;
   }
 
   /* 5. Modals in Mobile Landscape */
@@ -3031,4 +3128,35 @@
     font-size: 0.72rem;
   }
 }
+
+/* Ultra-short mobile landscape (height <= 390px) */
+@media (orientation: landscape) and (max-height: 390px) {
+  .hud-bar {
+    min-height: 27px;
+    max-height: 28px;
+    padding: 1px 6px;
+  }
+
+  .hud-actions .btn-parchment.btn-sm {
+    min-height: 22px;
+    height: 22px;
+    padding: 1px 5px;
+    font-size: 0.68rem;
+  }
+
+  .bottom-battle-dock {
+    height: 62px;
+    min-height: 62px;
+    max-height: 64px;
+    gap: 4px;
+  }
+
+  .player-tile-card {
+    height: 54px;
+    min-height: 54px;
+    max-height: 54px;
+    grid-template-rows: 12px 1fr 12px;
+  }
+}
+
 

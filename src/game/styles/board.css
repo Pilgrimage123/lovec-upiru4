@@ -1761,7 +1761,56 @@
 /* Allow hero and bosses to have full width silhouette without shrinking their height */
 .scale-hero .entity-sprite-img {
   max-width: 195%;
-  filter: drop-shadow(0 0 2px rgba(255, 250, 220, 0.85)) drop-shadow(0 0 1px rgba(255, 255, 255, 0.9)) drop-shadow(0 7px 14px rgba(0, 0, 0, 0.95));
+  transform-origin: 50% 100%;
+  filter: brightness(1.05) contrast(1.06) saturate(1.06) drop-shadow(0 0 2.5px rgba(255, 248, 220, 0.92)) drop-shadow(0 0 5px rgba(212, 175, 55, 0.42)) drop-shadow(0 7px 14px rgba(0, 0, 0, 0.95));
+}
+
+.scale-hero .entity-sprite-img.hero-venca,
+.scale-hero .entity-sprite-img.hero-classic {
+  scale: 1.03;
+}
+
+.scale-hero .entity-sprite-img.hero-honza {
+  scale: 1.04;
+}
+
+.scale-hero .entity-sprite-img.hero-dragoun {
+  scale: 1.12;
+  filter: brightness(1.08) contrast(1.08) saturate(1.08) drop-shadow(0 0 2.5px rgba(255, 248, 220, 0.92)) drop-shadow(0 0 5px rgba(212, 175, 55, 0.45)) drop-shadow(0 7px 14px rgba(0, 0, 0, 0.95));
+}
+
+.scale-hero .entity-sprite-img.hero-zlodejka {
+  scale: 1.06;
+  filter: brightness(1.26) contrast(1.12) saturate(1.14) drop-shadow(0 0 3px rgba(255, 250, 225, 0.98)) drop-shadow(0 0 7px rgba(250, 224, 148, 0.65)) drop-shadow(0 7px 14px rgba(0, 0, 0, 0.95));
+}
+
+.scale-hero .entity-sprite-img.hero-ponocny {
+  scale: 1.11;
+  filter: brightness(1.12) contrast(1.08) saturate(1.08) drop-shadow(0 0 2.5px rgba(255, 248, 220, 0.95)) drop-shadow(0 0 6px rgba(250, 224, 148, 0.48)) drop-shadow(0 7px 14px rgba(0, 0, 0, 0.95));
+}
+
+.scale-hero .entity-sprite-img.hero-silak {
+  scale: 1.06;
+}
+
+.scale-hero .entity-sprite-img.hero-anglicanka {
+  scale: 1.12;
+  filter: brightness(1.14) contrast(1.08) saturate(1.1) drop-shadow(0 0 2.5px rgba(255, 248, 220, 0.95)) drop-shadow(0 0 6px rgba(250, 224, 148, 0.5)) drop-shadow(0 7px 14px rgba(0, 0, 0, 0.95));
+}
+
+.scale-hero .entity-sprite-img.hero-helsing {
+  scale: 1.12;
+  filter: brightness(1.14) contrast(1.09) saturate(1.08) drop-shadow(0 0 2.5px rgba(255, 248, 220, 0.95)) drop-shadow(0 0 6px rgba(250, 224, 148, 0.5)) drop-shadow(0 7px 14px rgba(0, 0, 0, 0.95));
+}
+
+.scale-hero .entity-sprite-img.hero-revident {
+  scale: 1.08;
+  filter: brightness(1.12) contrast(1.08) saturate(1.08) drop-shadow(0 0 2.5px rgba(255, 248, 220, 0.94)) drop-shadow(0 0 6px rgba(250, 224, 148, 0.46)) drop-shadow(0 7px 14px rgba(0, 0, 0, 0.95));
+}
+
+.scale-hero .entity-sprite-img.hero-zaboj {
+  scale: 1.09;
+  filter: brightness(1.06) contrast(1.08) saturate(1.1) drop-shadow(0 0 2.5px rgba(255, 248, 220, 0.95)) drop-shadow(0 0 6px rgba(212, 175, 55, 0.48)) drop-shadow(0 7px 14px rgba(0, 0, 0, 0.95));
 }
 
 .scale-boss .entity-sprite-img {
@@ -2397,9 +2446,14 @@
    MOBILE LANDSCAPE MODE (Horizontally rotated smartphones: max-height 540px)
    ========================================================================== */
 @media (orientation: landscape) and (max-height: 540px) {
+  .badge-verbose-text,
+  .intent-tag-label {
+    display: none !important;
+  }
+
   .hero-queue-panel {
-    min-height: 30px;
-    max-height: 32px;
+    min-height: 28px;
+    max-height: 30px;
     padding: 2px 8px;
     gap: 6px;
     border-width: 2px;
@@ -2426,9 +2480,9 @@
   }
 
   .queue-slot {
-    height: 24px;
-    min-height: 24px;
-    max-height: 24px;
+    height: 22px;
+    min-height: 22px;
+    max-height: 22px;
     padding: 1px 6px;
     flex-direction: row;
     align-items: center;
@@ -2440,7 +2494,7 @@
   .queue-slot-filled .queue-slot-content {
     order: 1;
     flex: 1 1 auto;
-    height: 20px;
+    height: 18px;
     gap: 5px;
   }
 
@@ -2462,24 +2516,24 @@
   }
 
   .queue-slot-empty .queue-slot-content {
-    height: 18px;
-  }
-
-  .queue-slot-role {
-    font-size: 0.6rem;
-  }
-
-  .queue-slot-icon {
-    width: 16px;
     height: 16px;
   }
 
+  .queue-slot-role {
+    font-size: 0.58rem;
+  }
+
+  .queue-slot-icon {
+    width: 15px;
+    height: 15px;
+  }
+
   .queue-slot-name {
-    font-size: 0.7rem;
+    font-size: 0.68rem;
   }
 
   .queue-slot-placeholder {
-    font-size: 0.64rem;
+    font-size: 0.62rem;
   }
 
   .drag-handle {
@@ -2487,42 +2541,42 @@
   }
 
   .btn-slot-move {
-    font-size: 0.58rem;
+    font-size: 0.56rem;
     padding: 0 3px;
     line-height: 14px;
   }
 
   .btn-slot-remove {
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     padding: 0 3px;
   }
 
   /* 1D Battlefield in Mobile Landscape */
   .battlefield-1d-stage {
-    min-height: 130px;
+    min-height: 118px;
     height: 100%;
-    padding: 4px 6px 5px;
-    border-width: 2.5px;
+    padding: 3px 5px 4px;
+    border-width: 2px;
     border-radius: 10px;
   }
 
   .battlefield-stone-track {
     gap: 4px;
-    min-height: 120px;
+    min-height: 110px;
     height: 100%;
   }
 
   .board-cell {
-    min-height: 120px;
+    min-height: 110px;
     height: 100%;
     padding: 2px 2px 3px;
     border-width: 1.5px;
-    border-bottom-width: 4px;
+    border-bottom-width: 3.5px;
     border-radius: 6px 6px 4px 4px;
   }
 
   .cell-index-label {
-    font-size: 0.58rem;
+    font-size: 0.56rem;
     line-height: 1;
   }
 
@@ -2538,24 +2592,29 @@
     display: none;
   }
 
+  .gate-reinf-portrait-wrap {
+    width: 20px;
+    height: 20px;
+  }
+
   .enemy-intent-column {
-    flex: 0 0 28px;
-    height: 28px;
-    min-height: 28px;
-    max-height: 28px;
+    flex: 0 0 27px;
+    height: 27px;
+    min-height: 27px;
+    max-height: 27px;
     gap: 1px;
     margin-bottom: 1px;
   }
 
   .enemy-intent-header {
-    height: 12px;
+    height: 11px;
   }
 
   .enemy-initiative-tag,
   .intent-armed-tag,
   .intent-queuing-tag,
   .intent-positioning-banner {
-    font-size: 0.52rem;
+    font-size: 0.5rem;
     padding: 0 3px;
   }
 
@@ -2592,10 +2651,18 @@
   .preview-badge,
   .inspect-reach-badge,
   .ground-crosshair-badge {
-    font-size: 0.54rem;
+    font-size: 0.52rem;
     padding: 1px 2px;
     border-width: 1px;
     border-radius: 4px;
+  }
+
+  .crosshair-header {
+    font-size: 0.48rem;
+  }
+
+  .crosshair-dmg-row {
+    font-size: 0.54rem;
   }
 
   .entity-hud-top {
@@ -2611,39 +2678,57 @@
   }
 
   .entity-given {
-    font-size: 0.64rem;
+    font-size: 0.62rem;
     line-height: 1.05;
   }
 
   .facing-indicator {
-    font-size: 0.6rem;
+    font-size: 0.58rem;
   }
 
   .entity-hp-bar-outer {
-    height: 9px;
+    height: 8px;
     margin-top: 1px;
     border-width: 1px;
   }
 
   .entity-hp-text {
-    font-size: 0.52rem;
-    line-height: 8px;
+    font-size: 0.5rem;
+    line-height: 7px;
   }
 
   .entity-shield-pill,
   .entity-armor-pill {
-    font-size: 0.56rem;
+    font-size: 0.54rem;
     padding: 0 3px;
     top: -6px;
   }
 
   .status-chip {
-    font-size: 0.52rem;
+    font-size: 0.5rem;
     padding: 0 2px;
   }
 
+  .hero-reaper-badge {
+    padding: 0 4px;
+    font-size: 0.58rem;
+    gap: 2px;
+  }
+
+  .hero-reaper-badge .reaper-badge-icon {
+    font-size: 0.64rem;
+  }
+
+  .hero-reaper-badge .reaper-badge-num {
+    font-size: 0.68rem;
+  }
+
+  .hero-reaper-badge .reaper-badge-label {
+    display: none;
+  }
+
   .cell-floor-stone {
-    min-height: 18px;
+    min-height: 16px;
     margin-top: 1px;
     padding: 1px 2px;
     border-width: 1.5px;
@@ -2651,36 +2736,36 @@
   }
 
   .terrain-decal-wrapper {
-    height: 16px;
+    height: 14px;
   }
 
   .decal-icon {
-    font-size: 0.78rem;
+    font-size: 0.74rem;
   }
 
   .decal-icon-mini {
-    font-size: 0.68rem;
+    font-size: 0.64rem;
   }
 
   .terrain-duration-tag {
-    font-size: 0.48rem;
+    font-size: 0.46rem;
     padding: 0 2px;
   }
 
   /* Expressive Sprite Hierarchy scaled for Mobile Landscape */
-  .scale-boss { --sprite-h: 90px; }
-  .scale-hero { --sprite-h: 80px; }
-  .scale-human { --sprite-h: 64px; }
-  .scale-prop { --sprite-h: 42px; }
-  .scale-beast { --sprite-h: 40px; }
+  .scale-boss { --sprite-h: 88px; }
+  .scale-hero { --sprite-h: 78px; }
+  .scale-human { --sprite-h: 62px; }
+  .scale-prop { --sprite-h: 40px; }
+  .scale-beast { --sprite-h: 38px; }
   .scale-small,
-  .scale-lojzicek { --sprite-h: 34px; }
-  .scale-flyer { --sprite-h: 30px; }
-  .scale-critter { --sprite-h: 22px; }
+  .scale-lojzicek { --sprite-h: 33px; }
+  .scale-flyer { --sprite-h: 29px; }
+  .scale-critter { --sprite-h: 21px; }
 
-  .scale-hero .entity-ground-shadow { max-width: 60px; height: 9px; }
-  .scale-boss .entity-ground-shadow { max-width: 66px; height: 10px; }
-  .scale-human .entity-ground-shadow { max-width: 46px; height: 7px; }
+  .scale-hero .entity-ground-shadow { max-width: 58px; height: 8px; }
+  .scale-boss .entity-ground-shadow { max-width: 64px; height: 9px; }
+  .scale-human .entity-ground-shadow { max-width: 44px; height: 6px; }
   .scale-small .entity-ground-shadow,
   .scale-lojzicek .entity-ground-shadow { max-width: 20px; height: 3px; }
   .scale-critter .entity-ground-shadow { max-width: 16px; height: 3px; }
@@ -2688,15 +2773,38 @@
 
 /* Ultra-short mobile landscape (when browser address bar is visible, height <= 390px) */
 @media (orientation: landscape) and (max-height: 390px) {
-  .scale-boss { --sprite-h: 74px; }
-  .scale-hero { --sprite-h: 66px; }
-  .scale-human { --sprite-h: 54px; }
-  .scale-prop { --sprite-h: 36px; }
-  .scale-beast { --sprite-h: 34px; }
+  .hero-queue-panel {
+    min-height: 25px;
+    max-height: 26px;
+    padding: 1px 6px;
+  }
+
+  .queue-slot {
+    height: 20px;
+    min-height: 20px;
+    max-height: 20px;
+  }
+
+  .battlefield-1d-stage {
+    min-height: 104px;
+    padding: 2px 4px 3px;
+  }
+
+  .battlefield-stone-track,
+  .board-cell {
+    min-height: 98px;
+  }
+
+  .scale-boss { --sprite-h: 72px; }
+  .scale-hero { --sprite-h: 64px; }
+  .scale-human { --sprite-h: 52px; }
+  .scale-prop { --sprite-h: 34px; }
+  .scale-beast { --sprite-h: 32px; }
   .scale-small,
-  .scale-lojzicek { --sprite-h: 28px; }
+  .scale-lojzicek { --sprite-h: 27px; }
   .scale-flyer { --sprite-h: 24px; }
   .scale-critter { --sprite-h: 18px; }
 }
+
 
 

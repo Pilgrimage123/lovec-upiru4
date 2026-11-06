@@ -181,8 +181,7 @@ body {
     flex: 1 1 0%;
     min-height: 0;
     gap: 3px;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden;
   }
 
   #center-stage > .tutorial-banner {
@@ -191,7 +190,7 @@ body {
 
   #center-stage > .battlefield-1d-stage {
     flex: 1 1 0%;
-    min-height: 130px;
+    min-height: 118px;
     max-height: none;
     height: 100%;
   }
@@ -201,10 +200,25 @@ body {
   }
 }
 
+@media (orientation: landscape) and (max-height: 390px) {
+  #app-shell {
+    gap: 2px;
+    padding: 2px max(6px, env(safe-area-inset-right)) 2px max(6px, env(safe-area-inset-left));
+  }
+
+  #center-stage {
+    gap: 2px;
+  }
+
+  #center-stage > .battlefield-1d-stage {
+    min-height: 104px;
+  }
+}
+
 .parchment-surface {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent 36%),
-    var(--bg-parchment);
+  var(--bg-parchment);
   border: 3px solid var(--ink-dark);
   border-top: 6px solid var(--roof);
   border-radius: 14px 14px 10px 10px;
@@ -336,17 +350,25 @@ kbd {
   }
 
   .title-screen-header {
-    padding-top: 4px !important;
-    padding-bottom: 4px !important;
+    padding-top: 3px !important;
+    padding-bottom: 3px !important;
+  }
+
+  .title-header-kicker,
+  .title-header-sub,
+  .title-screen-header p {
+    display: none !important;
   }
 
   .title-screen-header h1 {
-    font-size: 1.35rem !important;
+    font-size: 1.25rem !important;
     line-height: 1.05 !important;
   }
 
-  .title-screen-header p {
-    display: none !important;
+  .title-screen-main {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+    gap: 6px !important;
   }
 
   .title-roster-grid {
@@ -355,12 +377,16 @@ kbd {
   }
 
   .title-roster-card {
-    padding: 3px !important;
-    gap: 2px !important;
+    padding: 2px 3px !important;
+    gap: 1px !important;
   }
 
   .title-roster-portrait {
-    height: 36px !important;
+    height: 34px !important;
+  }
+
+  .title-roster-stats {
+    display: none !important;
   }
 
   .title-showcase-grid {
@@ -370,6 +396,7 @@ kbd {
 
   .title-left-column {
     grid-column: span 4 / span 4 !important;
+    padding: 6px 8px !important;
   }
 
   .title-right-column {
@@ -378,17 +405,23 @@ kbd {
   }
 
   .title-hero-stage {
-    min-height: 135px !important;
-    padding: 6px !important;
+    min-height: 110px !important;
+    max-height: 150px !important;
+    padding: 4px !important;
   }
 
   .title-hero-stage img {
-    height: 80px !important;
-    width: 80px !important;
+    height: 92px !important;
+    width: auto !important;
+    max-height: 100% !important;
+  }
+
+  .title-hero-quote {
+    display: none !important;
   }
 
   .title-dossier-card {
-    padding: 8px 10px !important;
+    padding: 6px 10px !important;
   }
 
   .title-cta-bar {
@@ -402,4 +435,5 @@ kbd {
     padding-bottom: 3px !important;
   }
 }
+
 

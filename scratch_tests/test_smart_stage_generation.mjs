@@ -120,6 +120,50 @@ console.log('=== TEST: Smart Stage System & Procedural Random Generation ===');
         assert.ok(reachable.has(node.id), `Node ${node.id} must be reachable from Tier 0`);
       }
 
+      // Check Planar Non-Crossing Edge Invariant
+      for (let t = 0; t < 5; t++) {
+        const curNodes = tierMap.get(t);
+        const nxtById = new Map(tierMap.get(t + 1).map((x) => [x.id, x]));
+        for (let i = 0; i < curNodes.length; i++) {
+          for (let j = i + 1; j < curNodes.length; j++) {
+            const u1 = curNodes[i];
+            const u2 = curNodes[j];
+            for (const v1Id of u1.next) {
+              for (const v2Id of u2.next) {
+                const v1 = nxtById.get(v1Id);
+                const v2 = nxtById.get(v2Id);
+                assert.ok(
+                  !(u1.lane < u2.lane && v1.lane > v2.lane) &&
+                    !(u1.lane > u2.lane && v1.lane < v2.lane),
+                  `Edges (${u1.id}->${v1Id}) and (${u2.id}->${v2Id}) must not cross!`
+                );
+              }
+            }
+          }
+        }
+      }
+
+      // Check Markov Path-Pacing Invariant (no identical consecutive utility nodes)
+      const nodeById = new Map(map.nodes.map((x) => [x.id, x]));
+      const utilityTypes = new Set([
+        NODE_TYPES.PUB,
+        NODE_TYPES.WORKSHOP,
+        NODE_TYPES.EVENT,
+        NODE_TYPES.TREASURE
+      ]);
+      for (const node of map.nodes) {
+        if (utilityTypes.has(node.type)) {
+          for (const prevId of node.prev) {
+            const prevNode = nodeById.get(prevId);
+            assert.notEqual(
+              prevNode.type,
+              node.type,
+              `Utility node ${node.id} (${node.type}) must not immediately follow identical utility node ${prevNode.id}`
+            );
+          }
+        }
+      }
+
       // Check combat nodes have valid encounterId
       for (const node of map.nodes) {
         if (node.type === NODE_TYPES.BATTLE || node.type === NODE_TYPES.ELITE || node.type === NODE_TYPES.BOSS) {
@@ -130,7 +174,7 @@ console.log('=== TEST: Smart Stage System & Procedural Random Generation ===');
       }
     }
   }
-  console.log('✓ 3. DAG topology, forward/backward edge connectivity, and 100% reachability verified across 50 seeds');
+  console.log('✓ 3. Planar non-crossing DAG topology, Markov path-pacing, and 100% reachability verified across 50 seeds');
 }
 
 // 4. Verify Map Navigation & Run State Integration
@@ -169,3 +213,4 @@ console.log('=== TEST: Smart Stage System & Procedural Random Generation ===');
 }
 
 console.log('=== ALL SMART STAGE SYSTEM TESTS PASSED! ===');
+

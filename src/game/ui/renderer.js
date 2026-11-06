@@ -718,7 +718,7 @@ function renderEntityOnCellHtml(entity, initiativeRank = 1, impact = null) {
   const givenName = entity.givenName || entity.name;
   const epithet = entity.epithet || '';
   const bodyScale = getEntityBodyScale(entity);
-  const heroClass = entity.entityType === 'hero' ? 'hero-sprite' : '';
+  const heroClass = entity.entityType === 'hero' ? `hero-sprite hero-${entity.hunterId || 'venca'}` : '';
   const gait = gaitFor(entity, bodyScale);
   const spriteKey = entity.sprite;
   const spriteUrl =

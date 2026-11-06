@@ -266,4 +266,10 @@ export const STARTING_LOADOUTS = {
   }
 };
 
-STARTING_LOADOUTS.venca = STARTING_LOADOUTS.classic;
+Object.defineProperty(STARTING_LOADOUTS, 'venca', {
+  value: STARTING_LOADOUTS.classic,
+  enumerable: false,
+  configurable: true,
+  writable: true
+});
+

@@ -887,8 +887,42 @@ export function getEncounter(id) {
 }
 
 /**
+ * Computes a deterministic 1D horizontal reflection (mirroring) of an encounter
+ * while preserving exact relative distances, collision spacings, and tactical invariants.
+ */
+export function computeSpatialVariant(enc, shouldMirror = false) {
+  if (!enc || !shouldMirror || enc.isTutorial) return enc;
+  const N = enc.boardSize || 7;
+  const mirrorCell = (c) => Math.max(0, Math.min(N - 1, (N - 1) - c));
+  const mirrorFacing = (f) => (f === 1 ? -1 : 1);
+
+  return {
+    ...enc,
+    isMirroredVariant: true,
+    heroCell: mirrorCell(enc.heroCell ?? 2),
+    heroFacing: mirrorFacing(enc.heroFacing ?? 1),
+    initialEnemies: (enc.initialEnemies || []).map((e) => ({
+      ...e,
+      cell: mirrorCell(e.cell),
+      facing: mirrorFacing(e.facing ?? -1)
+    })),
+    props: enc.props
+      ? enc.props.map((p) => ({ ...p, cell: mirrorCell(p.cell) }))
+      : undefined,
+    terrain: enc.terrain
+      ? enc.terrain.map((t) => ({ ...t, cell: mirrorCell(t.cell) }))
+      : undefined,
+    reinforcements: (enc.reinforcements || []).map((r) => ({
+      ...r,
+      gateCell: r.gateCell === 0 ? N - 1 : 0
+    }))
+  };
+}
+
+/**
  * Intelligent encounter query and selector for the smart stage generation system.
- * Filters by act and constraints, then scores candidates using threat budget and synergy archetypes.
+ * Filters by act and constraints, then scores candidates using threat budget,
+ * route synergy archetypes, and parent-aware anti-repetition penalties.
  */
 export function queryEncounters(opts = {}) {
   const {
@@ -897,6 +931,7 @@ export function queryEncounters(opts = {}) {
     isBoss = false,
     threatTarget = 2,
     preferredArchetype = null,
+    avoidArchetypes = [],
     rng = null,
     excludeIds = []
   } = opts;
@@ -915,32 +950,40 @@ export function queryEncounters(opts = {}) {
     if (e.act !== act) return false;
     if (Boolean(e.isElite) !== Boolean(isElite)) return false;
     if (e.isBoss) return false;
+    if (e.isTutorial) return false;
     return true;
   });
 
   if (pool.length === 0) {
     // Fallback: relax elite requirement if none found
-    pool = allList.filter((e) => e.act === act && !e.isBoss);
+    pool = allList.filter((e) => e.act === act && !e.isBoss && !e.isTutorial);
   }
 
-  // 2. Filter out already used encounters in this run if we have enough variety
+  // 2. Filter out already used encounters in this act if we have enough variety
   const unusedPool = pool.filter((e) => !excludeIds.includes(e.id));
   const candidatePool = unusedPool.length > 0 ? unusedPool : pool;
 
-  // 3. Score candidates based on threat budget distance and archetype match
+  const avoidSet = new Set(Array.isArray(avoidArchetypes) ? avoidArchetypes : []);
+
+  // 3. Multi-objective utility scoring:
+  //    U(e) = max(1, 12 - 3 * |threat(e) - B| + 4 * I(arch == pref) - 6 * I(arch in parentArchs))
   const scored = candidatePool.map((enc) => {
-    let score = 10;
+    let score = 12;
     const diff = Math.abs((enc.threatRating || 2) - threatTarget);
-    score -= diff * 3; // Closer to target threat gives higher score
+    score -= diff * 3;
 
     if (preferredArchetype && enc.archetype === preferredArchetype) {
-      score += 4; // Preference bonus for route synergy
+      score += 4;
+    }
+
+    if (avoidSet.has(enc.archetype)) {
+      score -= 6;
     }
 
     return { enc, score: Math.max(1, score) };
   });
 
-  // 4. Weighted selection using RNG
+  // 4. Weighted Boltzmann-like proportional sampling using seeded PRNG
   if (rng && typeof rng.nextFloat === 'function') {
     const totalWeight = scored.reduce((sum, item) => sum + item.score, 0);
     let r = rng.nextFloat() * totalWeight;
@@ -951,7 +994,8 @@ export function queryEncounters(opts = {}) {
     return scored[scored.length - 1]?.enc || pool[0];
   }
 
-  // Fallback to highest scored or first
+  // Deterministic fallback: highest utility score
   scored.sort((a, b) => b.score - a.score);
   return scored[0]?.enc || pool[0];
 }
+

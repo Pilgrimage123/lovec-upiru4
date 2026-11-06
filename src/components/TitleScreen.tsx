@@ -46,6 +46,124 @@ const HUNTER_PORTRAITS: Record<string, string> = {
   zaboj: "/assets/aistudio/K_i__c__bard_s_lyrou_a_palc_tem_9017845b.png",
 };
 
+/**
+ * Harmonizace měřítka (scale), vertikálního usazení a světelného kontrastu všech 10 lovců,
+ * aby široké postavy (Záboj, Angličanka, Helsing), vysoké zbraně (Dragoun, Ponocný)
+ * i tmavé pláště (Zlodějka) měly sjednocenou velikost postavy a výbornou čitelnost.
+ */
+const HUNTER_VISUAL_HARMONY: Record<
+  string,
+  {
+    rosterScale: number;
+    rosterOffsetY: string;
+    showcaseScale: number;
+    showcaseOffsetY: string;
+    filterDarkBg: string;
+    filterLightBg: string;
+  }
+> = {
+  classic: {
+    rosterScale: 1.04,
+    rosterOffsetY: "0%",
+    showcaseScale: 1.05,
+    showcaseOffsetY: "0%",
+    filterDarkBg:
+      "brightness(1.03) contrast(1.05) saturate(1.06) drop-shadow(0 0 2.5px rgba(255,248,225,0.85)) drop-shadow(0 8px 16px rgba(0,0,0,0.92))",
+    filterLightBg:
+      "brightness(1.0) contrast(1.05) saturate(1.06) drop-shadow(0 0 1.5px rgba(255,255,255,0.8)) drop-shadow(0 4px 7px rgba(28,18,8,0.65))",
+  },
+  honza: {
+    rosterScale: 1.06,
+    rosterOffsetY: "0%",
+    showcaseScale: 1.06,
+    showcaseOffsetY: "0%",
+    filterDarkBg:
+      "brightness(1.01) contrast(1.05) saturate(1.05) drop-shadow(0 0 2.5px rgba(255,248,225,0.85)) drop-shadow(0 8px 16px rgba(0,0,0,0.92))",
+    filterLightBg:
+      "brightness(0.99) contrast(1.05) saturate(1.05) drop-shadow(0 0 1.5px rgba(255,255,255,0.8)) drop-shadow(0 4px 7px rgba(28,18,8,0.65))",
+  },
+  dragoun: {
+    rosterScale: 1.15,
+    rosterOffsetY: "3%",
+    showcaseScale: 1.12,
+    showcaseOffsetY: "2%",
+    filterDarkBg:
+      "brightness(1.04) contrast(1.06) saturate(1.06) drop-shadow(0 0 2.5px rgba(255,248,225,0.88)) drop-shadow(0 8px 16px rgba(0,0,0,0.92))",
+    filterLightBg:
+      "brightness(1.0) contrast(1.06) saturate(1.06) drop-shadow(0 0 1.5px rgba(255,255,255,0.8)) drop-shadow(0 4px 7px rgba(28,18,8,0.65))",
+  },
+  zlodejka: {
+    rosterScale: 1.06,
+    rosterOffsetY: "0%",
+    showcaseScale: 1.06,
+    showcaseOffsetY: "0%",
+    filterDarkBg:
+      "brightness(1.22) contrast(1.08) saturate(1.1) drop-shadow(0 0 3px rgba(255,244,210,0.95)) drop-shadow(0 0 8px rgba(212,175,55,0.45)) drop-shadow(0 8px 16px rgba(0,0,0,0.92))",
+    filterLightBg:
+      "brightness(1.12) contrast(1.06) saturate(1.08) drop-shadow(0 0 2px rgba(255,255,255,0.9)) drop-shadow(0 4px 7px rgba(28,18,8,0.65))",
+  },
+  ponocny: {
+    rosterScale: 1.1,
+    rosterOffsetY: "2%",
+    showcaseScale: 1.08,
+    showcaseOffsetY: "1%",
+    filterDarkBg:
+      "brightness(1.1) contrast(1.06) saturate(1.08) drop-shadow(0 0 2.5px rgba(255,248,225,0.9)) drop-shadow(0 8px 16px rgba(0,0,0,0.92))",
+    filterLightBg:
+      "brightness(1.04) contrast(1.05) saturate(1.06) drop-shadow(0 0 1.5px rgba(255,255,255,0.85)) drop-shadow(0 4px 7px rgba(28,18,8,0.65))",
+  },
+  silak: {
+    rosterScale: 1.06,
+    rosterOffsetY: "0%",
+    showcaseScale: 1.06,
+    showcaseOffsetY: "0%",
+    filterDarkBg:
+      "brightness(1.01) contrast(1.05) saturate(1.05) drop-shadow(0 0 2.5px rgba(255,248,225,0.85)) drop-shadow(0 8px 16px rgba(0,0,0,0.92))",
+    filterLightBg:
+      "brightness(0.99) contrast(1.05) saturate(1.05) drop-shadow(0 0 1.5px rgba(255,255,255,0.8)) drop-shadow(0 4px 7px rgba(28,18,8,0.65))",
+  },
+  anglicanka: {
+    rosterScale: 1.16,
+    rosterOffsetY: "1%",
+    showcaseScale: 1.1,
+    showcaseOffsetY: "1%",
+    filterDarkBg:
+      "brightness(1.12) contrast(1.06) saturate(1.08) drop-shadow(0 0 2.5px rgba(255,248,225,0.9)) drop-shadow(0 8px 16px rgba(0,0,0,0.92))",
+    filterLightBg:
+      "brightness(1.05) contrast(1.05) saturate(1.06) drop-shadow(0 0 1.5px rgba(255,255,255,0.85)) drop-shadow(0 4px 7px rgba(28,18,8,0.65))",
+  },
+  helsing: {
+    rosterScale: 1.16,
+    rosterOffsetY: "1%",
+    showcaseScale: 1.1,
+    showcaseOffsetY: "1%",
+    filterDarkBg:
+      "brightness(1.12) contrast(1.07) saturate(1.08) drop-shadow(0 0 2.5px rgba(255,248,225,0.92)) drop-shadow(0 8px 16px rgba(0,0,0,0.92))",
+    filterLightBg:
+      "brightness(1.05) contrast(1.06) saturate(1.06) drop-shadow(0 0 1.5px rgba(255,255,255,0.85)) drop-shadow(0 4px 7px rgba(28,18,8,0.65))",
+  },
+  revident: {
+    rosterScale: 1.09,
+    rosterOffsetY: "1%",
+    showcaseScale: 1.07,
+    showcaseOffsetY: "0%",
+    filterDarkBg:
+      "brightness(1.09) contrast(1.06) saturate(1.07) drop-shadow(0 0 2.5px rgba(255,248,225,0.9)) drop-shadow(0 8px 16px rgba(0,0,0,0.92))",
+    filterLightBg:
+      "brightness(1.03) contrast(1.05) saturate(1.05) drop-shadow(0 0 1.5px rgba(255,255,255,0.85)) drop-shadow(0 4px 7px rgba(28,18,8,0.65))",
+  },
+  zaboj: {
+    rosterScale: 1.15,
+    rosterOffsetY: "2%",
+    showcaseScale: 1.1,
+    showcaseOffsetY: "1%",
+    filterDarkBg:
+      "brightness(1.05) contrast(1.07) saturate(1.08) drop-shadow(0 0 2.5px rgba(255,248,225,0.9)) drop-shadow(0 8px 16px rgba(0,0,0,0.92))",
+    filterLightBg:
+      "brightness(1.01) contrast(1.06) saturate(1.06) drop-shadow(0 0 1.5px rgba(255,255,255,0.85)) drop-shadow(0 4px 7px rgba(28,18,8,0.65))",
+  },
+};
+
 interface HunterDeed {
   id: string;
   shortName: string;
@@ -1139,6 +1257,10 @@ export function TitleScreen({
             {HUNTER_KEYS.map((hKey, index) => {
               const hunter = HUNTERS_DATA[hKey];
               const isSelected = hunter.id === selectedId;
+              const harmony = HUNTER_VISUAL_HARMONY[hunter.id] || HUNTER_VISUAL_HARMONY.classic;
+              const currentScale = isSelected
+                ? Number((harmony.rosterScale * 1.05).toFixed(3))
+                : harmony.rosterScale;
 
               return (
                 <button
@@ -1149,12 +1271,12 @@ export function TitleScreen({
                   className={`title-roster-card group relative px-1 py-1 sm:px-1.5 sm:py-1.5 rounded-lg border-2 transition-all duration-150 flex flex-col items-center justify-between cursor-pointer overflow-hidden ${
                     isSelected
                       ? "border-[#d4af37] bg-gradient-to-b from-[#f9f2e3] via-[#f1e4c7] to-[#e4d1aa] shadow-[0_0_18px_rgba(212,175,55,0.7),2px_3px_0_#1c1208] ring-2 ring-[#d4af37] scale-[1.03] z-20 text-[#25150a]"
-                      : "border-[#523722] bg-gradient-to-b from-[#22140c] via-[#1a0e08] to-[#120905] hover:border-[#b89552] hover:bg-[#2c190f] text-[#ded2be] hover:text-[#fffbeb]"
+                      : "border-[#523722] bg-gradient-to-b from-[#24150d] via-[#1c0f08] to-[#120905] hover:border-[#b89552] hover:bg-[#2c190f] text-[#ded2be] hover:text-[#fffbeb]"
                   }`}
                 >
                   {/* Číslo v kroužku / c. k. evidenční známka [1-9, 0] */}
                   <span
-                    className={`absolute top-1 left-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-mono font-black border z-10 ${
+                    className={`absolute top-1 left-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-mono font-black border z-20 ${
                       isSelected
                         ? "bg-[#87201c] text-[#fffbeb] border-[#4a0d0b] shadow-sm"
                         : "bg-[#1d1209] text-[#d4af37] border-[#6b4724]"
@@ -1163,14 +1285,23 @@ export function TitleScreen({
                     {index === 9 ? 0 : index + 1}
                   </span>
 
-                  {/* Portrétní miniatura v kabinetním rámečku */}
-                  <div className="title-roster-portrait relative w-full h-20 sm:h-24 flex items-end justify-center mb-0.5 overflow-hidden">
+                  {/* Portrétní miniatura v kabinetním rámečku s harmonizovaným měřítkem a podsvícením */}
+                  <div className="title-roster-portrait relative w-full h-20 sm:h-24 flex items-end justify-center mb-0.5 overflow-hidden rounded">
+                    <div
+                      className={`pointer-events-none absolute inset-0 ${
+                        isSelected
+                          ? "bg-[radial-gradient(circle_at_50%_58%,rgba(255,252,240,0.65)_0%,rgba(212,175,55,0.18)_55%,transparent_80%)]"
+                          : "bg-[radial-gradient(circle_at_50%_58%,rgba(250,224,148,0.28)_0%,rgba(212,175,55,0.12)_52%,transparent_78%)] group-hover:bg-[radial-gradient(circle_at_50%_58%,rgba(250,224,148,0.38)_0%,rgba(212,175,55,0.18)_55%,transparent_80%)]"
+                      }`}
+                    />
                     <img
                       src={hunter.portraitUrl}
                       alt={hunter.name}
-                      className={`h-full w-full object-contain object-bottom drop-shadow-[0_0_2px_rgba(255,255,255,0.7)] drop-shadow-[0_3px_6px_rgba(0,0,0,0.85)] transition-transform duration-150 ${
-                        isSelected ? "scale-110" : "scale-105 group-hover:scale-110 opacity-95 group-hover:opacity-100"
-                      }`}
+                      style={{
+                        transform: `translateY(${harmony.rosterOffsetY}) scale(${currentScale})`,
+                        filter: isSelected ? harmony.filterLightBg : harmony.filterDarkBg,
+                      }}
+                      className="relative z-10 h-full w-full object-contain object-bottom origin-bottom transition-transform duration-150"
                     />
                   </div>
 
@@ -1361,26 +1492,36 @@ export function TitleScreen({
             </div>
 
             {/* STŘEDOVÁ SCÉNA: KABINETNÍ PORTRÉT NA KAMENNÉM PODSTAVCI */}
-            <div className="title-hero-stage relative flex-1 min-h-[260px] sm:min-h-[300px] lg:min-h-[340px] w-full rounded-lg border-2 border-[#523722] bg-gradient-to-b from-[#180f08] via-[#100804] to-[#070302] flex items-center justify-center p-1 overflow-hidden shadow-inner">
-              {/* Atmosférické světlo za postavou */}
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_60%,rgba(212,175,55,0.28),transparent_72%)] pointer-events-none" />
+            <div className="title-hero-stage relative flex-1 min-h-[260px] sm:min-h-[300px] lg:min-h-[340px] w-full rounded-lg border-2 border-[#6b4724] bg-gradient-to-b from-[#1e120a] via-[#130a05] to-[#080402] flex items-end justify-center p-1.5 overflow-hidden shadow-inner">
+              {/* Atmosférické teplé kabinetní světlo za postavou pro vysoký kontrast tmavých plášťů a klobouků */}
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_75%_70%_at_50%_54%,rgba(250,224,148,0.34)_0%,rgba(212,175,55,0.16)_48%,transparent_76%)] pointer-events-none" />
               
               {/* Kamenný podstavec a stín */}
               <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-48 sm:w-56 h-3.5 rounded-full bg-black/90 blur-[3px] pointer-events-none" />
-              <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-44 sm:w-52 h-1.5 rounded-full bg-[#d4af37]/25 blur-[1px] pointer-events-none" />
+              <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-44 sm:w-52 h-1.5 rounded-full bg-[#d4af37]/30 blur-[1px] pointer-events-none" />
 
               {!failedImages[activeHunter.id] ? (
-                <img
-                  src={activeHunter.portraitUrl}
-                  alt={activeHunter.name}
-                  className="title-hero-portrait-img relative z-10 h-full w-full max-h-[370px] object-contain object-center scale-[1.06] drop-shadow-[0_0_3px_rgba(255,255,255,0.75)] drop-shadow-[0_12px_24px_rgba(0,0,0,0.98)] transition-transform duration-200"
-                  onError={() => {
-                    setFailedImages((prev) => ({
-                      ...prev,
-                      [activeHunter.id]: true,
-                    }));
-                  }}
-                />
+                (() => {
+                  const activeHarmony =
+                    HUNTER_VISUAL_HARMONY[activeHunter.id] || HUNTER_VISUAL_HARMONY.classic;
+                  return (
+                    <img
+                      src={activeHunter.portraitUrl}
+                      alt={activeHunter.name}
+                      style={{
+                        transform: `translateY(${activeHarmony.showcaseOffsetY}) scale(${activeHarmony.showcaseScale})`,
+                        filter: activeHarmony.filterDarkBg,
+                      }}
+                      className="title-hero-portrait-img relative z-10 h-full w-full max-h-[365px] object-contain object-bottom origin-bottom transition-transform duration-200"
+                      onError={() => {
+                        setFailedImages((prev) => ({
+                          ...prev,
+                          [activeHunter.id]: true,
+                        }));
+                      }}
+                    />
+                  );
+                })()
               ) : (
                 <div className="relative z-10 flex flex-col items-center justify-center h-full">
                   <span className="text-7xl drop-shadow-md">{activeHunter.icon}</span>

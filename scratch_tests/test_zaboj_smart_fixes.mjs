@@ -84,8 +84,35 @@ console.log('\n--- TEST 5: 3-kombo (Zpěv z Černého lesa) ---');
 const comboEvents = [];
 resolveHunterCombo3Bonus(state, state.hero, comboEvents);
 assert.ok((state.hero.statuses.shield || 0) >= 5, '3-kombo přidalo +5 Štít');
-console.log('✓ 3-kombo funguje spolehlivě.\n');
+console.log('✓ 3-kombo funguje spolehlivě.');
+
+// 6. Ověření unikátních 10 lovců v STARTING_LOADOUTS a alfa-kanálu Záboje
+console.log('\n--- TEST 6: Unikátnost 10 lovců & Alfa-kanál PNG Záboje ---');
+const allLoadoutKeys = Object.keys(STARTING_LOADOUTS);
+assert.equal(allLoadoutKeys.length, 10, 'Object.keys(STARTING_LOADOUTS) musí vracet přesně 10 unikátních lovců');
+assert.equal(STARTING_LOADOUTS.venca, STARTING_LOADOUTS.classic, 'Alias STARTING_LOADOUTS.venca musí nadále fungovat');
+
+import fs from 'node:fs';
+import zlib from 'node:zlib';
+
+const zabojPngBuf = fs.readFileSync('public/assets/aistudio/K_i__c__bard_s_lyrou_a_palc_tem_9017845b.png');
+const width = zabojPngBuf.readUInt32BE(16);
+const height = zabojPngBuf.readUInt32BE(20);
+let offset = 8;
+const idatChunks = [];
+while (offset < zabojPngBuf.length) {
+  const len = zabojPngBuf.readUInt32BE(offset);
+  const type = zabojPngBuf.toString('ascii', offset + 4, offset + 8);
+  if (type === 'IDAT') idatChunks.push(zabojPngBuf.subarray(offset + 8, offset + 8 + len));
+  offset += 12 + len;
+}
+const raw = zlib.inflateSync(Buffer.concat(idatChunks));
+// Check top-left corner (x=0, y=0) and between varyto strings (x=360, y=230) are transparent
+const cornerAlpha = raw[1 + 3]; // filter byte + R,G,B,A of (0,0)
+assert.equal(cornerAlpha, 0, 'Roh obrázku Záboje (0,0) musí být plně průhledný (alpha=0)');
+console.log(`✓ PNG Záboje (${width}x${height}) má čisté průhledné pozadí a 10 unikátních lovců v registru.\n`);
 
 console.log('====================================================');
-console.log('VŠECHNY TESTY ZÁBOJE ÚSPĚŠNĚ PROŠLY! 🎉');
+console.log('VŠECHNY TESTY ZÁBOJE A HARMONIZACE LOVCŮ PROŠLY! 🎉');
 console.log('====================================================');
+

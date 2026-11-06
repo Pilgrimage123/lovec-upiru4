@@ -53,12 +53,14 @@ export function renderTileBar(container, state, callbacks = {}) {
 
       return `
         <button type="button"
-                class="player-tile-card ${onCd ? 'tile-on-cooldown' : ''} ${inQ ? 'tile-in-queue' : ''}"
+                class="player-tile-card ${onCd ? 'tile-on-cooldown' : ''} ${inQ ? 'tile-in-queue' : ''} ${disabled ? 'tile-card-disabled' : ''}"
                 data-tile-instance="${tile.instanceId}"
-                ${disabled ? 'disabled' : ''}>
+                data-tile-disabled="${disabled ? '1' : '0'}"
+                aria-disabled="${disabled ? 'true' : 'false'}">
           <div class="tile-card-top">
             <span class="tile-hotkey">[${hotkey}]</span>
             <span class="tile-cd-stat" title="Chladnutí destičky">⏳ ${onCd ? `${tile.currentCooldown}/${tile.maxCooldown}` : `${tile.maxCooldown}t`}</span>
+            <span class="tile-info-trigger" data-tile-info="${tile.instanceId}" title="Zobrazit detail a dosah destičky na bojišti">?</span>
           </div>
           <div class="tile-card-art">
             <img src="${iconUrl}" alt="${tile.name}" class="tile-art-img" referrerpolicy="no-referrer" />
@@ -155,10 +157,30 @@ export function renderTileBar(container, state, callbacks = {}) {
 
   container.querySelectorAll('[data-tile-instance]').forEach((btn) => {
     const instanceId = btn.getAttribute('data-tile-instance');
+    const isTileDisabled = btn.getAttribute('data-tile-disabled') === '1';
     const tile = state.hand.find((t) => t.instanceId === instanceId);
     if (!tile) return;
 
-    btn.addEventListener('click', () => {
+    const infoTrigger = btn.querySelector('[data-tile-info]');
+    infoTrigger?.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      ev.preventDefault();
+      const r = btn.getBoundingClientRect();
+      callbacks.onHoverTile?.(instanceId);
+      showTooltip(buildTileTooltipHtml(tile, state?.hero), r.left + r.width / 2, r.top, true);
+    });
+
+    btn.addEventListener('click', (ev) => {
+      if (ev.target instanceof Element && ev.target.closest('[data-tile-info]')) {
+        return;
+      }
+      if (isTileDisabled) {
+        // When tile is on cooldown or already in queue, tapping it on mobile shows its tooltip & range preview!
+        const r = btn.getBoundingClientRect();
+        callbacks.onHoverTile?.(instanceId);
+        showTooltip(buildTileTooltipHtml(tile, state?.hero), r.left + r.width / 2, r.top, true);
+        return;
+      }
       hideTooltip();
       callbacks.onHoverTile?.(null);
       callbacks.onSelectTile?.(instanceId);
