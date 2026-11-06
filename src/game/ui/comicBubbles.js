@@ -52,10 +52,16 @@ export function spawnComicBubble(container, cellIdx, text, variant = 'quip', opt
   bubble.setAttribute('role', 'alert');
   bubble.setAttribute('aria-live', 'polite');
 
-  // Horizontal anchor: centered above the cell
-  const posX = Math.round(r.left + r.width / 2);
-  // Vertical anchor: just above the top edge of the cell / entity
-  const posY = Math.max(30, Math.round(r.top - 8));
+  const vw = window.innerWidth || 640;
+  const vh = window.innerHeight || 480;
+  const isCompactLandscape = vh <= 540 && vw > vh;
+
+  // Horizontal anchor: centered above the cell, clamped away from screen edges
+  const posX = Math.max(95, Math.min(vw - 95, Math.round(r.left + r.width / 2)));
+  // Vertical anchor: just above the top edge of the cell / entity, or slightly lower in compact landscape so it stays inside the viewport
+  const posY = isCompactLandscape
+    ? Math.max(68, Math.round(r.top + 28))
+    : Math.max(30, Math.round(r.top - 8));
 
   bubble.style.left = `${posX}px`;
   bubble.style.top = `${posY}px`;

@@ -291,6 +291,39 @@ export const HUNTER_DIALOGUES = {
       'FINANČNÍ EXEKUCE! HLOUBKOVÁ KONTROLA HRADNÍCH SKLEPŮ!',
       'DAŇOVÝ VÝMĚR ČÍSLO JEDNA! ZABAVUJE SE ŽIVOT!'
     ]
+  },
+
+  zaboj: {
+    name: 'Adolf Puchmajer',
+    icon: '🪕',
+    battle_cries: [
+      'SLAVOJI, BRATŘE! VZHŮRU Z ČERNÉHO LESA NA UPÍŘÍ VRAHY!',
+      'ZPÍVEJ, MÉ LEPENKOVÉ VARYTO! RUKOPISY JSOU PRAVÉ!',
+      'ZA VLAST, ZA HANKU A ZA PALIČKU NA ŘÍZKY REKA ZÁBOJE!',
+      'SLOVANSKÁ LÍPA NEZAHYNE! OKUSTE STAROČESKÝ MLAT!'
+    ],
+    threats: [
+      'Tuhle kroužkovou košili mi upletla maminka z vázacího drátu! Neprojdete!',
+      'Kdo zpochybní pravost Rukopisu královédvorského, schytá paličkou na maso!',
+      'Slyšíte ten akord?! To není rozladěný motouz, to je hněv dávných reků!',
+      'Mám u pasu lipové kolíky a znojemský česnek posvěcený samotným obrozením!'
+    ],
+    last_words: [
+      'Slavoji... dopěj... tu píseň... za mne...',
+      'Varyto... se rozlepilo... a maminka... bude hubovat...',
+      'Rukopisy... jsou... přece jen... pravé...',
+      'Paličku... vraťte... do kuchyně... k nedělnímu obědu...'
+    ],
+    quips: [
+      'Ejhle, upír klesl pod úderem staročeského kuchyňského mlatu!',
+      'O tomhle vítězství složím dvanáctidílný hrdinský zpěv do Národních listů!',
+      'Krabice od bot vydržela! Ať žije nezdolné obrozenecké lepidlo!',
+      'Tak dopadne každý noční cizák, jenž nectí posvátné lipové dřevo!'
+    ],
+    combo_cries: [
+      'ZPĚV Z ČERNÉHO LESA! TŘESTE SE, UPÍŘÍ HORDY!',
+      'ZÁBOJŮV HROMOVÝ CHORÁL! SLÁVA VLASTI A ČESNEKU!'
+    ]
   }
 };
 

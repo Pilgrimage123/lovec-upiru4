@@ -4,6 +4,7 @@ import { openRulesModal, openCastleArchiveModal } from "@/game/ui/modal.js";
 import { toggleFullscreen } from "@/game/ui/fullscreen.js";
 import { TacticalAnimationDemo } from "@/components/TacticalAnimationDemo";
 import { TitleScreen } from "@/components/TitleScreen";
+import { OrientationPrompt } from "@/components/OrientationPrompt";
 import "@/game/styles/main.css";
 import "@/game/styles/board.css";
 import "@/game/styles/ui.css";
@@ -125,6 +126,8 @@ export function Home() {
         isOpen={isAnimLabOpen}
         onClose={() => setIsAnimLabOpen(false)}
       />
+
+      <OrientationPrompt />
     </>
   );
 }

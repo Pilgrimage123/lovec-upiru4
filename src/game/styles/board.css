@@ -995,27 +995,98 @@
   text-shadow: 0 1px 2px #000;
 }
 
-/* Reinforcement Pending / Imminent */
+/* Reinforcement Pending / Telegraphed / Imminent */
 .gate-reinf-indicator {
   position: relative;
   z-index: 4;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
   white-space: nowrap;
 }
 
+.gate-reinf-portrait-wrap {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(30, 20, 15, 0.96) 0%, rgba(10, 6, 4, 0.98) 100%);
+  border: 1.5px solid #f59e0b;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.8), 0 0 8px rgba(245, 158, 11, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.gate-status-imminent .gate-reinf-portrait-wrap {
+  border-color: #ef4444;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.9), 0 0 12px rgba(239, 68, 68, 0.85);
+}
+
+.gate-reinf-portrait {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.9));
+}
+
+.gate-reinf-role-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -5px;
+  font-size: 0.56rem;
+  line-height: 1;
+  background: #1c1917;
+  border: 1px solid rgba(254, 240, 138, 0.65);
+  border-radius: 999px;
+  padding: 1px 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+}
+
 .gate-reinf-pill {
-  font-size: 0.58rem;
+  font-size: 0.56rem;
   font-weight: 900;
-  color: #fef2f2;
-  background: #991b1b;
-  border: 1px solid #f87171;
+  font-variant-numeric: tabular-nums;
+  color: #fef3c7;
+  background: #92400e;
+  border: 1px solid #fbbf24;
+  border-radius: 4px;
+  padding: 1px 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.gate-reinf-stack {
+  font-size: 0.5rem;
+  font-weight: 900;
+  color: #fffbeb;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 3px;
+  padding: 0 2px;
+  margin-left: 1px;
+}
+
+.gate-reinf-reserve-tag {
+  font-size: 0.54rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #fde68a;
+  background: rgba(28, 25, 23, 0.9);
+  border: 1px dashed rgba(251, 191, 36, 0.55);
   border-radius: 4px;
   padding: 1px 3px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.65);
+}
+
+.gate-status-telegraphed .gate-arch-frame {
+  border-color: #f59e0b;
+  box-shadow: inset 0 0 14px rgba(245, 158, 11, 0.55), 0 0 8px rgba(217, 119, 6, 0.45);
 }
 
 .gate-status-imminent .gate-arch-frame {
@@ -1025,6 +1096,7 @@
 }
 
 .gate-status-imminent .gate-reinf-pill {
+  color: #fef2f2;
   background: #dc2626;
   border-color: #fca5a5;
   animation: pulseArmedTag 1s infinite;
@@ -1051,6 +1123,10 @@
   }
   .gate-label-strip .gate-name {
     display: none;
+  }
+  .gate-reinf-portrait-wrap {
+    width: 20px;
+    height: 20px;
   }
 }
 
@@ -2316,4 +2392,311 @@
   .scale-lojzicek .entity-ground-shadow { max-width: 18px; height: 3px; }
   .scale-critter .entity-ground-shadow { max-width: 16px; height: 3px; }
 }
+
+/* ==========================================================================
+   MOBILE LANDSCAPE MODE (Horizontally rotated smartphones: max-height 540px)
+   ========================================================================== */
+@media (orientation: landscape) and (max-height: 540px) {
+  .hero-queue-panel {
+    min-height: 30px;
+    max-height: 32px;
+    padding: 2px 8px;
+    gap: 6px;
+    border-width: 2px;
+    border-top-width: 3px;
+    border-radius: 8px;
+  }
+
+  .hero-queue-panel::after {
+    display: none !important;
+  }
+
+  .hero-queue-label strong,
+  .hero-queue-hint {
+    display: none !important;
+  }
+
+  .hero-queue-label:not(:has(.queue-resonance-pill)) {
+    display: none !important;
+  }
+
+  .hero-queue-slots {
+    gap: 6px;
+    flex: 1 1 100%;
+  }
+
+  .queue-slot {
+    height: 24px;
+    min-height: 24px;
+    max-height: 24px;
+    padding: 1px 6px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    border-radius: 5px;
+  }
+
+  .queue-slot-filled .queue-slot-content {
+    order: 1;
+    flex: 1 1 auto;
+    height: 20px;
+    gap: 5px;
+  }
+
+  .queue-slot-filled .queue-slot-header {
+    order: 2;
+    width: auto;
+    flex: 0 0 auto;
+    gap: 3px;
+  }
+
+  .queue-slot-empty {
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .queue-slot-empty .queue-slot-header {
+    width: auto;
+    flex: 0 0 auto;
+  }
+
+  .queue-slot-empty .queue-slot-content {
+    height: 18px;
+  }
+
+  .queue-slot-role {
+    font-size: 0.6rem;
+  }
+
+  .queue-slot-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .queue-slot-name {
+    font-size: 0.7rem;
+  }
+
+  .queue-slot-placeholder {
+    font-size: 0.64rem;
+  }
+
+  .drag-handle {
+    display: none !important;
+  }
+
+  .btn-slot-move {
+    font-size: 0.58rem;
+    padding: 0 3px;
+    line-height: 14px;
+  }
+
+  .btn-slot-remove {
+    font-size: 0.72rem;
+    padding: 0 3px;
+  }
+
+  /* 1D Battlefield in Mobile Landscape */
+  .battlefield-1d-stage {
+    min-height: 130px;
+    height: 100%;
+    padding: 4px 6px 5px;
+    border-width: 2.5px;
+    border-radius: 10px;
+  }
+
+  .battlefield-stone-track {
+    gap: 4px;
+    min-height: 120px;
+    height: 100%;
+  }
+
+  .board-cell {
+    min-height: 120px;
+    height: 100%;
+    padding: 2px 2px 3px;
+    border-width: 1.5px;
+    border-bottom-width: 4px;
+    border-radius: 6px 6px 4px 4px;
+  }
+
+  .cell-index-label {
+    font-size: 0.58rem;
+    line-height: 1;
+  }
+
+  .cell-index-word {
+    display: none;
+  }
+
+  .diegetic-gate-portal {
+    width: 15px;
+  }
+
+  .gate-label-strip {
+    display: none;
+  }
+
+  .enemy-intent-column {
+    flex: 0 0 28px;
+    height: 28px;
+    min-height: 28px;
+    max-height: 28px;
+    gap: 1px;
+    margin-bottom: 1px;
+  }
+
+  .enemy-intent-header {
+    height: 12px;
+  }
+
+  .enemy-initiative-tag,
+  .intent-armed-tag,
+  .intent-queuing-tag,
+  .intent-positioning-banner {
+    font-size: 0.52rem;
+    padding: 0 3px;
+  }
+
+  .intent-bar-horizontal {
+    height: 15px;
+    gap: 2px;
+  }
+
+  .intent-slot {
+    height: 15px;
+    border-width: 1.5px;
+    border-radius: 3px;
+    padding: 0;
+  }
+
+  .intent-slot-icon-box {
+    width: 12px;
+    height: 12px;
+  }
+
+  .enemy-intent-svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  .cell-overlay-zone {
+    top: 12px;
+    left: 1px;
+    right: 1px;
+    gap: 1px;
+  }
+
+  .threat-badge,
+  .preview-badge,
+  .inspect-reach-badge,
+  .ground-crosshair-badge {
+    font-size: 0.54rem;
+    padding: 1px 2px;
+    border-width: 1px;
+    border-radius: 4px;
+  }
+
+  .entity-hud-top {
+    width: 96%;
+    max-width: none;
+    padding: 1px 3px 2px;
+    border-width: 1.5px;
+    border-radius: 5px;
+  }
+
+  .entity-epithet {
+    display: none !important;
+  }
+
+  .entity-given {
+    font-size: 0.64rem;
+    line-height: 1.05;
+  }
+
+  .facing-indicator {
+    font-size: 0.6rem;
+  }
+
+  .entity-hp-bar-outer {
+    height: 9px;
+    margin-top: 1px;
+    border-width: 1px;
+  }
+
+  .entity-hp-text {
+    font-size: 0.52rem;
+    line-height: 8px;
+  }
+
+  .entity-shield-pill,
+  .entity-armor-pill {
+    font-size: 0.56rem;
+    padding: 0 3px;
+    top: -6px;
+  }
+
+  .status-chip {
+    font-size: 0.52rem;
+    padding: 0 2px;
+  }
+
+  .cell-floor-stone {
+    min-height: 18px;
+    margin-top: 1px;
+    padding: 1px 2px;
+    border-width: 1.5px;
+    border-radius: 4px;
+  }
+
+  .terrain-decal-wrapper {
+    height: 16px;
+  }
+
+  .decal-icon {
+    font-size: 0.78rem;
+  }
+
+  .decal-icon-mini {
+    font-size: 0.68rem;
+  }
+
+  .terrain-duration-tag {
+    font-size: 0.48rem;
+    padding: 0 2px;
+  }
+
+  /* Expressive Sprite Hierarchy scaled for Mobile Landscape */
+  .scale-boss { --sprite-h: 90px; }
+  .scale-hero { --sprite-h: 80px; }
+  .scale-human { --sprite-h: 64px; }
+  .scale-prop { --sprite-h: 42px; }
+  .scale-beast { --sprite-h: 40px; }
+  .scale-small,
+  .scale-lojzicek { --sprite-h: 34px; }
+  .scale-flyer { --sprite-h: 30px; }
+  .scale-critter { --sprite-h: 22px; }
+
+  .scale-hero .entity-ground-shadow { max-width: 60px; height: 9px; }
+  .scale-boss .entity-ground-shadow { max-width: 66px; height: 10px; }
+  .scale-human .entity-ground-shadow { max-width: 46px; height: 7px; }
+  .scale-small .entity-ground-shadow,
+  .scale-lojzicek .entity-ground-shadow { max-width: 20px; height: 3px; }
+  .scale-critter .entity-ground-shadow { max-width: 16px; height: 3px; }
+}
+
+/* Ultra-short mobile landscape (when browser address bar is visible, height <= 390px) */
+@media (orientation: landscape) and (max-height: 390px) {
+  .scale-boss { --sprite-h: 74px; }
+  .scale-hero { --sprite-h: 66px; }
+  .scale-human { --sprite-h: 54px; }
+  .scale-prop { --sprite-h: 36px; }
+  .scale-beast { --sprite-h: 34px; }
+  .scale-small,
+  .scale-lojzicek { --sprite-h: 28px; }
+  .scale-flyer { --sprite-h: 24px; }
+  .scale-critter { --sprite-h: 18px; }
+}
+
 

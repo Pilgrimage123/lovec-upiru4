@@ -139,6 +139,84 @@ export function openFullLogModal(modalRoot, logs = []) {
   });
 }
 
+export function openLoadoutAndTalismansModal(modalRoot, runState, battleState = null) {
+  if (!modalRoot || !runState) return;
+  modalRoot.classList.remove('hidden');
+
+  const hero = battleState?.hero || null;
+  const hunterKey = hero?.hunterId || hero?.kind || runState.hunterId || runState.loadoutId || 'classic';
+  const loadout =
+    STARTING_LOADOUTS[hunterKey] ||
+    Object.values(STARTING_LOADOUTS).find((l) => l.hunterId === hunterKey) ||
+    STARTING_LOADOUTS.classic;
+
+  const bumpName = loadout?.bumpName || 'Krok do nepřítele';
+  const bumpDesc = loadout?.bumpDesc || 'Manévr při kroku do sousedního nepřítele.';
+  const bumpCd = hero?.bumpCooldown || 0;
+  const bumpStatusHtml =
+    bumpCd > 0
+      ? `<span class="maneuver-status-badge status-cooling">⏳ Chladne (${bumpCd} t.)</span>`
+      : `<span class="maneuver-status-badge status-ready">⚔️ Připraven k úderu</span>`;
+
+  const talismansListHtml =
+    !runState.talismans || runState.talismans.length === 0
+      ? `<p class="hud-muted-text" style="padding: 8px 0;">Zatím nemáš žádné talismany. Získáš je z bitev, truhlic nebo v hostinci.</p>`
+      : `<div class="reward-choices-grid" style="margin-top: 8px;">` +
+        runState.talismans
+          .map((id) => {
+            const t = TALISMANS[id];
+            if (!t) return '';
+            return `
+              <div class="reward-choice-card" style="padding: 10px;">
+                <div class="reward-card-title">${t.badge} ${t.name}</div>
+                <p class="reward-card-desc">${t.description}</p>
+              </div>
+            `;
+          })
+          .join('') +
+        `</div>`;
+
+  modalRoot.innerHTML = `
+    <div class="modal-backdrop">
+      <div class="modal-card modal-lg">
+        <div class="modal-header">
+          <h3>🧿 C. k. Osobní výstroj, manévr a talismany: ${loadout?.name || 'Lovec'}</h3>
+          <button type="button" class="btn-parchment btn-xs" id="btn-modal-close">✖ Zavřít</button>
+        </div>
+        <div class="modal-body rules-grid">
+          <div class="rule-block">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:6px;">
+              <h4 style="margin:0; border:0; padding:0;">👢 Osobní manévr: ${bumpName}</h4>
+              ${bumpStatusHtml}
+            </div>
+            <p>${bumpDesc}</p>
+            ${
+              loadout?.passiveName
+                ? `<p style="margin-top:6px;"><strong>✨ Pasivní schopnost (${loadout.passiveName}):</strong> ${loadout.passiveDesc}</p>`
+                : ''
+            }
+            ${
+              loadout?.comboName
+                ? `<p style="margin-top:6px;"><strong>🔥 3-Kombo Finišer (${loadout.comboName}):</strong> ${loadout.comboDesc}</p>`
+                : ''
+            }
+          </div>
+
+          <div class="rule-block">
+            <h4>🧿 Aktivní talismany (${runState.talismans?.length || 0})</h4>
+            ${talismansListHtml}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  modalRoot.querySelector('#btn-modal-close')?.addEventListener('click', () => closeModal(modalRoot));
+  modalRoot.querySelector('.modal-backdrop')?.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal-backdrop')) closeModal(modalRoot);
+  });
+}
+
 export function openSettingsModal(modalRoot, settings, metaStats, callbacks = {}) {
   modalRoot.classList.remove('hidden');
   modalRoot.innerHTML = `

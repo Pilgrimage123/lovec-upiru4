@@ -236,6 +236,33 @@ export const STARTING_LOADOUTS = {
       { id: 'brass_stamp_denied', upgradeLevel: 0, permanentCdReduction: 0 },
       { id: 'rast_gasser_revolver', upgradeLevel: 0, permanentCdReduction: 0 }
     ]
+  },
+  zaboj: {
+    id: 'zaboj',
+    hunterId: 'zaboj',
+    name: 'Adolf Puchmajer',
+    shortName: 'Rek Záboj',
+    icon: '🪕',
+    portrait: '/assets/aistudio/K_i__c__bard_s_lyrou_a_palc_tem_9017845b.png',
+    cost: 20,
+    epithet: 'Vlastenecký pěvec v rouše Zábojově',
+    maxHp: 20,
+    defense: 1,
+    fury: 15,
+    armor: 1,
+    persistence: 6,
+    passiveName: 'Rukopisný zápal',
+    passiveDesc: 'Útok do cíle se Zmatením (❓) nebo v Česnekovém oblaku udělí +2 DMG navíc, přidá +2 Štít a +5 % k Rozlícení.',
+    bumpName: 'Falešný akord na varyto',
+    bumpDesc: 'Krok do nepřítele: 2 DMG, odhodí cíl o 1 pole a falešným zpěvem jej uvrhne do Zmatení (❓) (CD 3).',
+    comboName: 'Zpěv z Černého lesa',
+    comboDesc: '3-kombo: +5 Štít, +15 % k Rozlícení a všem nepřátelům v dosahu 1–2 pole před sebou udělí 4 DMG + Zmatení (❓).',
+    description: 'Vlastenecký nadšenec v pletené drátěné košili od maminky. Ohlušuje upíry zpěvem u lepenkového varyta a bije je paličkou na maso.',
+    deck: [
+      { id: 'zaboj_mallet', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'cardboard_varyto', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'linden_stakes', upgradeLevel: 0, permanentCdReduction: 0 }
+    ]
   }
 };
 

@@ -43,6 +43,7 @@ const HUNTER_PORTRAITS: Record<string, string> = {
   anglicanka: "/assets/aistudio/Barevn__viktori_nsk__lovkyn__s_de_tn_kem_e96488c5.png",
   helsing: "/assets/aistudio/Karikatura_Van_Helsinga_s_rota_n__ku___4ad7e475.png",
   revident: "/assets/aistudio/Ornate_c_sa_sk__boty_star_ho___edn_ka_8f8df6f3.png",
+  zaboj: "/assets/aistudio/K_i__c__bard_s_lyrou_a_palc_tem_9017845b.png",
 };
 
 interface HunterDeed {
@@ -366,9 +367,45 @@ const HUNTERS_DATA: Record<string, HunterDeed> = {
       { id: "rast_gasser_revolver", upgradeLevel: 0 },
     ],
   },
+  zaboj: {
+    id: "zaboj",
+    shortName: "Rek Záboj",
+    name: "Adolf Puchmajer",
+    epithet: "Vlastenecký pěvec v rouše Zábojově",
+    role: "Obrozenecký bard & drtič cizáků",
+    tag: "Rukopisný zápal (20 HP, 1 Brnění) · Lepenkové varyto · Palička na maso",
+    beerBadge: "Rukopisný ležák 12°",
+    maxHp: 20,
+    defense: 1,
+    fury: 15,
+    armor: 1,
+    persistence: 6,
+    passiveName: "Rukopisný zápal",
+    passiveDesc: "Útok do cíle se Zmatením (❓) nebo v Česnekovém oblaku udělí +2 DMG navíc, přidá +2 Štít a +5 % k Rozlícení.",
+    icon: "🪕",
+    heraldicColor: "from-red-950 via-stone-900 to-amber-950",
+    heraldicBorder: "border-red-500",
+    portraitUrl: HUNTER_PORTRAITS.zaboj,
+    quote: "„Tyto kroužky upletla maminka z drátu a varyto drží klihem, leč duch Zábojův rozdrtí každého upíra!“",
+    signatureWeapon: "Dřevěná palička na řízky & Lepenkové varyto z krabice",
+    bumpName: "Falešný akord na varyto",
+    bumpDesc:
+      "Krok do nepřítele: 2 DMG, odhodí cíl o 1 pole a falešným zpěvem jej uvrhne do Zmatení (❓) (CD 3).",
+    comboName: "Zpěv z Černého lesa",
+    comboDesc:
+      "3-kombo: +5 Štít, +15 % k Rozlícení a všem nepřátelům v dosahu 1–2 pole před sebou udělí 4 DMG + Zmatení (❓).",
+    deck: [
+      { id: "zaboj_mallet", upgradeLevel: 0 },
+      { id: "cardboard_varyto", upgradeLevel: 0 },
+      { id: "linden_stakes", upgradeLevel: 0 },
+    ],
+  },
 };
 
 const THEMATIC_FOLK_SEEDS = [
+  "ZABOJ-1817",
+  "RUKOPIS-1899",
+  "VARYTO-77",
   "ARTHUR-1888",
   "REVIDENT-1884",
   "CIRKUS-1899",
@@ -643,6 +680,25 @@ const HUNTER_ABILITY_TIPS: Record<
       "Revolver Rast & Gasser střílí přes 5 polí a zpětným rázem tě posune o 1 pole vzad — ideální pro udržení odstupu 2 polí na Úřední předvolání!",
     ],
   },
+  zaboj: {
+    passiveMechanics:
+      "Kdykoliv Adolf zasáhne nepřítele pod vlivem Zmatení (❓) nebo stojícího v Česnekovém oblaku, jeho vlastenecké nadšení udělí +2 DMG navíc, přidá mu +2 Štít a zvýší Bojové rozlícení o +5 %.",
+    passiveTip:
+      "Nejprve upíra ohluš Lepenkovým varytem (nebo krokem do nepřítele) či pod něj polož česnek Pásem lipových kolíků — každý tvůj další úder pak posílí o +2 DMG, +50 % ze Zmatení a dá ti Štít i Rozlícení!",
+    bumpMechanics:
+      "Krok do nepřítele udělí 2 DMG úderem lepenkového varyta, odhodí cíl o 1 pole vzad a falešným akordem jej uvrhne do Zmatení (❓). Chladnutí: 3 tahy.",
+    bumpTip:
+      "Po Falešném akordu je nepřítel zmatený a odhozený o 1 pole — přesně v dosahu Lepenkového varyta nebo po kroku vpřed pro drtivý úder paličkou na maso!",
+    comboMechanics:
+      "Odpálení 3 destiček přidá +5 Štít, +15 % k Bojovému rozlícení a hromovým zpěvem zasáhne obě pole před Adolfem (+1 a +2) za 4 DMG + Zmatení (❓).",
+    comboTip:
+      "Zpěv z Černého lesa zmate celou řadu upírů před tebou a prudce zvedne tvé Rozlícení pro drtivou dorážku v dalším kole!",
+    tileTips: [
+      "Zábojův mlat z paličky na maso dává 4 DMG a odhazuje o 1 pole — do zmateného nepřítele však díky pasivce a Zákeřnému úderu drtí za 8+ DMG a přidá +2 Štít!",
+      "Lepenkové varyto zasahuje na dálku až 3 pole, uvrhne cíl do Zmatení (❓) pro aktivaci Rukopisného zápalu a ještě zvedne Rozlícení o +10 %.",
+      "Pás lipových kolíků a česneku ti dá +3 Štít, bodne za 3 DMG, zanechá Česnekový oblak (který rovněž spouští tvou pasivku!) a spolehlivě doráží ochromené upíry.",
+    ],
+  },
 };
 
 function buildSmartInspectData(
@@ -745,9 +801,9 @@ function buildSmartInspectData(
       return {
         key,
         category: "ATRIBUT LOVCE",
-        icon: "🪦",
+        icon: "💀",
         title: `Verva (${hunter.persistence ?? 5}) · Odolnost proti Zubaté`,
-        badges: [`Limit záporných HP: −${(hunter.persistence ?? 5) - 1}`, "Při 0 HP vyprázdní frontu"],
+        badges: [`Limit záporných HP: −${(hunter.persistence ?? 5) - 1}`, "Při 0 HP vyprázdní frontu", `💀 Verva: ${hunter.persistence ?? 5}`],
         mechanics:
           "Když tvé životy klesnou na 0 nebo méně, nezemřeš ihned — vstoupíš do stavu Zubatá na krku (💀) a tvá fronta komba se vyprázdní. Dokud je součet (Verva + aktuální záporné HP) větší než 0, zůstáváš v boji! Každé celé kolo zakončené v Zubaté sníží Vervu o 1.",
         tacticalTip:
@@ -956,6 +1012,9 @@ export function TitleScreen({
       if (num >= 1 && num <= 9) {
         const targetHunter = HUNTER_KEYS[num - 1];
         if (targetHunter) handleSelectHunter(targetHunter);
+      } else if (e.key === "0") {
+        const targetHunter = HUNTER_KEYS[9];
+        if (targetHunter) handleSelectHunter(targetHunter);
       } else if (e.key === "r" || e.key === "R") {
         e.preventDefault();
         handleRandomSeed();
@@ -999,7 +1058,7 @@ export function TitleScreen({
   };
 
   return (
-    <div className="relative min-h-[100dvh] w-full bg-[#0a0705] text-[#f8fafc] flex flex-col justify-between overflow-x-hidden font-sans antialiased select-none">
+    <div className="title-screen-root relative min-h-[100dvh] w-full bg-[#0a0705] text-[#f8fafc] flex flex-col justify-between overflow-x-hidden font-sans antialiased select-none">
       {/* 1. Atmosférické pozadí */}
       <div
         className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center opacity-25 filter blur-[1px] saturate-150"
@@ -1018,42 +1077,42 @@ export function TitleScreen({
       />
 
       {/* 2. C. a k. Mimořádný věstník - Úřední záhlaví pro potírání vampýrismu */}
-      <header className="relative z-10 w-full pt-2.5 pb-2 px-3 sm:px-6 border-b-4 border-[#2b1b11] bg-gradient-to-b from-[#2a170d] via-[#1d1008] to-[#140b06] shadow-[0_6px_22px_rgba(0,0,0,0.9)]">
-        <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
-          <div className="inline-flex items-center gap-2 px-3.5 py-0.5 rounded-sm border-2 border-[#b89552] bg-[#221309] text-[#f4d99c] font-serif text-[10px] sm:text-xs font-black uppercase tracking-[0.22em] shadow-md mb-1">
+      <header className="title-screen-header relative z-10 w-full pt-2.5 pb-2 px-3 sm:px-6 border-b-4 border-[#2b1b11] bg-gradient-to-b from-[#2a170d] via-[#1d1008] to-[#140b06] shadow-[0_6px_22px_rgba(0,0,0,0.9)]">
+        <div className="title-screen-header-inner max-w-7xl mx-auto flex flex-col items-center text-center">
+          <div className="title-header-kicker inline-flex items-center gap-2 px-3.5 py-0.5 rounded-sm border-2 border-[#b89552] bg-[#221309] text-[#f4d99c] font-serif text-[10px] sm:text-xs font-black uppercase tracking-[0.22em] shadow-md mb-1">
             <span className="text-[#d4af37]">⚜️</span>
             <span>C. a k. Mimořádný věstník pro potírání vampýrismu v Království českém · L. P. 1899</span>
             <span className="text-[#d4af37]">⚜️</span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl md:text-5xl font-serif font-black tracking-wider text-[#fae094] drop-shadow-[0_4px_16px_rgba(212,175,55,0.65)] my-0 leading-tight">
+          <h1 className="title-header-h1 text-2xl sm:text-3xl md:text-5xl font-serif font-black tracking-wider text-[#fae094] drop-shadow-[0_4px_16px_rgba(212,175,55,0.65)] my-0 leading-tight">
             🧄 LOVEC UPÍRŮ
           </h1>
 
-          <p className="text-[11px] sm:text-xs text-[#f5eedb] font-serif font-medium italic max-w-2xl leading-snug mt-0.5">
-            „Povolení c. k. místodržitelství: Česnek ze Znojma, kůly z dubového jádra a 9 prověřených bijců proti Hraběti von Nochtic!“
+          <p className="title-header-sub text-[11px] sm:text-xs text-[#f5eedb] font-serif font-medium italic max-w-2xl leading-snug mt-0.5">
+            „Povolení c. k. místodržitelství: Česnek ze Znojma, kůly z dubového jádra a 10 prověřených bijců proti Hraběti von Nochtic!“
           </p>
         </div>
       </header>
 
       {/* 3. HLAVNÍ OBSAH: MASTER-DETAIL HERO SHOWCASE */}
-      <main className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-2 sm:px-4 py-2 flex flex-col justify-between gap-2.5">
+      <main className="title-screen-main relative z-10 flex-1 max-w-7xl w-full mx-auto px-2 sm:px-4 py-2 flex flex-col justify-between gap-2.5">
         
-        {/* HORNÍ LIŠTA: VÝBĚR LOVCE (9 HRDINŮ V PŘEHLEDNÉM PÁSU S HOTKEY [1-9]) */}
-        <section aria-label="Výběr hrdiny" className="w-full">
+        {/* HORNÍ LIŠTA: VÝBĚR LOVCE (10 HRDINŮ V PŘEHLEDNÉM PÁSU S HOTKEY [1-0]) */}
+        <section aria-label="Výběr hrdiny" className="title-roster-section w-full">
           <div className="flex items-center justify-between px-1 mb-1.5">
             <div className="flex items-center gap-1.5">
               <span className="text-[#d4af37] text-sm">📜</span>
               <h2 className="text-xs sm:text-sm uppercase tracking-wider text-[#fae094] font-serif font-black flex items-center gap-1.5">
                 <span>C. k. Kmenový registr lovců: Zvol svého bijce</span>
                 <span className="text-[11px] text-[#e8c878] font-mono font-bold">
-                  (Klávesy 1–9)
+                  (Klávesy 1–9, 0)
                 </span>
               </h2>
             </div>
             <div className="hidden sm:flex items-center gap-2 text-xs text-[#ebd8a7] font-mono font-bold">
               <span className="bg-[#2a170d] border border-[#8b6534] px-1.5 py-0.5 rounded text-[#fae094]">
-                [1–9] Výběr bijce
+                [1–0] Výběr bijce
               </span>
               <span>·</span>
               <span className="bg-[#2a170d] border border-[#8b6534] px-1.5 py-0.5 rounded text-[#fae094]">
@@ -1075,8 +1134,8 @@ export function TitleScreen({
             </div>
           </div>
 
-          {/* Roster 9 karet: 9-sloupcový na desktopu, stylizovaný jako kabinetní fotografie s kolkem */}
-          <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-1.5 sm:gap-2">
+          {/* Roster 10 karet: 10-sloupcový na desktopu, stylizovaný jako kabinetní fotografie s kolkem */}
+          <div className="title-roster-grid grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-1.5 sm:gap-2">
             {HUNTER_KEYS.map((hKey, index) => {
               const hunter = HUNTERS_DATA[hKey];
               const isSelected = hunter.id === selectedId;
@@ -1087,13 +1146,13 @@ export function TitleScreen({
                   data-hunter-id={hunter.id}
                   type="button"
                   onClick={() => handleSelectHunter(hunter.id)}
-                  className={`group relative px-1 py-1 sm:px-1.5 sm:py-1.5 rounded-lg border-2 transition-all duration-150 flex flex-col items-center justify-between cursor-pointer overflow-hidden ${
+                  className={`title-roster-card group relative px-1 py-1 sm:px-1.5 sm:py-1.5 rounded-lg border-2 transition-all duration-150 flex flex-col items-center justify-between cursor-pointer overflow-hidden ${
                     isSelected
                       ? "border-[#d4af37] bg-gradient-to-b from-[#f9f2e3] via-[#f1e4c7] to-[#e4d1aa] shadow-[0_0_18px_rgba(212,175,55,0.7),2px_3px_0_#1c1208] ring-2 ring-[#d4af37] scale-[1.03] z-20 text-[#25150a]"
                       : "border-[#523722] bg-gradient-to-b from-[#22140c] via-[#1a0e08] to-[#120905] hover:border-[#b89552] hover:bg-[#2c190f] text-[#ded2be] hover:text-[#fffbeb]"
                   }`}
                 >
-                  {/* Číslo v kroužku / c. k. evidenční známka [1-9] */}
+                  {/* Číslo v kroužku / c. k. evidenční známka [1-9, 0] */}
                   <span
                     className={`absolute top-1 left-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-mono font-black border z-10 ${
                       isSelected
@@ -1101,11 +1160,11 @@ export function TitleScreen({
                         : "bg-[#1d1209] text-[#d4af37] border-[#6b4724]"
                     }`}
                   >
-                    {index + 1}
+                    {index === 9 ? 0 : index + 1}
                   </span>
 
                   {/* Portrétní miniatura v kabinetním rámečku */}
-                  <div className="relative w-full h-20 sm:h-24 flex items-end justify-center mb-0.5 overflow-hidden">
+                  <div className="title-roster-portrait relative w-full h-20 sm:h-24 flex items-end justify-center mb-0.5 overflow-hidden">
                     <img
                       src={hunter.portraitUrl}
                       alt={hunter.name}
@@ -1124,19 +1183,45 @@ export function TitleScreen({
                     {hunter.shortName}
                   </span>
 
-                  {/* Miniaturní statistiky s patkovým a pečetním nádechem */}
-                  <div className="flex items-center gap-1 text-[9px] font-mono font-bold mt-0.5">
-                    <span className={isSelected ? "text-[#991b1b]" : "text-red-300"}>{hunter.maxHp} HP</span>
-                    <span className={isSelected ? "text-[#8b6f4e]" : "text-stone-500"}>·</span>
-                    <span className={isSelected ? "text-[#1e40af]" : "text-blue-300"}>🛡️{hunter.defense}</span>
+                  {/* Zvětšené statistiky a ikony pod kartou lovce (dvojnásobná velikost s lebkou pro Vervu) */}
+                  <div className="title-roster-stats flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 text-xs sm:text-sm font-mono font-black mt-1 px-0.5 leading-snug">
+                    <span
+                      className={`inline-flex items-center gap-0.5 ${isSelected ? "text-[#991b1b]" : "text-red-400"}`}
+                      title={`${hunter.maxHp} HP (Zdraví lovce)`}
+                    >
+                      <span className="text-sm sm:text-base">❤️</span>
+                      <span className="text-xs sm:text-sm">{hunter.maxHp}</span>
+                    </span>
+                    <span
+                      className={`inline-flex items-center gap-0.5 ${isSelected ? "text-[#1e40af]" : "text-blue-400"}`}
+                      title={`${hunter.defense} Základní obrana (Štít)`}
+                    >
+                      <span className="text-sm sm:text-base">🛡️</span>
+                      <span className="text-xs sm:text-sm">{hunter.defense}</span>
+                    </span>
                     {hunter.armor && hunter.armor > 0 ? (
-                      <>
-                        <span className={isSelected ? "text-[#8b6f4e]" : "text-stone-500"}>·</span>
-                        <span className={isSelected ? "text-[#166534]" : "text-emerald-400"}>🦺{hunter.armor}</span>
-                      </>
+                      <span
+                        className={`inline-flex items-center gap-0.5 ${isSelected ? "text-[#166534]" : "text-emerald-400"}`}
+                        title={`${hunter.armor} Brnění (Tlumí poškození)`}
+                      >
+                        <span className="text-sm sm:text-base">🦺</span>
+                        <span className="text-xs sm:text-sm">{hunter.armor}</span>
+                      </span>
                     ) : null}
-                    <span className={isSelected ? "text-[#8b6f4e]" : "text-stone-500"}>·</span>
-                    <span className={isSelected ? "text-[#b45309]" : "text-amber-400"}>💢{hunter.fury}%</span>
+                    <span
+                      className={`inline-flex items-center gap-0.5 ${isSelected ? "text-[#b45309]" : "text-amber-400"}`}
+                      title={`+${hunter.fury} % Rozlícení`}
+                    >
+                      <span className="text-sm sm:text-base">💢</span>
+                      <span className="text-xs sm:text-sm">{hunter.fury}%</span>
+                    </span>
+                    <span
+                      className={`inline-flex items-center gap-0.5 ${isSelected ? "text-[#27272a]" : "text-zinc-300"}`}
+                      title={`${hunter.persistence ?? 5} Verva (Odolnost vůči Zubaté)`}
+                    >
+                      <span className="text-sm sm:text-base">💀</span>
+                      <span className="text-xs sm:text-sm">{hunter.persistence ?? 5}</span>
+                    </span>
                   </div>
                 </button>
               );
@@ -1145,11 +1230,11 @@ export function TitleScreen({
         </section>
 
         {/* GRAND SHOWCASE: VELKÝ HRDINA NA LEVÉM PODSTAVCI BEZ PLÝTVÁNÍ MÍSTEM + TAKTICKÝ DOSSIER VPRAVO */}
-        <section className="w-full flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-3.5 items-stretch">
+        <section className="title-showcase-grid w-full flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-3.5 items-stretch">
           
           {/* LEVÝ SLOUPEC: C. a k. ÚŘEDNÍ KMENOVÝ LIST BIJCE */}
           <div
-            className={`lg:col-span-4 rounded-xl border-2 p-2.5 sm:p-3 flex flex-col justify-between gap-1.5 overflow-hidden relative shadow-2xl ${activeHunter.heraldicBorder} bg-gradient-to-b from-[#26150c] via-[#1a0d07] to-[#100704]`}
+            className={`title-left-column lg:col-span-4 rounded-xl border-2 p-2.5 sm:p-3 flex flex-col justify-between gap-1.5 overflow-hidden relative shadow-2xl ${activeHunter.heraldicBorder} bg-gradient-to-b from-[#26150c] via-[#1a0d07] to-[#100704]`}
           >
             {/* Ozdobné rohové kování */}
             <div className="absolute top-1.5 left-2 text-xs text-[#d4af37] font-serif pointer-events-none">
@@ -1270,13 +1355,13 @@ export function TitleScreen({
                       : "border-[#52525b] bg-[#18181b] hover:border-[#fae094] text-zinc-100"
                   }`}
                 >
-                  <span>🪦 {activeHunter.persistence ?? 5} Verva</span>
+                  <span>💀 {activeHunter.persistence ?? 5} Verva</span>
                 </button>
               </div>
             </div>
 
             {/* STŘEDOVÁ SCÉNA: KABINETNÍ PORTRÉT NA KAMENNÉM PODSTAVCI */}
-            <div className="relative flex-1 min-h-[260px] sm:min-h-[300px] lg:min-h-[340px] w-full rounded-lg border-2 border-[#523722] bg-gradient-to-b from-[#180f08] via-[#100804] to-[#070302] flex items-center justify-center p-1 overflow-hidden shadow-inner">
+            <div className="title-hero-stage relative flex-1 min-h-[260px] sm:min-h-[300px] lg:min-h-[340px] w-full rounded-lg border-2 border-[#523722] bg-gradient-to-b from-[#180f08] via-[#100804] to-[#070302] flex items-center justify-center p-1 overflow-hidden shadow-inner">
               {/* Atmosférické světlo za postavou */}
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_60%,rgba(212,175,55,0.28),transparent_72%)] pointer-events-none" />
               
@@ -1288,7 +1373,7 @@ export function TitleScreen({
                 <img
                   src={activeHunter.portraitUrl}
                   alt={activeHunter.name}
-                  className="relative z-10 h-full w-full max-h-[370px] object-contain object-center scale-[1.06] drop-shadow-[0_0_3px_rgba(255,255,255,0.75)] drop-shadow-[0_12px_24px_rgba(0,0,0,0.98)] transition-transform duration-200"
+                  className="title-hero-portrait-img relative z-10 h-full w-full max-h-[370px] object-contain object-center scale-[1.06] drop-shadow-[0_0_3px_rgba(255,255,255,0.75)] drop-shadow-[0_12px_24px_rgba(0,0,0,0.98)] transition-transform duration-200"
                   onError={() => {
                     setFailedImages((prev) => ({
                       ...prev,
@@ -1304,16 +1389,16 @@ export function TitleScreen({
             </div>
 
             {/* Citát hrdiny ve stylových uvozovkách */}
-            <blockquote className="px-1 text-center text-xs text-[#f5ebd7] font-serif font-medium italic leading-snug border-t border-[#6b4724]/60 pt-1.5">
+            <blockquote className="title-hero-quote px-1 text-center text-xs text-[#f5ebd7] font-serif font-medium italic leading-snug border-t border-[#6b4724]/60 pt-1.5">
               {activeHunter.quote}
             </blockquote>
           </div>
 
           {/* PRAVÝ SLOUPEC: TAKTICKÝ DOSSIER, SCHOPNOSTI, DECK & EXPEDIČNÍ CTA */}
-          <div className="lg:col-span-8 flex flex-col justify-between gap-2 sm:gap-3">
+          <div className="title-right-column lg:col-span-8 flex flex-col justify-between gap-2 sm:gap-3">
             
             {/* Taktická karta schopností a arzenálu */}
-            <div className="p-3 sm:p-4 rounded-xl border-2 border-[#8b6534] bg-gradient-to-b from-[#26150c] via-[#1b0e08] to-[#120804] shadow-xl space-y-2">
+            <div className="title-dossier-card p-3 sm:p-4 rounded-xl border-2 border-[#8b6534] bg-gradient-to-b from-[#26150c] via-[#1b0e08] to-[#120804] shadow-xl space-y-2">
               <div className="flex flex-wrap items-center justify-between gap-1 border-b border-[#523722] pb-2">
                 <div className="flex items-center gap-1.5 text-xs sm:text-sm font-serif font-black uppercase tracking-wider text-[#fae094]">
                   <Zap className="w-4 h-4 text-[#d4af37]" />
@@ -1613,7 +1698,7 @@ export function TitleScreen({
             </div>
 
             {/* C. a k. EXPEDIČNÍ REGISTRAČNÍ STANICE SE SEEDEM A PEČETNÍM TLAČÍTKEM */}
-            <div className="p-3 sm:p-4 rounded-xl border-2 border-[#b89552] bg-gradient-to-r from-[#28150c] via-[#351c10] to-[#28150c] shadow-2xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div className="title-cta-bar p-3 sm:p-4 rounded-xl border-2 border-[#b89552] bg-gradient-to-r from-[#28150c] via-[#351c10] to-[#28150c] shadow-2xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
               {/* Zadání seedu */}
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-1.5 text-[#fae094] font-serif text-xs font-black uppercase tracking-wider">
@@ -1667,7 +1752,7 @@ export function TitleScreen({
       </main>
 
       {/* 4. C. k. HOSPODSKÁ A CECHOVNÍ LIŠTA: PRAVIDLA, ARCHIV, ZVUK */}
-      <footer className="relative z-10 w-full py-1.5 px-3 sm:px-6 border-t-2 border-[#523722] bg-gradient-to-r from-[#1a0e08] via-[#24130a] to-[#1a0e08]">
+      <footer className="title-screen-footer relative z-10 w-full py-1.5 px-3 sm:px-6 border-t-2 border-[#523722] bg-gradient-to-r from-[#1a0e08] via-[#24130a] to-[#1a0e08]">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
           <div className="flex items-center gap-3 sm:gap-6 font-serif">
             <button

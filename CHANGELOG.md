@@ -4,6 +4,22 @@ Veškeré významné změny v projektu Lovec upírů jsou zaznamenávány v tomt
 
 Formát vychází z [Keep a Changelog](https://keepachangelog.com/cs/1.0.0/).
 
+## [2.0.0] - 2026-11-05
+
+### Přidáno (Added)
+- **Chytrý procedurální systém generování revírů a etap (Smart Stage System)**:
+  - **Procedurální grafová mapa (DAG)**: Dynamické větvení revíru do 6 etap (Etapa I–VI) se zaručenou dopřednou návazností, nulovými slepými uličkami a stoprocentní průchodností k hradnímu bossovi pro každé unikátní semínko (`run.seed`).
+  - **Taktické archetypy a rozpočet hrozby (Threat Budget)**:
+    - Bohatá knihovna 29 předem navržených střetů roztříděných podle taktických archetypů (*Letecký & rychlý roj*, *Štítová hradba*, *Střelecká křížová palba*, *Zákeřná léčka & pasti*, *Přepadení ze zálohy*, *Surová drtivá síla*, *C. k. panská inkvizice*, *Vládce patra*).
+    - Škála hrozby 1 až 5 (Boss 6) reflektující hloubku etapy a strategickou povahu zvolené trasy.
+  - **Specializované trasy s poměrem rizika a odměny (Risk-Reward Lanes)**:
+    - *Severní výspa (Vysoké riziko)*: Zvýšená hrozba, garantovaný elitní dráb ve 3. etapě, štědrá kořist a dukátový žold.
+    - *Císařská magistrála (Vyvážený revír)*: Rovnoměrný průzkum s dílnami, křižovatkami a taktickými přestřelkami.
+    - *Jižní hradební úvoz (Zásobovací stezka)*: Nižší hrozba, vyšší koncentrace pohostinství, náhodných setkání a truhlic.
+  - **C. a k. katastrální kartografie s vektorovými kolejemi (SVG Rails)**:
+    - Vizuální vykreslování hladkých Bézierových křivek spojujících uzly mapy (prošlé cesty v jantarovém lesku, volitelné cesty s dynamickou animací postupu, neaktivní v dobovém inkoustu).
+    - Taktický průzkum na kartách uzlů: ukazatel hrozby (lebky), náhled taktického archetypu a průzkumná nápověda.
+
 ## [1.9.0] - 2026-11-04
 
 ### Přidáno & Vyváženo (Added & Balanced)

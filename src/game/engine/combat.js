@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { ENEMY_TILES } from '../config/enemies.js';
+import { ENEMY_TILES, ENEMIES } from '../config/enemies.js';
 import { STRINGS, czechTurns } from '../config/strings.cs.js';
 import {
   isValidCell,
@@ -29,7 +29,11 @@ import {
   isHumanEntity,
   resolveEntityDeath,
   isHeroAlive,
-  applyHealToEntity
+  applyHealToEntity,
+  getEnemyTacticalRole,
+  getTacticalRoleMeta,
+  selectSmartReinforcementGate,
+  lockAndTelegraphReinforcement
 } from './state.js';
 import { applyResonances } from './combo.js';
 import { getHunterDialogue } from '../config/dialogues.js';
@@ -354,7 +358,13 @@ export function executeEnemyQueuedTile(state, enemy, tileDef, events = []) {
   }
 
   if (tileDef.summonEnemyId) {
-    const freeGate = [0, (state.boardSize || 7) - 1].find((c) => !getEntityAt(state, c));
+    const smartGate = selectSmartReinforcementGate(state, {
+      enemyId: tileDef.summonEnemyId,
+      gatePref: enemy.cell <= Math.floor((state.boardSize || 7) / 2) ? (state.boardSize || 7) - 1 : 0
+    });
+    const freeGate = !smartGate.isBlocked
+      ? smartGate.gateCell
+      : [0, (state.boardSize || 7) - 1].find((c) => !getEntityAt(state, c));
     if (freeGate !== undefined) {
       const facing = freeGate === 0 ? 1 : -1;
       const spawned = spawnEnemyEntity(tileDef.summonEnemyId, freeGate, facing);
@@ -746,6 +756,24 @@ export function resolveHeroHitOnTarget(
     });
   }
 
+  let zabojBonus = 0;
+  const targetInGarlic = state.terrain[target.cell]?.type === 'garlic_cloud';
+  if (hero.hunterId === 'zaboj' && (isConfused || targetInGarlic)) {
+    zabojBonus = 2;
+    addStatus(hero, 'shield', 2, events);
+    hero.currentFury = (hero.currentFury || 0) + 5;
+    events.push({
+      type: 'fury_changed',
+      heroId: hero.id,
+      delta: 5,
+      currentFury: hero.currentFury
+    });
+    events.push({
+      type: 'log',
+      text: `🪕 Rukopisný zápal! Vlastenecké nadšení při úderu do ${isConfused ? 'zmateného cíle' : 'česnekového oblaku'} (+2 DMG, +2 Štít, +5 % Rozlícení)!`
+    });
+  }
+
   if (tile.reduceTargetFury && target.entityType === 'enemy') {
     const furyDrop = tile.reduceTargetFury;
     target.currentFury = Math.max(-50, (target.currentFury || 0) - furyDrop);
@@ -755,7 +783,7 @@ export function resolveHeroHitOnTarget(
     });
   }
 
-  const calculatedDmg = baseDmg + sneakBonusDmg + bonusInfo.dmgBonus + humanBonus + dragounBonus + helsingBonus + revidentBonus;
+  const calculatedDmg = baseDmg + sneakBonusDmg + bonusInfo.dmgBonus + humanBonus + dragounBonus + helsingBonus + revidentBonus + zabojBonus;
   const totalDmg = (rawBaseDmg > 0 || baseDmg > 0) ? Math.max(1, calculatedDmg) : Math.max(0, calculatedDmg);
   let blockType = null;
   if (totalDmg > 0) {
@@ -1283,34 +1311,155 @@ export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events 
 
 export function processReinforcements(state, events = []) {
   if (!state.reinforcements || state.reinforcements.length === 0) return events;
+  const boardSize = state.boardSize || 7;
+  const maxActiveEnemies = state.maxActiveEnemies || 4;
+
+  // Track already-locked gates among imminent reinforcements
+  const reservedGates = new Set();
   for (const r of state.reinforcements) {
-    if (!r.spawned) {
-      r.turnsRemaining = Math.max(0, r.turnsRemaining - 1);
-      if (r.turnsRemaining <= 0) {
-        const gateCell = r.gateCell === 0 ? 0 : (state.boardSize || 7) - 1;
-        if (getEntityAt(state, gateCell)) {
-          r.turnsRemaining = 1;
-          events.push({ type: 'spawn_delayed', gateCell, enemyId: r.enemyId });
-          events.push({
-            type: 'log',
-            text: `🚪 Brána na poli ${gateCell + 1} je ucpaná! Posila se opožďuje o 1 tah.`
-          });
-        } else {
-          r.spawned = true;
-          const facing = gateCell === 0 ? 1 : -1;
-          const spawned = spawnEnemyEntity(r.enemyId, gateCell, facing);
-          state.enemies.push(spawned);
-          triggerCellTerrainOnEnter(state, spawned, gateCell, events);
-          if (spawned.hp > 0) refreshSingleEnemyIntent(state, spawned);
-          events.push({ type: 'spawn', enemy: structuredClone(spawned), cell: gateCell });
-          events.push({
-            type: 'log',
-            text: `🚪 Z brány na poli ${gateCell + 1} vtrhla na bojiště posila: ${spawned.name}!`
-          });
-        }
-      }
+    if (!r.spawned && r.isLocked && typeof r.lockedGateCell === 'number') {
+      reservedGates.add(r.lockedGateCell);
     }
   }
+
+  // Stage 1: Hybrid Pacing — Early Board-Clear Acceleration
+  const activeEnemiesAtStart = (state.enemies || []).filter((e) => e.hp > 0 || e.isTorpid);
+  if (activeEnemiesAtStart.length === 0) {
+    const nextWave = state.reinforcements
+      .filter((r) => !r.spawned)
+      .sort((a, b) => a.turnsRemaining - b.turnsRemaining)[0];
+    if (nextWave && nextWave.turnsRemaining > 2) {
+      const oldTurns = nextWave.turnsRemaining;
+      nextWave.turnsRemaining = 2; // Will tick down to 1 (imminent) in Stage 2
+      nextWave.accelerated = true;
+      events.push({
+        type: 'spawn_accelerated',
+        reinfId: nextWave.id,
+        previousTurns: oldTurns,
+        turnsRemaining: 1
+      });
+      events.push({
+        type: 'log',
+        text: `📯 Bojiště vyčištěno! Velitel nočních posil zatroubil k okamžitému přesunu – další vlna dorazí už příští tah!`
+      });
+    }
+  }
+
+  // Stage 2, 3, 4: Tick countdowns, Lock & Telegraph at <= 2 turns, and Spawn or Reroute at <= 0
+  for (const r of state.reinforcements) {
+    if (r.spawned) continue;
+
+    const currentActiveCount = (state.enemies || []).filter((e) => e.hp > 0 || e.isTorpid).length;
+
+    // Overcrowding Cap: if corridor has >= maxActiveEnemies and wave is about to spawn, hold at 1t
+    if (currentActiveCount >= maxActiveEnemies && r.turnsRemaining <= 1) {
+      r.turnsRemaining = 1;
+      r.heldByCap = true;
+      if (!r.isLocked) {
+        lockAndTelegraphReinforcement(state, r, reservedGates, events, { emitLog: false });
+      }
+      events.push({
+        type: 'spawn_crowded_hold',
+        reinfId: r.id,
+        gateCell: r.gateCell,
+        enemyId: r.enemyId,
+        activeEnemies: currentActiveCount
+      });
+      events.push({
+        type: 'log',
+        text: `⏳ Chodba je přeplněná (${currentActiveCount} nepřátelé v boji) – posila u brány vyčkává na uvolnění prostoru.`
+      });
+      continue;
+    }
+
+    r.heldByCap = false;
+    r.turnsRemaining = Math.max(0, r.turnsRemaining - 1);
+
+    // Stage 3: Lock & Telegraph when entering the 1-2 turn window
+    if (r.turnsRemaining <= 2 && !r.isLocked) {
+      lockAndTelegraphReinforcement(state, r, reservedGates, events, {
+        emitLog: r.turnsRemaining > 0
+      });
+    }
+
+    // Stage 4: Arrival & Smart Blocked-Gate Rerouting
+    if (r.turnsRemaining <= 0) {
+      if (!r.isLocked) {
+        lockAndTelegraphReinforcement(state, r, reservedGates, events, {
+          emitEvents: false,
+          emitLog: false
+        });
+      }
+
+      let targetGate =
+        typeof r.lockedGateCell === 'number'
+          ? r.lockedGateCell
+          : r.gateCell === 0
+          ? 0
+          : boardSize - 1;
+
+      const blocker = getEntityAt(state, targetGate);
+      if (blocker) {
+        const altGate = targetGate === 0 ? boardSize - 1 : 0;
+        const altBlocker = getEntityAt(state, altGate);
+        const enemyDef = ENEMIES[r.enemyId] || {};
+        const altIsLethalPit =
+          state.terrain?.[altGate]?.type === 'pit' && !enemyDef.flying;
+        const canReroute =
+          r.allowReroute !== false && !altBlocker && !altIsLethalPit;
+
+        if (canReroute) {
+          const fromGate = targetGate;
+          targetGate = altGate;
+          r.gateCell = altGate;
+          r.lockedGateCell = altGate;
+          r.rerouted = true;
+          r.lockReason = 'rerouted_blocked_gate';
+          r.lockReasonLabel = 'Obchvat zatarasené brány';
+          events.push({
+            type: 'spawn_rerouted',
+            reinfId: r.id,
+            fromGate,
+            toGate: altGate,
+            enemyId: r.enemyId
+          });
+          events.push({
+            type: 'log',
+            text: `🔄 Brána na poli ${fromGate + 1} byla zatarasena! Posila (${enemyDef.name || r.enemyId}) oběhla chodbou a vyráží z opačné brány na poli ${altGate + 1}!`
+          });
+        } else {
+          r.turnsRemaining = 1;
+          events.push({ type: 'spawn_delayed', gateCell: targetGate, enemyId: r.enemyId });
+          events.push({
+            type: 'log',
+            text: `🚪 Brána na poli ${targetGate + 1} je ucpaná! Posila se opožďuje o 1 tah.`
+          });
+          continue;
+        }
+      }
+
+      r.spawned = true;
+      const facing = targetGate === 0 ? 1 : -1;
+      const spawned = spawnEnemyEntity(r.enemyId, targetGate, facing);
+      state.enemies.push(spawned);
+      triggerCellTerrainOnEnter(state, spawned, targetGate, events);
+      if (spawned.hp > 0) refreshSingleEnemyIntent(state, spawned);
+      const roleMeta = getTacticalRoleMeta(r.tacticalRole || getEnemyTacticalRole(spawned));
+      events.push({
+        type: 'spawn',
+        enemy: structuredClone(spawned),
+        cell: targetGate,
+        tacticalRole: r.tacticalRole,
+        rerouted: Boolean(r.rerouted),
+        accelerated: Boolean(r.accelerated)
+      });
+      events.push({
+        type: 'log',
+        text: `🚪 Z brány na poli ${targetGate + 1} vtrhla na bojiště posila: ${spawned.name} [${roleMeta.icon} ${roleMeta.shortLabel}]!`
+      });
+    }
+  }
+
   assertBoardInvariants(state);
   return events;
 }
@@ -1813,6 +1962,20 @@ export function resolveHeroBump(state, hero, enemy, dir, targetCell, hunterId, e
     events.push({
       type: 'log',
       text: `📑 Třísknutí deskami spisů! C. k. vrchní revident Ignác Šiml vrazil do ${enemy.name} fasciklem (${dmg} DMG), odhodil ho a orazítkoval [OKOLKOVÁNO]!`
+    });
+  } else if (hunterId === 'zaboj') {
+    hero.bumpCooldown = 3;
+    const dmg = getBumpDmg(2);
+    dealDamage(state, enemy, dmg, { reason: 'zaboj_bump', attackerId: hero.id }, events);
+    if (enemy.hp > 0) {
+      pushEntity(state, enemy, dir, 1, events, { pusher: hero });
+    }
+    if (enemy.hp > 0) {
+      addStatus(enemy, 'confusion', 1, events);
+    }
+    events.push({
+      type: 'log',
+      text: `🪕 Falešný akord na varyto! Adolf Puchmajer třískl do lepenkových strun u ucha postavy ${enemy.name} (${dmg} DMG), odhodil ji o 1 pole a uvrhl do Zmatení (❓)!`
     });
   } else {
     hero.bumpCooldown = 3;
@@ -2340,6 +2503,31 @@ export function resolveHunterCombo3Bonus(state, hero, events) {
           dealDamage(state, e, dmg, { reason: 'revident_combo3', attackerId: hero.id }, events);
         }
         addStatus(e, 'okolkovano', 1, events);
+      }
+    }
+  } else if (hunterId === 'zaboj') {
+    addStatus(hero, 'shield', 5, events);
+    hero.currentFury = (hero.currentFury || 0) + 15;
+    events.push({
+      type: 'fury_changed',
+      heroId: hero.id,
+      delta: 15,
+      currentFury: hero.currentFury
+    });
+    const dmg = getComboDmg(4);
+    events.push({
+      type: 'log',
+      text: `🪕 Zpěv z Černého lesa! Adolf Puchmajer zapěl hromový staroslovanský chorál (+5 Štít, +15 % Rozlícení) a ohlušil nepřátele před sebou za ${dmg} DMG se Zmatením (❓)!`
+    });
+    for (const e of state.enemies) {
+      if (e.hp > 0) {
+        const offset = (e.cell - hero.cell) * hero.facing;
+        if (offset === 1 || offset === 2) {
+          dealDamage(state, e, dmg, { reason: 'zaboj_combo3', attackerId: hero.id }, events);
+          if (e.hp > 0) {
+            addStatus(e, 'confusion', 1, events);
+          }
+        }
       }
     }
   } else {

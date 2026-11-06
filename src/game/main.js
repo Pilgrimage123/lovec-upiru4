@@ -18,7 +18,8 @@ import {
   openWorkshopModal,
   openEventModal,
   openTreasureModal,
-  openCastleArchiveModal
+  openCastleArchiveModal,
+  openLoadoutAndTalismansModal
 } from './ui/modal.js';
 import { initTooltips } from './ui/tooltips.js';
 import { initKeyboardInput } from './ui/input.js';
@@ -72,9 +73,9 @@ function loadMetaStats() {
         selectedLoadout: 'classic',
         ...p,
         unlockedLoadouts:
-          Array.isArray(p.unlockedLoadouts) && p.unlockedLoadouts.length >= 9
+          Array.isArray(p.unlockedLoadouts) && p.unlockedLoadouts.length >= 10
             ? p.unlockedLoadouts
-            : ['classic', 'honza', 'dragoun', 'zlodejka', 'ponocny', 'silak', 'anglicanka', 'helsing', 'revident']
+            : ['classic', 'honza', 'dragoun', 'zlodejka', 'ponocny', 'silak', 'anglicanka', 'helsing', 'revident', 'zaboj']
       };
     }
   } catch {
@@ -86,7 +87,7 @@ function loadMetaStats() {
     totalKills: 0,
     lastSeed: 'VENCA-1899',
     fangs: 15,
-    unlockedLoadouts: ['classic', 'honza', 'dragoun', 'zlodejka', 'ponocny', 'silak', 'anglicanka', 'helsing', 'revident'],
+    unlockedLoadouts: ['classic', 'honza', 'dragoun', 'zlodejka', 'ponocny', 'silak', 'anglicanka', 'helsing', 'revident', 'zaboj'],
     selectedLoadout: 'classic'
   };
 }
@@ -245,6 +246,9 @@ function enterMapNode(node) {
       persistence: run.persistence,
       maxPersistence: run.maxPersistence,
       defense: run.defense,
+      fury: run.fury,
+      armor: run.armor,
+      backstabBonus: run.backstabBonus,
       deck: run.deck,
       talismans: run.talismans,
       curseLevel: run.curseLevel || 0,
@@ -305,6 +309,7 @@ function enterMapNode(node) {
       },
       () => renderAll()
     );
+    return;
   }
 }
 
@@ -365,6 +370,8 @@ function renderAll() {
       renderAll();
     },
     onOpenRules: () => openRulesModal(modalRoot),
+    onOpenLoadoutInfo: () => openLoadoutAndTalismansModal(modalRoot, appState.runState, appState.battleState),
+    onOpenFullLog: () => openFullLogModal(modalRoot, appState.battleState?.log || []),
     onOpenSettings: () =>
       openSettingsModal(modalRoot, appState.settings, appState.metaStats, {
         onChangeAnimSpeed: (val) => {

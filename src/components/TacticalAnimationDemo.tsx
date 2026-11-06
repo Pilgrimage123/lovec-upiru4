@@ -32,6 +32,7 @@ const HUNTER_DEMO_SKINS = [
   { id: "anglicanka", name: "Lady Gwendolyn", spriteUrl: SPRITE_PRESETS.anglicankaHunter },
   { id: "helsing", name: "Sir Arthur Featherstone", spriteUrl: SPRITE_PRESETS.helsingHunter },
   { id: "revident", name: "C. k. vrchní revident", spriteUrl: SPRITE_PRESETS.revidentHunter },
+  { id: "zaboj", name: "Adolf Puchmajer (Rek Záboj)", spriteUrl: SPRITE_PRESETS.zabojHunter },
 ] as const;
 
 const INITIAL_UNITS: TacticalUnit[] = [

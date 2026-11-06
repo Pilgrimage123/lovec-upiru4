@@ -165,6 +165,42 @@ body {
   }
 }
 
+/* Dedicated Mobile Landscape Mode (Horizontally rotated phones) */
+@media (orientation: landscape) and (max-height: 540px) {
+  #app-shell {
+    height: 100dvh;
+    max-height: 100dvh;
+    min-height: 100dvh;
+    gap: 3px;
+    padding: 3px max(8px, env(safe-area-inset-right)) 3px max(8px, env(safe-area-inset-left));
+    overflow-x: hidden;
+    overflow-y: hidden;
+  }
+
+  #center-stage {
+    flex: 1 1 0%;
+    min-height: 0;
+    gap: 3px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  #center-stage > .tutorial-banner {
+    display: none !important;
+  }
+
+  #center-stage > .battlefield-1d-stage {
+    flex: 1 1 0%;
+    min-height: 130px;
+    max-height: none;
+    height: 100%;
+  }
+
+  #log-root {
+    display: none !important;
+  }
+}
+
 .parchment-surface {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent 36%),
@@ -291,3 +327,79 @@ kbd {
   background: linear-gradient(90deg, var(--brick-red) 0%, var(--lantern) 55%, var(--garlic-yellow) 100%);
   transition: width 150ms ease;
 }
+
+/* Title Screen Mobile Landscape Optimization */
+@media (orientation: landscape) and (max-height: 540px) {
+  .title-screen-root {
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+
+  .title-screen-header {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+  }
+
+  .title-screen-header h1 {
+    font-size: 1.35rem !important;
+    line-height: 1.05 !important;
+  }
+
+  .title-screen-header p {
+    display: none !important;
+  }
+
+  .title-roster-grid {
+    grid-template-columns: repeat(10, minmax(0, 1fr)) !important;
+    gap: 4px !important;
+  }
+
+  .title-roster-card {
+    padding: 3px !important;
+    gap: 2px !important;
+  }
+
+  .title-roster-portrait {
+    height: 36px !important;
+  }
+
+  .title-showcase-grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .title-left-column {
+    grid-column: span 4 / span 4 !important;
+  }
+
+  .title-right-column {
+    grid-column: span 8 / span 8 !important;
+    gap: 6px !important;
+  }
+
+  .title-hero-stage {
+    min-height: 135px !important;
+    padding: 6px !important;
+  }
+
+  .title-hero-stage img {
+    height: 80px !important;
+    width: 80px !important;
+  }
+
+  .title-dossier-card {
+    padding: 8px 10px !important;
+  }
+
+  .title-cta-bar {
+    padding: 6px 10px !important;
+    flex-direction: row !important;
+    align-items: center !important;
+  }
+
+  .title-screen-footer {
+    padding-top: 3px !important;
+    padding-bottom: 3px !important;
+  }
+}
+

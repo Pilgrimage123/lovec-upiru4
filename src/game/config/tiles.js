@@ -1787,6 +1787,127 @@ export const HERO_TILES = {
         description: 'Chladnutí 1! Prohodí místo, otočí zády, aplikuje [OKOLKOVÁNO] a získá +3 Štít.'
       }
     ]
+  },
+  zaboj_mallet: {
+    id: 'zaboj_mallet',
+    name: 'Zábojův mlat z paličky na maso',
+    icon: 'tile.zaboj_mallet',
+    type: 'attack',
+    tags: ['brawl', 'craft'],
+    dmg: 4,
+    cooldown: 3,
+    quick: false,
+    pattern: [{ offset: 1, dmg: 4, effects: [{ type: 'push', distance: 1 }] }],
+    resonance: null,
+    description: 'Drtivý úder dřevěnou paličkou na řízky na 1 pole vpřed za 4 DMG a odhodí cíl o 1 pole vzad (Push 1).',
+    flavor: '„Tímhle mlatem drtil rek Záboj cizácké šiky! A maminka s ním v neděli klepe telecí kýtu!“',
+    starter: true,
+    upgrades: [
+      {
+        level: 1,
+        name: 'Okovaná palička na řízky+',
+        dmg: 6,
+        cooldown: 3,
+        pattern: [{ offset: 1, dmg: 6, effects: [{ type: 'push', distance: 1 }] }],
+        description: '6 DMG na 1 pole vpřed a odhození o 1 pole (Push 1).'
+      },
+      {
+        level: 2,
+        name: 'Posvátný mlat z Králova Dvora++',
+        dmg: 7,
+        cooldown: 2,
+        pattern: [{ offset: 1, dmg: 7, effects: [{ type: 'push', distance: 2 }] }],
+        description: 'Chladnutí 2! 7 DMG na 1 pole vpřed a odhození o 2 pole (Push 2).'
+      }
+    ]
+  },
+  cardboard_varyto: {
+    id: 'cardboard_varyto',
+    name: 'Lepenkové varyto z krabice',
+    icon: 'tile.cardboard_varyto',
+    type: 'ranged',
+    tags: ['holy', 'brawl'],
+    dmg: 2,
+    cooldown: 3,
+    quick: false,
+    projectileRange: 3,
+    furyChange: 10,
+    pattern: [
+      { offset: 1, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+      { offset: 2, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+      { offset: 3, dmg: 2, projectile: true, effects: [{ type: 'confusion', amount: 1 }] }
+    ],
+    resonance: null,
+    description: 'Ohlušující vlastenecký zpěv na dosah až 3 pole: 2 DMG prvnímu cíli, uvrhne jej do Zmatení (❓) na 1 tah a přidá +10 % k Bojovému rozlícení.',
+    flavor: '„Slepeno z krabice od dámských šněrovacích bot a vyztuženo staniolovou páskou. Když Adolf hrábne do strun, praskají upírům ušní bubínky!“',
+    starter: true,
+    upgrades: [
+      {
+        level: 1,
+        name: 'Vyzlacené lepenkové varyto+',
+        dmg: 4,
+        cooldown: 3,
+        projectileRange: 3,
+        furyChange: 15,
+        pattern: [
+          { offset: 1, dmg: 4, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+          { offset: 2, dmg: 4, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+          { offset: 3, dmg: 4, projectile: true, effects: [{ type: 'confusion', amount: 1 }] }
+        ],
+        description: 'Dosah 3 pole: 4 DMG prvnímu cíli, Zmatení (❓) a +15 % k Rozlícení.'
+      },
+      {
+        level: 2,
+        name: 'Hromové varyto reka Záboje++',
+        dmg: 5,
+        cooldown: 2,
+        projectileRange: 4,
+        furyChange: 20,
+        pattern: [
+          { offset: 1, dmg: 5, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+          { offset: 2, dmg: 5, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+          { offset: 3, dmg: 5, projectile: true, effects: [{ type: 'confusion', amount: 1 }] },
+          { offset: 4, dmg: 5, projectile: true, effects: [{ type: 'confusion', amount: 1 }] }
+        ],
+        description: 'Chladnutí 2! Dosah 4 pole, 5 DMG, Zmatení (❓) a +20 % k Rozlícení.'
+      }
+    ]
+  },
+  linden_stakes: {
+    id: 'linden_stakes',
+    name: 'Pás lipových kolíků a česneku',
+    icon: 'tile.linden_stakes',
+    type: 'attack',
+    tags: ['garlic', 'holy'],
+    dmg: 3,
+    cooldown: 3,
+    quick: false,
+    shieldAmount: 3,
+    pattern: [{ offset: 1, dmg: 3, effects: [{ type: 'spawn_garlic_target' }] }],
+    resonance: null,
+    description: 'Získá +3 Štít, bodne lipovým kolíkem na 1 pole vpřed za 3 DMG, zanechá na poli cíle Česnekový oblak a doráží ochromené upíry.',
+    flavor: '„Z posvátné slovanské lípy vyřezáno, znojemským česnekem potřeno a lékárenským lihem pokropeno!“',
+    starter: true,
+    upgrades: [
+      {
+        level: 1,
+        name: 'Posvěcený pás lipových kolíků+',
+        dmg: 4,
+        cooldown: 3,
+        shieldAmount: 5,
+        pattern: [{ offset: 1, dmg: 4, effects: [{ type: 'spawn_garlic_target' }] }],
+        description: 'Získá +5 Štít, 4 DMG na 1 pole vpřed, Česnekový oblak a doráží ochromené upíry.'
+      },
+      {
+        level: 2,
+        name: 'Zábojova obroda z lipového dřeva++',
+        dmg: 6,
+        cooldown: 2,
+        shieldAmount: 6,
+        pattern: [{ offset: 1, dmg: 6, effects: [{ type: 'spawn_garlic_target' }] }],
+        description: 'Chladnutí 2! Získá +6 Štít, 6 DMG na 1 pole vpřed, Česnekový oblak a doráží upíry.'
+      }
+    ]
   }
 };
 

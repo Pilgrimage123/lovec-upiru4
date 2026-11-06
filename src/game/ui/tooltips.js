@@ -50,7 +50,16 @@ function positionTooltip(x, y) {
   const vw = window.innerWidth || 360;
   const vh = window.innerHeight || 640;
   const margin = 8;
-  const pad = 14;
+  const pad = 12;
+
+  if (vh <= 540) {
+    tooltipEl.style.maxHeight = `${Math.max(180, vh - 16)}px`;
+    tooltipEl.style.overflowY = 'auto';
+  } else {
+    tooltipEl.style.maxHeight = '';
+    tooltipEl.style.overflowY = '';
+  }
+
   const rect = tooltipEl.getBoundingClientRect();
 
   // On narrow phone screens, center horizontally for maximum legibility
@@ -66,6 +75,9 @@ function positionTooltip(x, y) {
 
   if (top + rect.height > vh - margin) {
     top = Math.max(margin, y - rect.height - pad);
+  }
+  if (top + rect.height > vh - margin) {
+    top = Math.max(margin, vh - rect.height - margin);
   }
   if (top < margin) {
     top = margin;

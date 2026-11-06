@@ -115,6 +115,7 @@ export const SPRITE_PRESETS = {
   arthurHunter: "/assets/aistudio/Karikatura_Van_Helsinga_s_rota_n__ku___4ad7e475.png",
   komornik: "/assets/aistudio/komornik_tea_c6a99182.png",
   revidentHunter: "/assets/aistudio/Ornate_c_sa_sk__boty_star_ho___edn_ka_8f8df6f3.png",
+  zabojHunter: "/assets/aistudio/K_i__c__bard_s_lyrou_a_palc_tem_9017845b.png",
   enemyDrab: "/assets/enemies/drab.png",
   enemyVampireCilka: "/assets/enemies/upirka_cilka.png",
   enemySkeletonFabian: "/assets/enemies/kostlivec_fabian.png",

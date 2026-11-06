@@ -1164,6 +1164,11 @@ export function createBattleState(opts = {}) {
       { id: 'brass_stamp_denied', upgradeLevel: 0, permanentCdReduction: 0 },
       { id: 'rast_gasser_revolver', upgradeLevel: 0, permanentCdReduction: 0 }
     ],
+    zaboj: [
+      { id: 'zaboj_mallet', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'cardboard_varyto', upgradeLevel: 0, permanentCdReduction: 0 },
+      { id: 'linden_stakes', upgradeLevel: 0, permanentCdReduction: 0 }
+    ],
     silak: [
       { id: 'barbell_slam', upgradeLevel: 0, permanentCdReduction: 0 },
       { id: 'kettlebell_toss', upgradeLevel: 0, permanentCdReduction: 0 },
@@ -1221,6 +1226,7 @@ export function createBattleState(opts = {}) {
   const hunterMeta = {
     helsing: { name: 'Sir Arthur Featherstone', givenName: 'Arthur', epithet: 'Britský lovec trofejí' },
     revident: { name: 'Revident Ignác Šiml', givenName: 'Ignác', epithet: 'Císařský daňový exekutor' },
+    zaboj: { name: 'Adolf Puchmajer', givenName: 'Adolf', epithet: 'Vlastenecký pěvec v rouše Zábojově' },
     silak: { name: 'Silák Gustav Železný', givenName: 'Gustav', epithet: 'Cirkusový lamač podkov' },
     anglicanka: { name: 'Lady Gwendolyn Sterling', givenName: 'Gwendolyn', epithet: 'Viktoriánská dáma' },
     ponocny: { name: 'Ponocný Bartoloměj Klika', givenName: 'Bartoloměj', epithet: 'Strážce půlnoční hodiny' },
@@ -1246,6 +1252,8 @@ export function createBattleState(opts = {}) {
         ? 'hero.helsing'
         : hunterId === 'revident'
         ? 'hero.revident'
+        : hunterId === 'zaboj'
+        ? 'hero.zaboj'
         : hunterId === 'silak'
         ? 'hero.silak'
         : hunterId === 'anglicanka'
@@ -1266,7 +1274,7 @@ export function createBattleState(opts = {}) {
         ? opts.defense
         : hunterId === 'revident' || hunterId === 'ponocny' || hunterId === 'dragoun' || hunterId === 'anglicanka' || hunterId === 'zlodejka'
         ? 2
-        : hunterId === 'helsing' || hunterId === 'silak' || hunterId === 'classic' || hunterId === 'venca'
+        : hunterId === 'helsing' || hunterId === 'zaboj' || hunterId === 'silak' || hunterId === 'classic' || hunterId === 'venca'
         ? 1
         : 0,
     fury:
@@ -1369,13 +1377,30 @@ export function createBattleState(opts = {}) {
     terrain[hero.cell] = { type: 'garlic_cloud', duration: 2 };
   }
 
-  const reinforcements = (enc.reinforcements || []).map((r, idx) => ({
-    id: `reinf_${idx}`,
-    turnsRemaining: Math.max(1, r.turnDelay - (curseLevel >= 1 ? 1 : 0)),
-    gateCell: r.gateCell,
-    enemyId: r.enemyId,
-    spawned: false
-  }));
+  const reinforcements = (enc.reinforcements || []).map((r, idx) => {
+    const normalizedGate = r.gateCell === 0 ? 0 : boardSize - 1;
+    const initialTurns = Math.max(1, r.turnDelay - (curseLevel >= 1 ? 1 : 0));
+    return {
+      id: `reinf_${idx}`,
+      turnsRemaining: initialTurns,
+      baseDelay: r.turnDelay,
+      gatePref: normalizedGate,
+      gateCell: normalizedGate,
+      lockedGateCell: null,
+      isLocked: false,
+      baseEnemyId: r.enemyId,
+      enemyId: r.enemyId,
+      candidatePool: Array.isArray(r.candidatePool) && r.candidatePool.length > 0
+        ? [...r.candidatePool]
+        : [r.enemyId],
+      tacticalRole: getEnemyTacticalRole(r.enemyId),
+      lockReason: 'standard',
+      lockReasonLabel: 'Standardní nástup',
+      roleReason: 'fixed',
+      roleReasonLabel: 'Předepsaná hlídka',
+      spawned: false
+    };
+  });
 
   const state = {
     seed,
@@ -1420,6 +1445,15 @@ export function createBattleState(opts = {}) {
       triggerCellTerrainOnEnter(state, ent, ent.cell, initEvents);
     }
   }
+
+  // Lock & telegraph any reinforcement that begins at <= 2 turns remaining
+  const initReservedGates = new Set();
+  for (const r of state.reinforcements) {
+    if (!r.spawned && r.turnsRemaining <= 2) {
+      lockAndTelegraphReinforcement(state, r, initReservedGates, initEvents, { emitLog: true });
+    }
+  }
+
   for (const ev of initEvents) {
     if (ev.type === 'log' && ev.text) {
       state.log.push(ev.text);
@@ -1431,8 +1465,304 @@ export function createBattleState(opts = {}) {
   return state;
 }
 
+export function getEnemyTacticalRole(enemyOrId) {
+  const def =
+    typeof enemyOrId === 'string'
+      ? ENEMIES[enemyOrId] || {}
+      : enemyOrId || {};
+  if (
+    def.archetype === 'brute' ||
+    def.archetype === 'shielder' ||
+    def.frontShield ||
+    (def.armor || 0) >= 1
+  ) {
+    return 'frontline';
+  }
+  if (def.archetype === 'ranged' || def.archetype === 'support') {
+    return 'backline';
+  }
+  return 'flanker';
+}
+
+export function getTacticalRoleMeta(role) {
+  if (role === 'frontline') {
+    return { icon: '🛡️', shortLabel: 'Průlom', label: 'Přední linie (Průlom)' };
+  }
+  if (role === 'backline') {
+    return { icon: '🏹', shortLabel: 'Zadní voj', label: 'Zadní voj (Palba / Podpora)' };
+  }
+  return { icon: '🦇', shortLabel: 'Slídil', label: 'Slídil (Rychlý obchvat)' };
+}
+
+export function selectComplementaryReinforcementEnemy(state, reinf = {}) {
+  const fallbackId = reinf.enemyId || reinf.baseEnemyId || 'netopyr';
+  const pool =
+    Array.isArray(reinf.candidatePool) && reinf.candidatePool.length > 0
+      ? reinf.candidatePool.filter((id) => Boolean(ENEMIES[id]))
+      : [fallbackId];
+
+  if (reinf.lockEnemy || pool.length <= 1) {
+    const chosenId = pool[0] || fallbackId;
+    return {
+      enemyId: chosenId,
+      role: getEnemyTacticalRole(chosenId),
+      reason: 'fixed',
+      reasonLabel: 'Předepsaná hlídka'
+    };
+  }
+
+  const activeEnemies = (state?.enemies || []).filter((e) => e.hp > 0 || e.isTorpid);
+  let frontlineCount = 0;
+  let backlineCount = 0;
+  let flankerCount = 0;
+  const activeKinds = new Set();
+
+  for (const e of activeEnemies) {
+    activeKinds.add(e.kind || e.id);
+    const r = getEnemyTacticalRole(e);
+    if (r === 'frontline') frontlineCount++;
+    else if (r === 'backline') backlineCount++;
+    else flankerCount++;
+  }
+
+  let desiredRole = 'frontline';
+  let reason = 'frontline_needed';
+  let reasonLabel = 'Posílení přední linie';
+
+  if (frontlineCount === 0) {
+    desiredRole = 'frontline';
+    reason = 'frontline_needed';
+    reasonLabel = 'Posílení přední linie';
+  } else if (backlineCount === 0) {
+    desiredRole = 'backline';
+    reason = 'ranged_support';
+    reasonLabel = 'Palebná a podpůrná záloha';
+  } else if (flankerCount === 0) {
+    desiredRole = 'flanker';
+    reason = 'flank_pressure';
+    reasonLabel = 'Rychlý obchvat z boku';
+  } else {
+    desiredRole = frontlineCount <= backlineCount ? 'frontline' : 'backline';
+    reason = 'tactical_synergy';
+    reasonLabel = 'Doplnění bojové sestavy';
+  }
+
+  let bestId = pool[0] || fallbackId;
+  let bestScore = -999;
+
+  for (const candId of pool) {
+    const role = getEnemyTacticalRole(candId);
+    let score = 0;
+    if (role === desiredRole) {
+      score += 40;
+    } else if (desiredRole === 'backline' && role === 'flanker') {
+      score += 18;
+    } else if (desiredRole === 'frontline' && role === 'flanker') {
+      score += 12;
+    }
+    if (!activeKinds.has(candId)) {
+      score += 22;
+    }
+    if (candId === (reinf.baseEnemyId || reinf.enemyId)) {
+      score += 5;
+    }
+    if (score > bestScore) {
+      bestScore = score;
+      bestId = candId;
+    }
+  }
+
+  const chosenRole = getEnemyTacticalRole(bestId);
+  return {
+    enemyId: bestId,
+    role: chosenRole,
+    reason,
+    reasonLabel
+  };
+}
+
+export function scoreReinforcementGate(state, gateCell, enemyId, opts = {}) {
+  const boardSize = state?.boardSize || 7;
+  const heroCell = state?.hero?.cell ?? Math.floor(boardSize / 2);
+  const heroFacing = state?.hero?.facing ?? 1;
+  const def = ENEMIES[enemyId] || {};
+  const role = getEnemyTacticalRole(def);
+
+  let score = 0;
+  let reason = 'standard';
+  let reasonLabel = 'Standardní nástup';
+
+  const occ = getEntityAt(state, gateCell);
+  if (!occ) {
+    score += 100;
+  } else if (occ.entityType === 'hero') {
+    score -= 140;
+    reason = 'hero_blocking';
+    reasonLabel = 'Brána blokována lovcem';
+  } else {
+    score -= 95;
+    reason = 'occupied';
+    reasonLabel = 'Brána obsazena';
+  }
+
+  if (opts.reservedGates && opts.reservedGates.has(gateCell)) {
+    score -= 65;
+  }
+
+  const terr = state?.terrain?.[gateCell];
+  if (terr?.type === 'pit') {
+    if (!def.flying) {
+      score -= 500;
+    } else {
+      score += 15;
+    }
+  } else if (
+    terr?.type === 'spikes' ||
+    terr?.type === 'holy_water_puddle' ||
+    terr?.type === 'garlic_cloud'
+  ) {
+    score -= 35;
+  }
+
+  const activeEnemies = (state?.enemies || []).filter((e) => e.hp > 0 || e.isTorpid);
+  const leftEnemies = activeEnemies.filter((e) => e.cell < heroCell).length;
+  const rightEnemies = activeEnemies.filter((e) => e.cell > heroCell).length;
+  const isLeftGate = gateCell === 0;
+
+  if (!occ) {
+    if (isLeftGate && leftEnemies < rightEnemies) {
+      score += 45;
+      reason = 'pincer_flank';
+      reasonLabel = 'Obklíčení z nechráněného boku';
+    } else if (!isLeftGate && rightEnemies < leftEnemies) {
+      score += 45;
+      reason = 'pincer_flank';
+      reasonLabel = 'Obklíčení z nechráněného boku';
+    } else {
+      const dirFromHero = Math.sign(gateCell - heroCell);
+      if (dirFromHero !== 0 && dirFromHero === -heroFacing) {
+        score += 28;
+        reason = 'rear_ambush';
+        reasonLabel = 'Vpád lovci do zad';
+      }
+    }
+  }
+
+  const dist = Math.abs(gateCell - heroCell);
+  if (role === 'backline') {
+    if (dist >= 3) score += 20;
+    else if (dist <= 1) score -= 20;
+  } else if (dist === 0) {
+    score -= 50;
+  } else if (dist >= 2) {
+    score += 10;
+  }
+
+  if (typeof opts.preferredGate === 'number' && opts.preferredGate === gateCell) {
+    score += 6;
+  }
+
+  return {
+    gateCell,
+    score,
+    isBlocked: Boolean(occ),
+    isLethalPit: Boolean(terr?.type === 'pit' && !def.flying),
+    reason,
+    reasonLabel
+  };
+}
+
+export function selectSmartReinforcementGate(state, reinf = {}, reservedGates = new Set()) {
+  const boardSize = state?.boardSize || 7;
+  const rightCell = boardSize - 1;
+  const pref =
+    typeof reinf.gatePref === 'number'
+      ? reinf.gatePref === 0
+        ? 0
+        : rightCell
+      : typeof reinf.gateCell === 'number'
+      ? reinf.gateCell === 0
+        ? 0
+        : rightCell
+      : null;
+
+  const leftEval = scoreReinforcementGate(state, 0, reinf.enemyId, {
+    preferredGate: pref,
+    reservedGates
+  });
+  const rightEval = scoreReinforcementGate(state, rightCell, reinf.enemyId, {
+    preferredGate: pref,
+    reservedGates
+  });
+
+  const chosen = rightEval.score > leftEval.score ? rightEval : leftEval;
+  const other = chosen === rightEval ? leftEval : rightEval;
+
+  if (pref !== null && chosen.gateCell !== pref && (other.isBlocked || other.isLethalPit)) {
+    chosen.reason = 'rerouted_clear_gate';
+    chosen.reasonLabel = 'Přesun k volné bráně';
+  }
+
+  return chosen;
+}
+
+export function lockAndTelegraphReinforcement(
+  state,
+  reinf,
+  reservedGates = new Set(),
+  events = [],
+  opts = {}
+) {
+  if (!state || !reinf || reinf.spawned) return reinf;
+  const roleRes = selectComplementaryReinforcementEnemy(state, reinf);
+  reinf.enemyId = roleRes.enemyId;
+  reinf.tacticalRole = roleRes.role;
+  reinf.roleReason = roleRes.reason;
+  reinf.roleReasonLabel = roleRes.reasonLabel;
+
+  const gateRes = selectSmartReinforcementGate(state, reinf, reservedGates);
+  reinf.gateCell = gateRes.gateCell;
+  reinf.lockedGateCell = gateRes.gateCell;
+  reinf.isLocked = true;
+  reinf.lockReason = gateRes.reason;
+  reinf.lockReasonLabel = gateRes.reasonLabel;
+
+  reservedGates.add(gateRes.gateCell);
+
+  if (opts.emitEvents !== false) {
+    const def = ENEMIES[reinf.enemyId];
+    events.push({
+      type: 'reinf_telegraphed',
+      reinfId: reinf.id,
+      gateCell: reinf.gateCell,
+      enemyId: reinf.enemyId,
+      enemyName: def?.name || reinf.enemyId,
+      turnsRemaining: reinf.turnsRemaining,
+      tacticalRole: reinf.tacticalRole,
+      lockReason: reinf.lockReason,
+      lockReasonLabel: reinf.lockReasonLabel,
+      roleReasonLabel: reinf.roleReasonLabel
+    });
+
+    if (opts.emitLog && reinf.turnsRemaining > 0) {
+      const gateName =
+        reinf.gateCell === 0
+          ? 'Levé brány (pole 1)'
+          : `Pravé brány (pole ${reinf.gateCell + 1})`;
+      const turnsWord = reinf.turnsRemaining === 1 ? 'tah' : 'tahy';
+      events.push({
+        type: 'log',
+        text: `👀 Za mříží ${gateName} se chystá posila: ${def?.name || reinf.enemyId} (za ${reinf.turnsRemaining} ${turnsWord} · ${reinf.lockReasonLabel})!`
+      });
+    }
+  }
+
+  return reinf;
+}
+
 export function getSortedEnemiesByInitiative(state) {
   return state.enemies.filter((e) => e.hp > 0).sort((a, b) => a.cell - b.cell);
 }
 
 export const getLivingEnemiesLeftToRight = getSortedEnemiesByInitiative;
+

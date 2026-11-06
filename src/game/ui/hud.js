@@ -89,7 +89,7 @@ export function renderHud(container, runState, battleState, callbacks = {}) {
           ` : `
             <span class="hud-separator">·</span>
             <div class="hud-persistence" title="Verva (${heroPersistence}/${heroMaxPersistence}): limit záporných HP před definitivním skonem">
-              🪦 <strong>${heroPersistence}</strong><span class="hud-unit-suffix"> Verva</span>
+              💀 <strong>${heroPersistence}</strong><span class="hud-unit-suffix"> Verva</span>
             </div>
           `}
           <span class="hud-separator">·</span>
@@ -132,6 +132,16 @@ export function renderHud(container, runState, battleState, callbacks = {}) {
       </div>
 
       <div class="hud-actions">
+        <button type="button" class="btn-parchment btn-sm btn-hud-compact-detail" id="btn-hud-loadout-info" title="Osobní manévr lovce a aktivní talismany (${runState.talismans.length})" aria-label="Výbava a talismany">
+          <span class="btn-icon">🧿</span><span class="btn-compact-tag">${runState.talismans.length}</span><span class="btn-text"> Výbava</span>
+        </button>
+        ${
+          battleState
+            ? `<button type="button" class="btn-parchment btn-sm btn-hud-compact-detail" id="btn-hud-log" title="Otevřít Bojový deník (Kolo ${battleState.turn})" aria-label="Bojový deník">
+                 <span class="btn-icon">📜</span><span class="btn-compact-tag">${battleState.turn}.k</span><span class="btn-text"> Deník</span>
+               </button>`
+            : ''
+        }
         <button type="button" class="btn-parchment btn-sm" id="btn-hud-hunters" title="Výběr lovce a titulní strana" aria-label="Výběr lovce">
           <span class="btn-icon">🏰</span><span class="btn-text"> Lovci</span>
         </button>
@@ -173,6 +183,12 @@ export function renderHud(container, runState, battleState, callbacks = {}) {
     });
   });
 
+  container.querySelector('#btn-hud-loadout-info')?.addEventListener('click', () => {
+    callbacks.onOpenLoadoutInfo?.();
+  });
+  container.querySelector('#btn-hud-log')?.addEventListener('click', () => {
+    callbacks.onOpenFullLog?.();
+  });
   container.querySelector('#btn-hud-hunters')?.addEventListener('click', () => {
     callbacks.onOpenTitleScreen?.();
   });

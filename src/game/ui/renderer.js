@@ -5,7 +5,12 @@ import { TERRAIN_TYPES } from '../config/terrain.js';
 import { STRINGS, czechTurns } from '../config/strings.cs.js';
 import { detectResonances } from '../engine/combo.js';
 import { simulateComboImpact } from '../engine/simulation.js';
-import { getSortedEnemiesByInitiative, isHeroAlive } from '../engine/state.js';
+import {
+  getSortedEnemiesByInitiative,
+  isHeroAlive,
+  getEnemyTacticalRole,
+  getTacticalRoleMeta
+} from '../engine/state.js';
 import { computeBoardThreats, computePlayerQueuePreview } from '../engine/threat.js';
 import { getAssetUrl } from './assets.js';
 import { renderEnemyIntentStripHtml, buildEnemyTooltipHtml } from './enemyIntent.js';
@@ -100,6 +105,12 @@ const HUNTER_SPRITE_PRESETS = {
     attack: ['/assets/aistudio/Ornate_c_sa_sk__boty_star_ho___edn_ka_8f8df6f3.png'],
     hurt: ['/assets/aistudio/Ornate_c_sa_sk__boty_star_ho___edn_ka_8f8df6f3.png'],
     dead: ['/assets/aistudio/Ornate_c_sa_sk__boty_star_ho___edn_ka_8f8df6f3.png']
+  },
+  zaboj: {
+    idle: ['/assets/aistudio/K_i__c__bard_s_lyrou_a_palc_tem_9017845b.png'],
+    attack: ['/assets/aistudio/K_i__c__bard_s_lyrou_a_palc_tem_9017845b.png'],
+    hurt: ['/assets/aistudio/K_i__c__bard_s_lyrou_a_palc_tem_9017845b.png'],
+    dead: ['/assets/aistudio/K_i__c__bard_s_lyrou_a_palc_tem_9017845b.png']
   }
 };
 
@@ -214,9 +225,20 @@ export function renderBattleBoard(container, state, uiState = {}, callbacks = {}
   const currentEncounter = (ENCOUNTERS && state.encounterId && ENCOUNTERS[state.encounterId]) || ENCOUNTERS?.tutorial_1 || null;
   const theme = getEncounterTheme(currentEncounter);
 
-  // Gate reinforcement indicators on the end cells
-  const leftGateReinf = state.reinforcements.find((r) => !r.spawned && r.gateCell === 0);
-  const rightGateReinf = state.reinforcements.find((r) => !r.spawned && r.gateCell === boardSize - 1);
+  // Gate reinforcement indicators on the end cells (locked/telegraphed within <= 2 turns)
+  const unspawnedReinfs = (state.reinforcements || []).filter((r) => !r.spawned);
+  const leftGateQueue = unspawnedReinfs
+    .filter((r) => (r.isLocked || r.turnsRemaining <= 2) && (r.lockedGateCell ?? r.gateCell) === 0)
+    .sort((a, b) => a.turnsRemaining - b.turnsRemaining);
+  const rightGateQueue = unspawnedReinfs
+    .filter((r) => (r.isLocked || r.turnsRemaining <= 2) && (r.lockedGateCell ?? r.gateCell) === boardSize - 1)
+    .sort((a, b) => a.turnsRemaining - b.turnsRemaining);
+  const reserveReinfs = unspawnedReinfs
+    .filter((r) => !r.isLocked && r.turnsRemaining > 2)
+    .sort((a, b) => a.turnsRemaining - b.turnsRemaining);
+
+  const leftGateReinf = leftGateQueue[0] || null;
+  const rightGateReinf = rightGateQueue[0] || null;
 
   // Build Hero Queue Bar (3 or 4 slots above the battlefield)
   const queueSlotsHtml = Array.from({ length: state.maxQueueSlots }, (_, slotIdx) => {
@@ -277,7 +299,15 @@ export function renderBattleBoard(container, state, uiState = {}, callbacks = {}
 
     const entity = livingEntityAt(state, cellIdx) || corpseAt(state, cellIdx);
 
-    const gateHtml = renderGateBannerHtml(cellIdx, leftGateReinf, rightGateReinf, boardSize);
+    const gateHtml = renderGateBannerHtml(
+      cellIdx,
+      leftGateReinf,
+      rightGateReinf,
+      boardSize,
+      leftGateQueue.length,
+      rightGateQueue.length,
+      reserveReinfs.length
+    );
     const overlayHtml = renderCellThreatAndPreviewHtml(cellIdx, cellThreat, queuePreview, state, simPreview);
     const impact = simPreview?.impactMap?.[entity?.id] || null;
     const entityHtml = entity
@@ -500,14 +530,42 @@ export function renderBattleBoard(container, state, uiState = {}, callbacks = {}
     const side = gateEl.getAttribute('data-gate-side');
     const isLeft = side === 'left';
     const reinf = isLeft ? leftGateReinf : rightGateReinf;
-    const gateName = isLeft ? 'Levá hradní brána' : 'Pravá hradní brána';
+    const gateQueue = isLeft ? leftGateQueue : rightGateQueue;
+    const gateName = isLeft ? 'Levá hradní brána (Pole 1)' : `Pravá hradní brána (Pole ${boardSize})`;
     let tooltipHtml = `<div class="tt-title">🚪 <strong>${gateName}</strong></div>`;
     if (reinf) {
       const enemyDef = ENEMIES?.[reinf.enemyId] || null;
       const enemyName = enemyDef?.name || 'Upíří posila';
-      tooltipHtml += `<div class="tt-warn">⚠️ Příchod posily za <strong>${reinf.turnsRemaining} ${czechTurns(reinf.turnsRemaining)}</strong></div><div class="tt-desc" style="margin-top:5px;">Zpoza brány se blíží: <strong>${enemyName}</strong> (Max HP: ${enemyDef?.maxHp || '?'}).</div>`;
+      const roleMeta = getTacticalRoleMeta(
+        reinf.tacticalRole || getEnemyTacticalRole(enemyDef || reinf.enemyId)
+      );
+      const armorInfo = enemyDef?.armor ? ` · Brnění: ${enemyDef.armor}` : '';
+      const defInfo = enemyDef?.defense ? ` · Obrana: ${enemyDef.defense}` : '';
+      const holdNote = reinf.heldByCap
+        ? `<div class="tt-meta" style="color:#fbbf24; margin-top:4px;">⏳ Chodba je přeplněná – vyčkává u brány na uvolnění místa.</div>`
+        : '';
+      const extraQueued = gateQueue.length > 1
+        ? `<div class="tt-meta" style="margin-top:4px;">➕ Za touto posilou čeká u brány ještě <strong>${gateQueue.length - 1}</strong> další vlna.</div>`
+        : '';
+      tooltipHtml += `
+        <div class="tt-warn">⚠️ Příchod posily za <strong>${reinf.turnsRemaining} ${czechTurns(reinf.turnsRemaining)}</strong></div>
+        <div class="tt-desc" style="margin-top:5px;">
+          <div><strong>${enemyName}</strong> (Max HP: ${enemyDef?.maxHp || '?'}${armorInfo}${defInfo})</div>
+          <div style="margin-top:3px;">${roleMeta.icon} <strong>Role:</strong> ${roleMeta.label}</div>
+          <div style="margin-top:2px;">🎯 <strong>Taktika:</strong> ${reinf.lockReasonLabel || 'Standardní nástup'} · ${reinf.roleReasonLabel || 'Předepsaná hlídka'}</div>
+          ${holdNote}
+          ${extraQueued}
+          <div style="margin-top:5px; font-size:0.74rem; opacity:0.88;">💡 <em>Zatarasíš-li tuto bránu sudem či nepřítelem, posila oběhne k volné bráně (nebo se zdrží, jsou-li obě ucpané).</em></div>
+        </div>
+      `;
     } else {
-      tooltipHtml += `<div class="tt-desc">V této bráně je momentálně klid. Žádná posila se neblíží.</div>`;
+      tooltipHtml += `<div class="tt-desc">U této mříže je momentálně klid. Žádná bezprostřední posila zde není uzamčena.</div>`;
+    }
+    if (reserveReinfs.length > 0) {
+      const reserveList = reserveReinfs
+        .map((r) => `vlna za ${r.turnsRemaining} ${czechTurns(r.turnsRemaining)}`)
+        .join(', ');
+      tooltipHtml += `<div class="tt-meta" style="margin-top:6px; border-top:1px dashed rgba(255,255,255,0.2); padding-top:4px;">📯 <strong>Záloha v chodbách (${reserveReinfs.length}):</strong> ${reserveList}. <em>(Uzamkne bránu 2 tahy před příchodem, nebo zrychlí při vyčištění bojiště!)</em></div>`;
     }
     gateEl.addEventListener('mouseenter', (ev) => {
       showTooltip(tooltipHtml, ev.clientX, ev.clientY);
@@ -554,11 +612,20 @@ export function renderBattleBoard(container, state, uiState = {}, callbacks = {}
   }
 }
 
-function renderGateBannerHtml(cellIdx, leftReinf, rightReinf, boardSize = BOARD_SIZE) {
+function renderGateBannerHtml(
+  cellIdx,
+  leftReinf,
+  rightReinf,
+  boardSize = BOARD_SIZE,
+  leftCount = 0,
+  rightCount = 0,
+  reserveCount = 0
+) {
   if (cellIdx !== 0 && cellIdx !== boardSize - 1) return '';
 
   const isLeft = cellIdx === 0;
   const reinf = isLeft ? leftReinf : rightReinf;
+  const queueCount = isLeft ? leftCount : rightCount;
   const sideClass = isLeft ? 'gate-portal-left' : 'gate-portal-right';
   const label = isLeft ? 'Levá brána' : 'Pravá brána';
 
@@ -567,16 +634,32 @@ function renderGateBannerHtml(cellIdx, leftReinf, rightReinf, boardSize = BOARD_
 
   if (reinf) {
     const isImminent = reinf.turnsRemaining <= 1;
-    warningClass = isImminent ? 'gate-status-imminent' : 'gate-status-pending';
+    warningClass = isImminent ? 'gate-status-imminent' : 'gate-status-telegraphed';
     const enemyDef = ENEMIES?.[reinf.enemyId] || null;
     const enemyName = enemyDef?.name || 'Upír';
+    const spriteUrl = enemyDef ? getAssetUrl(enemyDef.sprite, enemyName) : '';
+    const roleMeta = getTacticalRoleMeta(
+      reinf.tacticalRole || getEnemyTacticalRole(enemyDef || reinf.enemyId)
+    );
     const tagText = isImminent ? 'POZOR!' : `${reinf.turnsRemaining}t`;
+    const extraBadge = queueCount > 1 ? `<span class="gate-reinf-stack">+${queueCount - 1}</span>` : '';
 
     reinfContent = `
-      <div class="gate-reinf-indicator ${isImminent ? 'is-imminent' : ''}"
-           title="Posila: ${enemyName} (za ${reinf.turnsRemaining} ${czechTurns(reinf.turnsRemaining)})">
-        ${isImminent ? '<span class="gate-vampire-eyes">👀</span>' : ''}
-        <span class="gate-reinf-pill">⚠️ ${tagText}</span>
+      <div class="gate-reinf-indicator ${isImminent ? 'is-imminent' : 'is-telegraphed'}"
+           title="Posila: ${enemyName} (${roleMeta.shortLabel} · za ${reinf.turnsRemaining} ${czechTurns(reinf.turnsRemaining)})">
+        <div class="gate-reinf-portrait-wrap">
+          ${spriteUrl ? `<img src="${spriteUrl}" alt="${enemyName}" class="gate-reinf-portrait" referrerpolicy="no-referrer" />` : `<span class="gate-vampire-eyes">👀</span>`}
+          <span class="gate-reinf-role-badge" title="${roleMeta.label}">${roleMeta.icon}</span>
+        </div>
+        <span class="gate-reinf-pill">${isImminent ? '🚨' : '⚠️'} ${tagText}${extraBadge}</span>
+      </div>
+    `;
+  } else if (reserveCount > 0) {
+    warningClass = 'gate-status-reserve';
+    reinfContent = `
+      <div class="gate-reinf-indicator is-reserve"
+           title="V chodbách za branami čeká v záloze ${reserveCount} ${reserveCount === 1 ? 'vlna' : 'vlny'}">
+        <span class="gate-reinf-reserve-tag">⏳ ${reserveCount}×</span>
       </div>
     `;
   }
@@ -1460,6 +1543,61 @@ export async function playEngineEvents(container, events, animSpeed = 1, state =
       case 'enemy_queue_firing':
         spawnFloatingBadgeOnCell(container, ev.cell, '🚨 ODPALUJE FRONTU!', 'float-warn');
         await sleep(180, animSpeed);
+        break;
+
+      case 'reinf_telegraphed':
+        SFX.bell();
+        spawnFloatingBadgeOnCell(
+          container,
+          ev.gateCell ?? 0,
+          `👀 POSILA (${ev.turnsRemaining}t)`,
+          'float-warn'
+        );
+        await sleep(140, animSpeed);
+        break;
+
+      case 'spawn_accelerated':
+        SFX.bell();
+        spawnFloatingBadgeOnCell(
+          container,
+          activeState?.hero?.cell ?? 0,
+          '📯 DALŠÍ VLNA ZRYCHLUJE!',
+          'float-warn'
+        );
+        await sleep(160, animSpeed);
+        break;
+
+      case 'spawn_rerouted':
+        SFX.swap();
+        spawnFloatingBadgeOnCell(
+          container,
+          ev.toGate ?? 0,
+          '🔄 OBCHVAT BRÁNY!',
+          'float-warn'
+        );
+        await sleep(160, animSpeed);
+        break;
+
+      case 'spawn_delayed':
+        SFX.collision();
+        spawnFloatingBadgeOnCell(
+          container,
+          ev.gateCell ?? 0,
+          '🚪 BRÁNA UCPÁNA!',
+          'float-info'
+        );
+        await sleep(140, animSpeed);
+        break;
+
+      case 'spawn':
+        SFX.step();
+        spawnFloatingBadgeOnCell(
+          container,
+          ev.cell ?? 0,
+          `🚪 ${ev.enemy?.givenName || ev.enemy?.name || 'POSILA'}!`,
+          'float-warn'
+        );
+        await sleep(160, animSpeed);
         break;
 
       case 'comic_bubble':

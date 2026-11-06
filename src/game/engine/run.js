@@ -3,7 +3,35 @@ import { NODE_TYPES } from '../config/constants.js';
 import { HERO_TILES, getHeroTileDefinition } from '../config/tiles.js';
 import { TALISMANS } from '../config/talismans.js';
 import { STARTING_LOADOUTS } from '../config/loadouts.js';
+import { queryEncounters, ENCOUNTERS } from '../config/encounters.js';
 import { createRng } from './rng.js';
+
+export const ROUTE_ARCHETYPES = {
+  0: {
+    lane: 0,
+    name: 'Severní výspa',
+    tag: 'Vysoké riziko',
+    description: 'Nebezpečné patroly, elitní drábi a štědrá kořist.',
+    threatModifier: 1,
+    preferredArchetype: 'brute_force'
+  },
+  1: {
+    lane: 1,
+    name: 'Císařská magistrála',
+    tag: 'Císařská silnice',
+    description: 'Vyvážený taktický průzkum s dílnami a šarvátkami.',
+    threatModifier: 0,
+    preferredArchetype: 'disruption'
+  },
+  2: {
+    lane: 2,
+    name: 'Jižní hradební úvoz',
+    tag: 'Zásobovací stezka',
+    description: 'Hostince, podivná setkání a méně početné hlídky.',
+    threatModifier: -1,
+    preferredArchetype: 'swarm'
+  }
+};
 
 export function createNewRun(seedInput = 'VENCA-1899', loadoutId = 'classic', curseLevel = 0) {
   const seed = String(seedInput || 'VENCA-1899').trim() || 'VENCA-1899';
@@ -54,7 +82,7 @@ export function createNewRun(seedInput = 'VENCA-1899', loadoutId = 'classic', cu
   return run;
 }
 
-function getNodeTitle(type) {
+export function getNodeTitle(type) {
   switch (type) {
     case NODE_TYPES.BATTLE:
       return 'Upíří hlídka';
@@ -81,112 +109,238 @@ function getActBossTitle(act) {
   return 'Hrabě Leopold von Nochtic';
 }
 
+/**
+ * Procedural DAG Map Generator with Threat Budget & Tactical Synergy Archetypes.
+ * Generates an interconnected 6-tier graph per Act with deterministic seed RNG.
+ */
 export function generateActMap(run, act) {
-  const rng = run.rng;
-  const prefix = `act${act}`;
-  const nodes = [];
+  const rng = run.rng || createRng(`${run.seed}_act${act}`);
+  const tiers = [[], [], [], [], [], []];
+  const usedEncounterIds = [];
 
-  const n0 = {
-    id: `a${act}_t0_n0`,
-    tier: 0,
-    lane: 1,
-    type: NODE_TYPES.BATTLE,
-    title: act === 1 ? 'Noční vrátnice (Tutoriál)' : `Brána ${act}. aktu`,
-    encounterId: act === 1 ? 'tutorial_1' : `${prefix}_battle_1`,
-    next: [`a${act}_t1_n0`, `a${act}_t1_n1`]
-  };
-  nodes.push(n0);
+  // =========================================================================
+  // 1. TIER TOPOLOGY GENERATION (6 Tiers: 0 to 5)
+  // =========================================================================
 
-  const t1Left = rng.nextFloat() < 0.65 ? NODE_TYPES.BATTLE : NODE_TYPES.EVENT;
-  const t1Right = t1Left === NODE_TYPES.BATTLE ? NODE_TYPES.EVENT : NODE_TYPES.BATTLE;
-  nodes.push({
-    id: `a${act}_t1_n0`,
-    tier: 1,
+  // TIER 0: Entry Point
+  if (act === 1) {
+    // Act 1 starts with a single entry gate
+    tiers[0].push({
+      lane: 1,
+      type: NODE_TYPES.BATTLE,
+      isTutorial: !run.stats || run.stats.battlesWon === 0
+    });
+  } else {
+    // Acts 2 & 3 give an immediate strategic lane choice (Left Vanguard vs Right Bypass)
+    tiers[0].push({ lane: 0, type: NODE_TYPES.BATTLE });
+    tiers[0].push({ lane: 2, type: NODE_TYPES.BATTLE });
+  }
+
+  // TIER 1: First Branching Exploration (2 lanes)
+  tiers[1].push({ lane: 0, type: NODE_TYPES.BATTLE });
+  const t1RightType = rng.nextFloat() < 0.6 ? NODE_TYPES.EVENT : NODE_TYPES.BATTLE;
+  tiers[1].push({ lane: 2, type: t1RightType });
+
+  // TIER 2: Strategic Crossroads (3 lanes: high risk battle, center workshop/battle, pub/event)
+  tiers[2].push({ lane: 0, type: NODE_TYPES.BATTLE });
+  const t2CenterType = rng.nextFloat() < 0.5 ? NODE_TYPES.WORKSHOP : NODE_TYPES.BATTLE;
+  tiers[2].push({ lane: 1, type: t2CenterType });
+  const t2RightType = rng.nextFloat() < 0.55 ? NODE_TYPES.PUB : NODE_TYPES.EVENT;
+  tiers[2].push({ lane: 2, type: t2RightType });
+
+  // TIER 3: High-Stakes Trial (Lane 0 guaranteed Elite; Lane 2 Treasure or Battle)
+  tiers[3].push({ lane: 0, type: NODE_TYPES.ELITE });
+  if (rng.nextFloat() < 0.65) {
+    // Occasional 3-lane expansion in Tier 3
+    const t3CenterType = rng.nextFloat() < 0.5 ? NODE_TYPES.BATTLE : NODE_TYPES.EVENT;
+    tiers[3].push({ lane: 1, type: t3CenterType });
+  }
+  const t3RightType = rng.nextFloat() < 0.5 ? NODE_TYPES.TREASURE : NODE_TYPES.BATTLE;
+  tiers[3].push({ lane: 2, type: t3RightType });
+
+  // TIER 4: Pre-Boss Preparation (Workshop + Pub for gearing and healing)
+  tiers[4].push({
     lane: 0,
-    type: t1Left,
-    title: getNodeTitle(t1Left),
-    encounterId: t1Left === NODE_TYPES.BATTLE ? `${prefix}_battle_1` : null,
-    next: [`a${act}_t2_n0`, `a${act}_t2_n1`]
+    type: rng.nextFloat() < 0.35 ? NODE_TYPES.BATTLE : NODE_TYPES.WORKSHOP
   });
-  nodes.push({
-    id: `a${act}_t1_n1`,
-    tier: 1,
+  tiers[4].push({
     lane: 2,
-    type: t1Right,
-    title: getNodeTitle(t1Right),
-    encounterId: t1Right === NODE_TYPES.BATTLE ? `${prefix}_battle_1` : null,
-    next: [`a${act}_t2_n1`, `a${act}_t2_n2`]
+    type: NODE_TYPES.PUB
   });
 
-  rng.shuffle([NODE_TYPES.WORKSHOP, NODE_TYPES.BATTLE, NODE_TYPES.PUB]).forEach((type, idx) => {
-    nodes.push({
-      id: `a${act}_t2_n${idx}`,
-      tier: 2,
-      lane: idx,
-      type,
-      title: getNodeTitle(type),
-      encounterId: type === NODE_TYPES.BATTLE ? `${prefix}_battle_2` : null,
-      next:
-        idx === 0
-          ? [`a${act}_t3_n0`]
-          : idx === 1
-            ? [`a${act}_t3_n0`, `a${act}_t3_n1`]
-            : [`a${act}_t3_n1`]
+  // TIER 5: The Act Boss Chamber (All paths converge here)
+  tiers[5].push({
+    lane: 1,
+    type: NODE_TYPES.BOSS
+  });
+
+  // =========================================================================
+  // 2. ASSIGN NODE IDENTIFIERS & BASE FIELDS
+  // =========================================================================
+
+  const allNodes = [];
+  tiers.forEach((tierList, tierIdx) => {
+    // Sort tier nodes by lane so rendering is clean and predictable
+    tierList.sort((a, b) => a.lane - b.lane);
+    tierList.forEach((node, nodeIdx) => {
+      node.id = `a${act}_t${tierIdx}_n${nodeIdx}`;
+      node.tier = tierIdx;
+      node.next = [];
+      node.prev = [];
+      allNodes.push(node);
     });
   });
 
-  nodes.push({
-    id: `a${act}_t3_n0`,
-    tier: 3,
-    lane: 0,
-    type: NODE_TYPES.ELITE,
-    title: 'Elitní strážnice',
-    encounterId: `${prefix}_elite`,
-    next: [`a${act}_t4_n0`, `a${act}_t4_n1`]
+  // =========================================================================
+  // 3. DIRECTED ACYCLIC GRAPH (DAG) FORWARD & BACKWARD EDGE ROUTING
+  // =========================================================================
+
+  for (let t = 0; t < 5; t++) {
+    const curNodes = tiers[t];
+    const nxtNodes = tiers[t + 1];
+
+    // Connect nodes based on lane proximity (|laneA - laneB| <= 1, or single convergence)
+    curNodes.forEach((nodeA) => {
+      nxtNodes.forEach((nodeB) => {
+        const canConnect =
+          curNodes.length === 1 ||
+          nxtNodes.length === 1 ||
+          Math.abs(nodeA.lane - nodeB.lane) <= 1;
+
+        if (canConnect) {
+          if (!nodeA.next.includes(nodeB.id)) nodeA.next.push(nodeB.id);
+          if (!nodeB.prev.includes(nodeA.id)) nodeB.prev.push(nodeA.id);
+        }
+      });
+    });
+
+    // Invariant Check 1: Ensure every node in current tier has at least 1 outgoing edge
+    curNodes.forEach((nodeA) => {
+      if (nodeA.next.length === 0) {
+        let closest = nxtNodes[0];
+        let minDist = 999;
+        nxtNodes.forEach((nodeB) => {
+          const dist = Math.abs(nodeA.lane - nodeB.lane);
+          if (dist < minDist) {
+            minDist = dist;
+            closest = nodeB;
+          }
+        });
+        nodeA.next.push(closest.id);
+        if (!closest.prev.includes(nodeA.id)) closest.prev.push(nodeA.id);
+      }
+    });
+
+    // Invariant Check 2: Ensure every node in next tier has at least 1 incoming edge
+    nxtNodes.forEach((nodeB) => {
+      if (nodeB.prev.length === 0) {
+        let closest = curNodes[0];
+        let minDist = 999;
+        curNodes.forEach((nodeA) => {
+          const dist = Math.abs(nodeA.lane - nodeB.lane);
+          if (dist < minDist) {
+            minDist = dist;
+            closest = nodeA;
+          }
+        });
+        nodeB.prev.push(closest.id);
+        if (!closest.next.includes(nodeB.id)) closest.next.push(nodeB.id);
+      }
+    });
+  }
+
+  // =========================================================================
+  // 4. THREAT BUDGET & TACTICAL ENCOUNTER ALLOCATION
+  // =========================================================================
+
+  allNodes.forEach((node) => {
+    const route = ROUTE_ARCHETYPES[node.lane] || ROUTE_ARCHETYPES[1];
+    node.routeTag = route.tag;
+
+    // Base threat target curves by Act and Tier depth
+    let baseThreat = 1;
+    if (act === 1) {
+      baseThreat = node.tier <= 1 ? 1 : node.tier <= 2 ? 2 : 3;
+    } else if (act === 2) {
+      baseThreat = node.tier <= 1 ? 2 : node.tier <= 2 ? 3 : 4;
+    } else {
+      baseThreat = node.tier <= 1 ? 3 : node.tier <= 2 ? 4 : 5;
+    }
+
+    if (node.type === NODE_TYPES.ELITE) {
+      node.threatRating = act === 1 ? 4 : 5;
+      const enc = queryEncounters({
+        act,
+        isElite: true,
+        threatTarget: node.threatRating,
+        preferredArchetype: 'elite',
+        rng,
+        excludeIds: usedEncounterIds
+      });
+      node.encounterId = enc.id;
+      node.title = enc.name;
+      node.archetype = enc.archetype;
+      node.archetypeName = enc.archetypeName;
+      node.tacticalHint = enc.tacticalHint;
+      usedEncounterIds.push(enc.id);
+    } else if (node.type === NODE_TYPES.BOSS) {
+      node.threatRating = act === 1 ? 5 : 6;
+      const enc = queryEncounters({ act, isBoss: true, rng });
+      node.encounterId = enc.id;
+      node.title = getActBossTitle(act);
+      node.archetype = enc.archetype;
+      node.archetypeName = enc.archetypeName;
+      node.tacticalHint = enc.tacticalHint;
+      usedEncounterIds.push(enc.id);
+    } else if (node.type === NODE_TYPES.BATTLE) {
+      // Adjust threat by route personality
+      const adjustedThreat = Math.max(1, Math.min(5, baseThreat + route.threatModifier));
+      node.threatRating = adjustedThreat;
+
+      let enc;
+      if (act === 1 && node.tier === 0 && node.isTutorial) {
+        enc = ENCOUNTERS.tutorial_1;
+      } else {
+        enc = queryEncounters({
+          act,
+          isElite: false,
+          isBoss: false,
+          threatTarget: adjustedThreat,
+          preferredArchetype: route.preferredArchetype,
+          rng,
+          excludeIds: usedEncounterIds
+        });
+      }
+
+      node.encounterId = enc.id;
+      node.title = enc.name;
+      node.archetype = enc.archetype;
+      node.archetypeName = enc.archetypeName;
+      node.tacticalHint = enc.tacticalHint;
+      usedEncounterIds.push(enc.id);
+    } else {
+      // Non-combat utility nodes
+      node.encounterId = null;
+      node.threatRating = 0;
+      node.archetype = null;
+
+      if (node.type === NODE_TYPES.PUB) {
+        node.title = node.lane === 2 ? 'Hostinec U Zlatého kříže' : 'Hospoda U Svěcené pípy';
+        node.tacticalHint = 'Čas na sklenici piva, nákup proviantu a ošetření ran.';
+      } else if (node.type === NODE_TYPES.WORKSHOP) {
+        node.title = node.lane === 0 ? 'Panská zbrojířská kovárna' : 'Kolářská dílna mistra Hanuše';
+        node.tacticalHint = 'Vylepši destičku nebo zkrať její chladnutí.';
+      } else if (node.type === NODE_TYPES.EVENT) {
+        node.title = node.lane === 2 ? 'Cikánská věštírna v maringotce' : 'Hradní výběrčí desátků';
+        node.tacticalHint = 'Příběhové setkání s volbou osudu.';
+      } else if (node.type === NODE_TYPES.TREASURE) {
+        node.title = 'Zapomenutá hradní truhlice';
+        node.tacticalHint = 'Volný výběr z relikvií nebo měšce dukátů.';
+      }
+    }
   });
 
-  const t3Right = rng.nextFloat() < 0.5 ? NODE_TYPES.TREASURE : NODE_TYPES.BATTLE;
-  nodes.push({
-    id: `a${act}_t3_n1`,
-    tier: 3,
-    lane: 2,
-    type: t3Right,
-    title: getNodeTitle(t3Right),
-    encounterId: t3Right === NODE_TYPES.BATTLE ? `${prefix}_battle_2` : null,
-    next: [`a${act}_t4_n0`, `a${act}_t4_n1`]
-  });
-
-  nodes.push({
-    id: `a${act}_t4_n0`,
-    tier: 4,
-    lane: 0,
-    type: NODE_TYPES.PUB,
-    title: 'Hospoda U Svěcené pípy',
-    encounterId: null,
-    next: [`a${act}_t5_n0`]
-  });
-
-  nodes.push({
-    id: `a${act}_t4_n1`,
-    tier: 4,
-    lane: 2,
-    type: NODE_TYPES.WORKSHOP,
-    title: 'Kolářská dílna',
-    encounterId: null,
-    next: [`a${act}_t5_n0`]
-  });
-
-  nodes.push({
-    id: `a${act}_t5_n0`,
-    tier: 5,
-    lane: 1,
-    type: NODE_TYPES.BOSS,
-    title: getActBossTitle(act),
-    encounterId: `${prefix}_boss`,
-    next: []
-  });
-
-  return { act, nodes };
+  return { act, nodes: allNodes };
 }
 
 export function getAvailableNodes(run) {

@@ -938,6 +938,18 @@
   margin-bottom: 16px;
   border-bottom: 2px dashed rgba(28, 20, 14, 0.3);
   padding-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.map-header-kicker {
+  font-family: var(--font-display, serif);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--stamp-red, #991b1b);
+  text-transform: uppercase;
+  margin-bottom: 2px;
 }
 
 .map-act-heading {
@@ -955,6 +967,30 @@
   margin-top: 2px;
 }
 
+.map-header-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.map-route-legend {
+  font-size: 0.72rem;
+  color: var(--wood-deep, #3e2723);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.45);
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(28, 20, 14, 0.2);
+}
+
+.legend-sep {
+  color: rgba(28, 20, 14, 0.4);
+}
+
 .map-curse-pill {
   display: inline-block;
   background: #4c1d95;
@@ -967,39 +1003,111 @@
   margin-top: 3px;
 }
 
+.map-tiers-container {
+  position: relative;
+  width: 100%;
+  overflow-x: auto;
+  padding: 6px 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.map-scroll-plane {
+  position: relative;
+  width: max-content;
+  min-width: 100%;
+}
+
+.map-connections-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: visible;
+}
+
+.map-connection-path {
+  fill: none;
+  transition: stroke 200ms ease, stroke-width 200ms ease;
+}
+
+.map-edge-inactive {
+  stroke: rgba(92, 64, 51, 0.28);
+  stroke-width: 2px;
+  stroke-dasharray: 3 3;
+}
+
+.map-edge-available {
+  stroke: #d97706;
+  stroke-width: 3.5px;
+  stroke-dasharray: 6 4;
+  animation: mapDash 1.2s linear infinite;
+  filter: drop-shadow(0 0 3px rgba(217, 119, 6, 0.5));
+}
+
+.map-edge-traversed {
+  stroke: #92400e;
+  stroke-width: 4px;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 4px rgba(180, 83, 9, 0.55));
+}
+
+@keyframes mapDash {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
 .map-tiers-grid {
+  position: relative;
+  z-index: 2;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(6, minmax(165px, 1fr));
+  gap: 14px;
 }
 
 .map-tier-column {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.4);
   border: 1.5px dashed rgba(28, 20, 14, 0.25);
   border-radius: 8px;
-  padding: 8px 6px;
+  padding: 10px 8px;
+  min-height: 490px;
+  backdrop-filter: blur(1px);
+}
+
+.map-tier-header {
+  border-bottom: 2px solid var(--ink-dark);
+  padding-bottom: 4px;
+  text-align: center;
 }
 
 .map-tier-label {
   font-family: var(--font-display);
   font-weight: 900;
-  font-size: 0.8rem;
-  text-align: center;
+  font-size: 0.82rem;
   color: var(--wood-deep);
-  border-bottom: 2px solid var(--ink-dark);
-  padding-bottom: 4px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+.map-tier-sub {
+  font-size: 0.65rem;
+  color: var(--ink-muted);
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 1px;
 }
 
 .map-tier-nodes {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  justify-content: center;
+  gap: 14px;
+  justify-content: space-around;
   flex: 1;
 }
 
@@ -1008,16 +1116,57 @@
     linear-gradient(180deg, #fffef9 0%, var(--bg-parchment-card) 60%, #f6e7c6 100%);
   border: 2px solid var(--ink-dark);
   border-radius: 8px;
-  padding: 8px 6px;
+  padding: 8px 8px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 5px;
+  gap: 6px;
   cursor: pointer;
-  text-align: center;
+  text-align: left;
   box-shadow: 2.5px 2.5px 0 var(--ink-dark);
   position: relative;
   transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+  user-select: none;
+}
+
+.map-lane-0 {
+  border-top: 3.5px solid #991b1b;
+}
+
+.map-lane-1 {
+  border-top: 3.5px solid #b45309;
+}
+
+.map-lane-2 {
+  border-top: 3.5px solid #15803d;
+}
+
+.map-node-top-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  border-bottom: 1px dotted rgba(28, 20, 14, 0.2);
+  padding-bottom: 3px;
+  font-size: 0.68rem;
+}
+
+.map-node-route-label {
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--wood-deep);
+}
+
+.map-node-threat-text {
+  font-size: 0.68rem;
+  letter-spacing: 1px;
+  color: #991b1b;
+}
+
+.map-node-body {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .map-node-available {
@@ -1061,6 +1210,23 @@
   justify-content: center;
 }
 
+.map-node-elite-badge {
+  position: absolute;
+  bottom: -2px;
+  left: -2px;
+  background: #991b1b;
+  color: #fff;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font-size: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  border: 1px solid #fff;
+}
+
 .map-node-current {
   border-color: var(--roof) !important;
   border-width: 3px !important;
@@ -1072,19 +1238,50 @@
   filter: grayscale(0.6);
 }
 
+.map-node-icon-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
 .map-node-icon {
-  width: 50px;
-  height: 50px;
+  width: 44px;
+  height: 44px;
   object-fit: contain;
   filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+}
+
+.map-node-info {
+  flex: 1;
+  min-width: 0;
 }
 
 .map-node-title {
   font-family: var(--font-display);
   font-weight: 900;
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   color: var(--ink-dark);
   line-height: 1.15;
+}
+
+.map-node-archetype {
+  font-size: 0.7rem;
+  color: #78350f;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.map-node-hint-preview {
+  font-size: 0.64rem;
+  color: var(--ink-muted);
+  font-style: italic;
+  line-height: 1.2;
+  margin-top: 2px;
+  max-height: 2.4em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .map-node-sub {
@@ -2204,8 +2401,9 @@
   align-items: center;
   gap: 4px;
   font-size: 0.85rem;
-  color: #a1a1aa;
+  color: #e4e4e7;
   font-weight: 800;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
 }
 
 .hud-reaper-badge {
@@ -2386,3 +2584,451 @@
   background: linear-gradient(180deg, #f4f4f5 0%, #e4e4e7 100%);
   color: #18181b;
 }
+
+/* Default state for compact HUD detail triggers and bottom battle dock */
+.btn-hud-compact-detail {
+  display: none;
+}
+
+.btn-compact-tag {
+  font-size: 0.68rem;
+  font-weight: 900;
+  margin-left: 2px;
+  color: var(--brick-red);
+}
+
+.bottom-battle-dock {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+@media (max-width: 720px) {
+  #btn-hud-loadout-info {
+    display: inline-flex;
+  }
+}
+
+/* ==========================================================================
+   MOBILE LANDSCAPE MODE (Horizontally rotated smartphones: max-height 540px)
+   ========================================================================== */
+@media (orientation: landscape) and (max-height: 540px) {
+  kbd {
+    display: none !important;
+  }
+
+  .btn-label-full {
+    display: none !important;
+  }
+
+  .btn-label-short {
+    display: inline !important;
+  }
+
+  /* 1. Ultra-clean single-row Top HUD Bar */
+  .hud-bar {
+    flex-wrap: nowrap;
+    min-height: 32px;
+    max-height: 34px;
+    padding: 2px 8px;
+    gap: 6px;
+    border-width: 2px;
+    border-top-width: 3px;
+    border-radius: 8px;
+  }
+
+  .hud-bar::before,
+  .chronicle-panel::before,
+  .map-screen-wrapper::before {
+    display: none !important;
+  }
+
+  .hud-left {
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .hud-left::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hud-brand {
+    flex-shrink: 0;
+    gap: 4px;
+  }
+
+  .hud-title {
+    font-size: 0.78rem;
+  }
+
+  .hud-title-text,
+  .hud-act,
+  .hud-location,
+  .hud-seed,
+  .hud-seed-sep,
+  .hud-vital-label,
+  .hud-unit-suffix,
+  .hud-hearts,
+  .hud-center-talismans,
+  .hud-maneuver {
+    display: none !important;
+  }
+
+  .hud-vitals {
+    gap: 4px;
+    font-size: 0.72rem;
+    overflow: visible;
+  }
+
+  .hud-hp-group {
+    padding: 1px 5px;
+    border-radius: 5px;
+  }
+
+  .hud-hp-numbers,
+  .hud-gold,
+  .hud-fangs,
+  .hud-persistence,
+  .hud-defense,
+  .hud-armor,
+  .hud-fury,
+  .hud-reaper-badge {
+    font-size: 0.7rem;
+    padding: 1px 4px;
+  }
+
+  .hud-actions {
+    gap: 4px;
+  }
+
+  .hud-actions .btn-text {
+    display: none !important;
+  }
+
+  .hud-actions #btn-hud-anim-lab {
+    display: none !important;
+  }
+
+  .hud-actions .btn-parchment.btn-sm {
+    padding: 2px 6px;
+    min-width: 28px;
+    min-height: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.74rem;
+    border-width: 1.5px;
+    box-shadow: 1.5px 1.5px 0 var(--ink-dark);
+  }
+
+  .hud-actions .btn-hud-compact-detail {
+    display: inline-flex !important;
+    padding: 2px 6px;
+    gap: 2px;
+  }
+
+  /* 2. Hide standalone maneuver bar in battle (accessible via HUD button) */
+  .action-maneuver-bar {
+    display: none !important;
+  }
+
+  /* 3. Split Bottom Battle Dock: Tiles on Left (~58%), Action Grid on Right (~42%) */
+  .bottom-battle-dock {
+    display: grid;
+    grid-template-columns: minmax(0, 1.38fr) minmax(236px, 1fr);
+    gap: 6px;
+    align-items: stretch;
+    width: 100%;
+    height: 74px;
+    min-height: 74px;
+    max-height: 76px;
+  }
+
+  .tile-hand-Dock {
+    order: 1;
+    padding: 3px 5px;
+    border-width: 2px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    height: 100%;
+  }
+
+  .tile-hand-strip {
+    width: 100%;
+    height: 100%;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 5px;
+    overflow-x: auto;
+    padding-bottom: 0;
+    scrollbar-width: none;
+  }
+
+  .tile-hand-strip::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Compact 2-column horizontal tile cards for landscape thumb ergonomics */
+  .player-tile-card {
+    flex: 1 1 104px;
+    min-width: 96px;
+    max-width: 152px;
+    width: auto;
+    height: 64px;
+    min-height: 64px;
+    max-height: 64px;
+    padding: 3px 5px;
+    border-width: 2px;
+    border-radius: 7px;
+    box-shadow: 2px 2px 0 var(--ink-dark);
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    grid-template-rows: 12px 1fr 13px;
+    column-gap: 5px;
+    row-gap: 1px;
+    align-items: center;
+    text-align: left;
+  }
+
+  .tile-card-top {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    height: 12px;
+    font-size: 0.56rem;
+  }
+
+  .tile-card-art {
+    grid-column: 1;
+    grid-row: 2 / 4;
+    width: 28px;
+    height: 28px;
+    border-radius: 5px;
+    border-width: 1.5px;
+  }
+
+  .cd-number {
+    font-size: 0.88rem;
+  }
+
+  .cd-label {
+    font-size: 0.46rem;
+  }
+
+  .tile-queued-overlay {
+    font-size: 0.56rem;
+  }
+
+  .tile-card-name {
+    grid-column: 2;
+    grid-row: 2;
+    font-size: 0.62rem;
+    line-height: 1.05;
+    height: auto;
+    min-height: 0;
+    max-height: 24px;
+    text-align: left;
+  }
+
+  .tile-card-metrics {
+    grid-column: 2;
+    grid-row: 3;
+    height: 13px;
+    font-size: 0.56rem;
+    padding-top: 1px;
+  }
+
+  .tile-card-tags {
+    display: none !important;
+  }
+
+  /* Right column: 2-row tactical action pad */
+  .action-controls-row {
+    order: 2;
+    margin-bottom: 0;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: 1fr 1fr;
+    gap: 4px;
+    width: 100%;
+  }
+
+  .action-controls-row .btn-action {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    padding: 2px 4px;
+    font-size: 0.7rem;
+    border-width: 2px;
+    border-radius: 7px;
+    box-shadow: 2px 2px 0 var(--ink-dark);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+  }
+
+  .action-controls-row #btn-act-preview,
+  .action-controls-row #btn-act-preview-toggle {
+    grid-column: 1 / 2;
+  }
+
+  .action-controls-row #btn-act-execute {
+    grid-column: 2 / 5;
+  }
+
+  /* 4. Map Screen in Mobile Landscape: keep 6 horizontal columns */
+  .map-screen-wrapper {
+    padding: 8px 10px;
+    border-width: 2.5px;
+    border-top-width: 4px;
+    border-radius: 10px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .map-header-banner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+    padding-bottom: 4px;
+  }
+
+  .map-act-heading {
+    font-size: 1rem;
+  }
+
+  .map-act-subtitle {
+    font-size: 0.72rem;
+    margin-top: 0;
+  }
+
+  .map-tiers-grid {
+    grid-template-columns: repeat(6, minmax(96px, 1fr));
+    gap: 6px;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: auto;
+    overflow-y: auto;
+  }
+
+  .map-tier-column {
+    padding: 4px;
+    gap: 4px;
+    border-radius: 7px;
+  }
+
+  .map-tier-label {
+    font-size: 0.66rem;
+    padding-bottom: 2px;
+  }
+
+  .map-tier-nodes {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 5px;
+    justify-content: center;
+  }
+
+  .map-node-card {
+    flex: 0 1 auto;
+    padding: 4px 4px;
+    gap: 2px;
+    border-radius: 6px;
+  }
+
+  .map-node-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .map-node-title {
+    font-size: 0.68rem;
+  }
+
+  .map-node-sub {
+    font-size: 0.58rem;
+  }
+
+  /* 5. Modals in Mobile Landscape */
+  .modal-backdrop {
+    padding: 6px max(10px, env(safe-area-inset-right)) 6px max(10px, env(safe-area-inset-left));
+  }
+
+  .modal-card {
+    padding: 10px 14px;
+    max-height: 94dvh;
+    border-radius: 10px;
+  }
+
+  .modal-header {
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+  }
+
+  .modal-header h3 {
+    font-size: 0.95rem;
+  }
+
+  .modal-lead {
+    font-size: 0.8rem;
+    margin-bottom: 6px;
+  }
+
+  .reward-choices-grid {
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 8px;
+    margin: 8px 0;
+  }
+
+  .reward-choice-card {
+    padding: 8px;
+    gap: 4px;
+  }
+
+  .summary-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin: 8px 0;
+  }
+
+  .modal-footer-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-top: 8px;
+    padding-top: 8px;
+  }
+
+  .modal-footer-actions .btn-parchment {
+    width: auto;
+    padding: 5px 10px;
+    font-size: 0.78rem;
+  }
+
+  /* Compact comic bubbles in mobile landscape */
+  .comic-speech-bubble {
+    max-width: 190px;
+  }
+
+  .comic-bubble-inner {
+    padding: 4px 8px;
+  }
+
+  .comic-bubble-quote {
+    font-size: 0.72rem;
+  }
+}
+

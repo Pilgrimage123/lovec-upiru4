@@ -106,30 +106,32 @@ export function renderTileBar(container, state, callbacks = {}) {
       <span class="maneuver-tag">👢 ${bumpName}</span>
       <span class="maneuver-status-badge ${bumpOnCd ? 'status-cooling' : 'status-ready'}">${bumpOnCd ? `⏳ Chladne (${bumpCd} ${czechTurns(bumpCd)})` : '⚔️ Připraven k úderu'}</span>
     </div>
-    <div class="action-controls-row">
-      <button type="button" class="btn-action btn-act-move" id="btn-act-left" ${!canStepLeft ? 'disabled' : ''} title="Krok vlevo (Klávesa A nebo ⬅)">
-        ⬅ <span class="btn-label-full">Krok vlevo</span><span class="btn-label-short">Vlevo</span> <kbd>A</kbd>
-      </button>
-      <button type="button" class="btn-action btn-act-utility ${inGarlic ? 'btn-action-free' : ''}" id="btn-act-turn" title="${inGarlic ? 'Otočit čelem vzad (ZDARMA v česneku! Klávesa W)' : 'Otočit čelem vzad (Klávesa W)'}">
-        🔄 <span>Otočit</span>${inGarlic ? '<span class="garlic-free-tag" title="Otočení zdarma v česneku">0t</span>' : ''} <kbd>W</kbd>
-      </button>
-      <button type="button" class="btn-action btn-act-utility" id="btn-act-wait" title="Vyčkat 1 tah a zkrátit Chladnutí (Klávesa S)">
-        ⏳ <span>Čekat</span> <kbd>S</kbd>
-      </button>
-      <button type="button" class="btn-action btn-act-move" id="btn-act-right" ${!canStepRight ? 'disabled' : ''} title="Krok vpravo (Klávesa D nebo ➡)">
-        <span class="btn-label-full">Krok vpravo</span><span class="btn-label-short">Vpravo</span> ➡ <kbd>D</kbd>
-      </button>
-      <button type="button" class="btn-action btn-preview-toggle ${callbacks.isComboPreviewActive ? 'btn-preview-active' : ''}" id="btn-act-preview-toggle" ${!hasQueued ? 'disabled' : ''} title="Taktický náhled dopadu komba na Bojiště (vhodné pro mobily a dotykové displeje)">
-        👁️ <span>Náhled</span>
-      </button>
-      <button type="button" class="${executeBtnClass}" id="btn-act-execute" ${!hasQueued ? 'disabled' : ''} title="${executeBtnTitle}">
-        ${executeBtnText}
-      </button>
-    </div>
+    <div class="bottom-battle-dock">
+      <div class="action-controls-row">
+        <button type="button" class="btn-action btn-act-move" id="btn-act-left" ${!canStepLeft ? 'disabled' : ''} title="Krok vlevo (Klávesa A nebo ⬅)">
+          ⬅ <span class="btn-label-full">Krok vlevo</span><span class="btn-label-short">Vlevo</span> <kbd>A</kbd>
+        </button>
+        <button type="button" class="btn-action btn-act-utility ${inGarlic ? 'btn-action-free' : ''}" id="btn-act-turn" title="${inGarlic ? 'Otočit čelem vzad (ZDARMA v česneku! Klávesa W)' : 'Otočit čelem vzad (Klávesa W)'}">
+          🔄 <span>Otočit</span>${inGarlic ? '<span class="garlic-free-tag" title="Otočení zdarma v česneku">0t</span>' : ''} <kbd>W</kbd>
+        </button>
+        <button type="button" class="btn-action btn-act-utility" id="btn-act-wait" title="Vyčkat 1 tah a zkrátit Chladnutí (Klávesa S)">
+          ⏳ <span>Čekat</span> <kbd>S</kbd>
+        </button>
+        <button type="button" class="btn-action btn-act-move" id="btn-act-right" ${!canStepRight ? 'disabled' : ''} title="Krok vpravo (Klávesa D nebo ➡)">
+          <span class="btn-label-full">Krok vpravo</span><span class="btn-label-short">Vpravo</span> ➡ <kbd>D</kbd>
+        </button>
+        <button type="button" class="btn-action btn-preview-toggle ${callbacks.isComboPreviewActive ? 'btn-preview-active' : ''}" id="btn-act-preview-toggle" ${!hasQueued ? 'disabled' : ''} title="Taktický náhled dopadu komba na Bojiště (vhodné pro mobily a dotykové displeje)">
+          👁️ <span>Náhled</span>
+        </button>
+        <button type="button" class="${executeBtnClass}" id="btn-act-execute" ${!hasQueued ? 'disabled' : ''} title="${executeBtnTitle}">
+          ${executeBtnText}
+        </button>
+      </div>
 
-    <div class="tile-hand-Dock">
-      <div class="tile-hand-strip">
-        ${tilesHtml}
+      <div class="tile-hand-Dock">
+        <div class="tile-hand-strip">
+          ${tilesHtml}
+        </div>
       </div>
     </div>
   `;

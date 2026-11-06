@@ -1,142 +1,163 @@
-# C. a k. Satirická redakce rozhraní: Rakousko-Uhersko stižené upíry (1899)
+# Smart Stage System: Procedural Map Layout & Threat-Budget Encounters
 
-Citlivé a chytré přepracování herního UI a UX, které sjednocuje celou hru do nezaměnitelné atmosféry rakousko-uherské karikatury z přelomu 19. a 20. století — kombinace satirického tisku (*Humoristické listy*, *Šípy*), úředního šimla, kolkových známek, mosazného kování a zažloutlého c. k. pergamenu při plném zachování osvědčeného taktického rozvržení bojiště.
+Procedural multi-path branching stage map generation with risk-reward routes, coupled with an expanded catalog of pre-designed tactical encounters governed by a threat-budget and synergy-archetype allocation engine.
 
 ## User Review & Critical Decisions
 
 > [!IMPORTANT]
-> Níže jsou potvrzená rozhodnutí z úvodního dotazníku, která určují směr celé úpravy:
+> The architectural direction was confirmed via Phase 1 clarification:
+> - **Procedural Map Scope**: Procedural map layout and route topology generation, pairing nodes dynamically with pre-designed, hand-crafted enemy encounters.
+> - **Encounter Balancing**: Threat-budget system matching stage tier and route difficulty with curated tactical synergy archetypes.
+> - **Navigation & Topology**: Multi-path branching directed acyclic graph (DAG) offering distinct high-risk/high-reward routes and safe utility trails.
 
-- **Potvrzený vizuální tón**: **Satirický c. k. tisk, pergamen, mosaz a razítka** — rozhraní využije estetiku císařsko-královských vyhlášek, dobových novinových rámů, červeno-černých úředních razítek, kolkových známek a mosazných plaket.
-- **Potvrzený rozsah priorit**:
-  1. **Sjednocení titulní Síně lovců a bitevní obrazovky** do jednoho soudržného vizuálního jazyka.
-  2. **Přehlednější horní lišta, akční panel a čitelnější karty destiček** s dobovým rámováním a čistou hierarchií.
-  3. **Mapa výpravy a události jako c. k. katastrální plány a vyhlášky** (c. k. okresní hejtmanství, úřední protokoly, hostinský výčepní lístek a cechovní dílna).
-  4. **Výraznější komiksové bubliny, razítka stavů a bojový protokol** ve stylu novinové karikatury a četnické svodky.
-- **Potvrzený přístup k rozvržení v boji**: **Zachovat stávající rozvržení a soustředit se na dobovou grafiku, čitelnost a textaci** — neměníme prostorové proporce 1D bojiště ani umístění klíčových ovládacích prvků, aby utrpěla svalová paměť či přehlednost na noteboocích a mobilech.
+- **Confirmed Decision 1**: Pre-designed enemy encounters cataloged by tactical archetype (e.g., *Frontline & Backline Buffer*, *Skirmisher Swarm*, *Cursed Artillery*, *Armored Patrol*) and threat budget (ratings 1–5).
+- **Confirmed Decision 2**: Procedural map generation builds dynamic multi-lane graphs per Act using deterministic seed-based RNG, guaranteeing route connectivity, path divergence, and climax convergence.
+- **Confirmed Decision 3**: Map UI upgraded with Austro-Hungarian cartographic styling, route connection lines (SVG paths between linked nodes), and risk-reward intelligence tags.
 
 ---
 
 ## 1. Overview & Core Concept
 
-- **Co úprava přináší**: Hráč se od první vteřiny ocitá uprostřed groteskní c. k. monarchie roku 1899, kde proti upíří šlechtě Hraběte Leopolda von Nochtic stojí sokolové, ponocní, vysloužilí dragouni i daňoví revidenti vyzbrojení osikovými kolíky vzor 1884 a razítkem „ZAMÍTNUTO“.
-- **Hlavní přínos pro UX**: Dosavadní rozhraní mělo výrazný stylový předěl mezi velmi tmavou titulní obrazovkou a světlým pergamenovým bojištěm. Sjednocením materiálů (ušlechtilý tiskový pergamen, litinově černé linky, císařská mosaz a pečetní červeň) a zpřehledněním karet destiček i horního panelu získá hra okamžitou čitelnost i silnější komediální atmosféru.
+### What It Does
+Replaces the static 6-step linear encounter sequence with an intelligent, seed-driven procedural stage map. Each Act constructs a branching directed acyclic graph (DAG) of 6–7 tiers featuring distinct strategic lanes (e.g., an aggressive *High-Risk Vanguard* path filled with Elites and Workshops vs. a cautious *Catacomb Bypass* packed with Events and Pubs). Encounter nodes draw dynamically from a rich taxonomy of pre-designed tactical encounters based on the node's tier budget and route difficulty.
+
+### Target Audience & Persona
+Players seeking deep roguelike deckbuilding strategy where macro-navigation (choosing when to risk taking an Elite path for better relics vs. visiting a Pub to heal) is just as consequential as tactical 1D combat positioning.
+
+### Key Value
+- **High Replayability**: Every run and seed produces unique route topography and varied tactical combat puzzles.
+- **Meaningful Agency**: Clear risk vs. reward trade-offs before entering each sector.
+- **Tactical Depth**: Combats present deliberate enemy synergies rather than random mismatched spawns.
 
 ---
 
 ## 2. User Experience & Visual Design
 
-### Klíčové uživatelské průchody (User Flows)
+### Key User Flows
+1. **Act Initiation / Map Entry**: Upon starting a run or advancing an Act, the player is presented with the *C. a k. Katastrální revírní mapa* (Imperial Cadastral Sector Map). The starting tier highlights valid entry points.
+2. **Route Reconnaissance**: The player inspects branching routes. Connection lines illuminate which downstream nodes are reachable. Node cards show tactical risk indicators (threat level, expected encounter archetype, and reward incentives).
+3. **Sector Selection & Engagement**: Selecting an available node commits the Hunter to that sector (battle, pub, workshop, event, or treasure). Active paths remain clearly distinguishable from locked or completed routes.
+4. **Forking Progression**: After victorious combat or sector resolution, the map returns with downstream connected nodes unlocked for the next tier.
+5. **Act Climax**: All navigable branches converge onto the Act Boss chamber.
 
-1. **Titulní Síň lovců (C. k. Evidenční list lovců a dobrovolníků)**:
-   - Záhlaví ve stylu titulní hlavičky satirického oběžníku *„C. a k. Mimořádný věstník pro potírání vampýrismu v zemích Koruny české“*.
-   - Pás 9 lovců stylizovaný jako dobové kabinetní portréty s mosazným číslováním `[1–9]` a čistými, nezahlcujícími statistikami.
-   - Levá vitrína hrdiny připomíná **Osobní kmenový list a cechovní dekret** s pečetí pivovaru, citátem z dobové karikatury a přehlednými atributy.
-   - Pravý panel funguje jako **Taktický spis a arzenál** s interaktivním detailem schopností a **Expediční podatelnou**, kde zadání seedu působí jako číslo jednací (`Č. j. CESNEK-1899`) a tlačítko startu jako potvrzený rozkaz k výpravě.
-
-2. **Horní c. k. velitelská lišta (HUD) a Fronta komba**:
-   - Horní lišta sjednocená jako **C. k. polní hlášení**: vlevo lokace a akt v podobě katastrální hlavičky + přehledné vitální ukazatele (Zdraví, Verva/Zubatá, Obrana/Štít, Brnění, Rozlícení, Zlaté dukáty a Upíří tesáky s číselným zarovnáním `tabular-nums`), uprostřed sbírka talismanů jako připnuté medaile a kolky, vpravo čistá sada úředních tlačítek.
-   - **Fronta komba (Bojový rozvrh)** nad bojištěm má podobu kolkované telegrafní pásky / taktického rozkazu se zřetelným číslováním slotů `#1 – #3`, zvýrazněnou rezonancí a okamžitou vizuální odezvou při připraveném 3-kombu.
-
-3. **Akční lišta a Karty destiček (C. k. Polní příručka a kolkované karty)**:
-   - Ovládací tlačítka (`Krok vlevo [A]`, `Otočit [W]`, `Čekat [S]`, `Krok vpravo [D]`, `Náhled` a `ODPÁLIT KOMBO [Space]`) zachovávají své přesné místo, ale dostávají charakter **mosazných a tiskových štítků** s výrazným stavem manévru kroku do nepřítele.
-   - **Karty destiček v ruce** jsou přepracovány jako **dobové ilustrované kolkované lístky**:
-     - Horní roh: klávesa `[1–4]` v tiskařském rámečku a zřetelná doba chladnutí.
-     - Střed: čistý ilustrovaný medailon s výrazným razítkem stavu při chladnutí (`⏳ CHLADNE`) nebo zařazení (`✓ VE FRONTĚ #1`).
-     - Spodní část: čitelný název v patkovém písmu `Fraunces`, oddělený řádek s okamžitým přepočtem poškození (včetně bonusu z Rozlícení) a dosahu bez vizuálního šumu.
-
-4. **Mapa výpravy, Hospoda, Dílna a Události**:
-   - **Mapa výpravy**: Stylizována jako **C. k. katastrální a vojenská mapa revíru** s dvojitou tiskařskou obrubou, označením pater jako *„Etapa I–VI“*, červeným razítkem `✓ VYŘÍZENO` u splněných uzlů a pečetí dostupných míst.
-   - **Hospoda „U Svěcené pípy“**: Vypadá jako **dobový hostinský jídelní a výčepní lístek** (1. Erární guláš a ležák na kuráž, 2. Promazání výzbroje sádlem, 3. Podpultový šmelc od štamgastů).
-   - **Kolářská a kovářská dílna**: Stylizována jako **cechovní zakázkový list** s přehledným porovnáním stavu *„Před úpravou“* a *„Mistrovské kování“*.
-   - **Příběhové události, Bojový protokol a Archiv**: Události jako **C. k. četnické hlášení a místní vyhláška**, Bojový deník jako **Četnický protokol šarvátky** a Hradní archiv jako **C. k. Kabinet kuriozit a zbrojnice**.
-
-5. **Komiksové bubliny a razítka na bojišti**:
-   - Komiksové bubliny nad postavami dostávají autentickou kreslenou linku z humoristických listů (dvojitý inkoustový obrys, špičatý zobáček mířící k mluvčímu, rozlišení tónu pro bojový pokřik sokola vs. aristokratickou hrozbu upíra).
-   - Stavy jako `[OKOLKOVÁNO]`, `🚨 1 AKCE`, `❓ ZMATENÍ` či `💀 ZUBATÁ` působí jako ostrá tiskařská razítka.
-
-### Vizuální identita a paleta
-
-- **Dominantní povrchy (60 %)**:
-  - `--bg-parchment` (`#f5ebd6`) a `--bg-parchment-card` (`#fff9ec`) — teplý rakousko-uherský novinový a listovní pergamen s jemnou kresbou a inkoustovým stínem.
-  - Noční pozadí scény (`#0d1522` s teplým jantarovým odleskem pouličních luceren).
-- **Strukturální prvky a typografické rámování (30 %)**:
-  - `--ink-dark` (`#1b130d`) — hluboká tiskařská čerň pro dvojité linky, novinové obruby a patkové nadpisy.
-  - `--wood-deep` (`#422814`) a `--brass-border` (`#b88938`) — patinovaná mosaz a tmavé dřevo hostince.
-- **Akcentní barvy a pečetě (10 %)**:
-  - `--brick-red` (`#9e2424`) — c. k. pečetní a razítková červeň pro primární akce (`ODPÁLIT KOMBO`), hrozby a pečetě.
-  - `--garlic-yellow` (`#e8be3e`) — císařská žluť a mosaz pro aktivní výběr, rezonance a nasvícené sloty.
-- **Typografie**:
-  - **Display / Titulky**: `Fraunces` (výrazná charakterová antikva evokující rakousko-uherský tisk a vyhlášky roku 1899).
-  - **Body / Popisy**: `Nunito` (čisté, výborně čitelné písmo pro mechanické popisy a deník).
-  - **Čísla a zkratky**: `tabular-nums` pro všechny počty HP, dukátů, tesáků, chladnutí a procenta Rozlícení.
+### Visual Identity & Theme
+- **Aesthetic Direction**: 19th-century Austro-Hungarian cartography, imperial military reconnaissance blueprints, and antique surveyor parchment.
+- **Color Palette & Atmosphere**:
+  - Dominant canvas: Deep sepia / aged parchment (`#1A1412` dark parchment base, `#2A1F1A` card containers).
+  - Structural lines: Muted antique gold and brass connection paths (`#A37C44` active paths, `#4A3B32` inactive connections).
+  - Accent colors: Imperial crimson stamp (`#991B1B`) for Elites/Bosses, amber wax seal (`#D97706`) for Treasures/Events, sage green (`#15803D`) for Pubs/Workshops.
+- **Typography & Hierarchy**:
+  - Display headers: High-contrast serif with letter-spaced imperial grandeur.
+  - Node metadata: Clean unboxed typography with bullet/separator dots (`·`), strictly avoiding generic pill badges.
+- **Interactive Feedback & Cartography Canvas**:
+  - SVG bezier connection rails drawn between interconnected nodes, glowing when traversed.
+  - Hover micro-interactions highlighting future branching possibilities.
 
 ---
 
 ## 3. Key Product Decisions & Trade-Offs
 
-- **Rozhodnutí 1: Sjednocení Síně lovců s herním pergamenem a mosazí**
-  - *Zvolený přístup*: Nahradit generické černé boxy na titulní obrazovce kombinací tmavého nočního rámu, mosazně kovaných karet s pergamenovými štítky, c. k. novinového záhlaví a evidenčního listu lovce.
-  - *Proč*: Odstraní se vizuální propast mezi výběrem postavy a samotnou hrou; hráč si už při výběru lovce čte skutečný dobový kmenový list.
-- **Rozhodnutí 2: Zachování přesné geometrie 1D bojiště a akčního panelu**
-  - *Zvolený přístup*: Ponechat stávající rozvržení `#hud-root`, `#center-stage`, `#bottom-root` a `#log-root` i výšky kamenných polí a postav, a veškeré úpravy provést formou dobové grafiky, tiskařských linek, přehlednějších karet a satirické textace.
-  - *Proč*: Stávající rozvržení je pečlivě odladěné pro nulové poskakování prvků při hoveru i pro obrazovky notebooků a mobilů.
+### Decision 1: Pre-Designed Encounters with Threat-Budget Allocation vs. Pure Random Spawning
+- **Chosen Approach**: Hand-craft a diverse library of 25+ themed tactical encounters across Acts 1–3, tagged with tactical archetypes (*Swarm Ambush*, *Iron Shieldwall*, *Blood Ritualist & Thralls*, *Crossfire Battery*) and assigned integer Threat Ratings (1 to 5). The stage generator selects encounters matching the node's allocated tier budget.
+- **Why**: Pure procedural enemy placement frequently produces unplayable soft-locks (e.g., three flying units trapping the player without ranged tiles) or trivial pushovers. Hand-crafted tactical synergies ensure every fight feels like a bespoke tactical challenge while procedural selection guarantees variety.
+- **Alternatives Considered**: Fully randomized enemy/terrain generation was considered, but rejected to maintain tight tactical balance and historical Czech/Austro-Hungarian satirical flavor.
+
+### Decision 2: Directed Acyclic Graph (DAG) with Lane Interpolation vs. Fixed Grid
+- **Chosen Approach**: Generate a forward-flowing DAG with 6 tiers. Each tier contains 2 to 3 nodes distributed across virtual lanes (Left, Center, Right). An edge-routing algorithm connects nodes forward while preventing crossing lines and ensuring that every path reaches the boss.
+- **Why**: Provides the classic roguelike feel (reminiscent of *Slay the Spire* / *FTL*) while guaranteeing zero dead ends and deterministic seed reproducibility.
+
+### Decision 3: Route Archetypes (Risk-Reward Specialization)
+- **Chosen Approach**: Tag lanes with route identities (e.g., *Cesta cti a chřtánu* with high threat, extra elite, and double gold/talisman rewards vs. *Bylinkářský úvoz* with lower threat and guaranteed pub/workshop).
+- **Why**: Gives strategic weight to path selection based on current deck strength and hero HP.
 
 ---
 
 ## 4. Technical Architecture & Data Strategy
 
-### Architektura zobrazení a tok stavu
+### Architecture & Component Diagram
 
 ```
-┌───────────────────────────────────────────────────────────────────────────┐
-│                        Kořen aplikace (React + Herní jádro)               │
-│  ┌───────────────────────────────────┐  ┌──────────────────────────────┐  │
-│  │   Titulní obrazovka (Síň lovců)   │  │     Bitevní a mapový rám     │  │
-│  │  • C. k. Věstník (Záhlaví)        │  │  • C. k. Polní HUD lišta     │  │
-│  │  • 9 kabinetních karet [1–9]      │  │  • Bojový rozvrh (Fronta)    │  │
-│  │  • Osobní kmenový list hrdiny     │  │  • 1D Bojiště + Bubliny      │  │
-│  │  • Taktický spis & Podatelna      │  │  • Kolkované destičky & Akce │  │
-│  └─────────────────┬─────────────────┘  └──────────────┬───────────────┘  │
-│                    │                                   │                  │
-│                    ▼                                   ▼                  │
-│  ┌─────────────────────────────────────────────────────────────────────┐  │
-│  │            C. k. Úřední modály, Katastrální mapa a Protokol         │  │
-│  │  • Katastrální mapa revíru (Etapy I–VI, razítka VYŘÍZENO)           │  │
-│  │  • Výčepní lístek „U Svěcené pípy“ & Cechovní list kolářské dílny   │  │
-│  │  • Četnická hlášení (Události, Odměny, Bojový protokol, Archiv)     │  │
-│  └─────────────────────────────────────────────────────────────────────┘  │
-└───────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│                           Run Engine (run.js)                           │
+│  - Seeded PRNG                                                          │
+│  - generateActMap(run, act):                                            │
+│    ├── generateGraphTopology(act, rng) -> Nodes & Edges (DAG)           │
+│    ├── assignRouteArchetypes(topology, rng)                             │
+│    └── allocateThreatEncounters(nodes, act, rng)                        │
+└────────────────────────────────────┬────────────────────────────────────┘
+                                     │
+                                     ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                     Encounters Registry & Budget                        │
+│                         (encounters.js)                                 │
+│  - ENCOUNTERS catalog categorized by Act, Archetype, & Threat (1-5)    │
+│  - pickEncounterForNode(act, nodeType, threatBudget, rng, usedIds)       │
+└────────────────────────────────────┬────────────────────────────────────┘
+                                     │
+                                     ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      Map Screen View (mapScreen.js)                     │
+│  - SVG Connection Rails (draws bezier curves between connected nodes)   │
+│  - Interactive Node Cards with unboxed threat & reward intelligence     │
+│  - Responsive Tier Columns & Active Route Highlighting                  │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Mapování interaktivních prvků a zachování funkčnosti
+### Data Model & State
 
-- **Titulní Síň lovců**:
-  - Zachovává klávesové zkratky `1–9` pro výběr lovce, `R` pro náhodné číslo jednací (seed), `F` pro celou obrazovku a `Enter` / `Space` pro okamžité zahájení výpravy.
-  - Každý atribut (`HP`, `Obrana`, `Rozlícení`, `Brnění`, `Zákeřný úder`, `Verva`), schopnost (`Pasivní signatura`, `Krok do nepřítele`, `3-Kombo Finišer`) i startovní destička mají plně funkční hover tooltip i rozklikávací c. k. detailní kartu s kovářskými vylepšeními.
-- **Bitevní HUD, Fronta komba a Karty destiček**:
-  - Zachovává všechny ovládací handlery (`onStep`, `onTurn`, `onWait`, `onExecuteQueue`, `onToggleComboPreview`, drag-and-drop i šipkové řazení ve frontě komba).
-  - Karty destiček jasně odlišují připravený stav, zařazení do fronty (`#1–#3`) a chladnutí pomocí nepřehlédnutelných dobových razítek.
-- **Mapa, Modály a Komiksové bubliny**:
-  - Všechny modály (Pravidla cechu, Celý protokol, Nastavení, Odměny po bitvě, Hospoda, Dílna, Události, Pokladnice, Konec výpravy, Hradní archiv) dostávají jednotnou c. k. hlavičku s dvojitou tiskařskou linkou, dobovou sazbou a okamžitou odezvou tlačítek.
+```typescript
+interface MapNode {
+  id: string;               // e.g. "a1_t2_n1"
+  tier: number;             // 0 to 5
+  lane: number;             // 0 = Left, 1 = Center, 2 = Right
+  type: NodeType;           // BATTLE | ELITE | PUB | WORKSHOP | EVENT | TREASURE | BOSS
+  title: string;            // Thematic sector title
+  routeTag?: string;        // e.g. "Vysoké riziko", "Zásobovací stezka"
+  threatRating: number;     // 1 to 5 (or 6 for Boss)
+  encounterId: string | null;
+  archetype?: string;       // e.g. "shieldwall", "swarm", "snipers"
+  next: string[];           // Forward connected node IDs
+  prev: string[];           // Backward parent node IDs
+}
 
----
+interface EncounterDefinition {
+  id: string;
+  act: number;
+  name: string;
+  backgroundTheme: string;
+  threatRating: number;     // 1 (starter) to 5 (extreme elite)
+  archetype: 'swarm' | 'shieldwall' | 'snipers' | 'disruption' | 'ambush' | 'boss';
+  isElite?: boolean;
+  isBoss?: boolean;
+  boardSize?: number;
+  heroCell?: number;
+  heroFacing?: number;
+  initialEnemies: Array<{ enemyId: string; cell: number; facing: number }>;
+  props?: Array<{ type: string; cell: number }>;
+  terrain?: Array<{ type: string; cell: number }>;
+  reinforcements?: Array<{
+    turnDelay: number;
+    gateCell: number;
+    enemyId: string;
+    candidatePool: string[];
+  }>;
+  goldReward: number;
+}
+```
 
-## 5. Audit schopností lovců (Soulad popisů s herním enginem)
-
-Byl proveden detailní křížový audit všech 9 lovců (`classic/venca`, `sedlak`, `dragoun`, `zlodejka`, `ponocny`, `silak`, `anglicanka`, `helsing`, `revident`) mezi texty v rozhraní (`src/game/config/loadouts.js`, `src/components/TitleScreen.tsx`, `src/game/config/tiles.js`) a reálným enginem (`src/game/engine/combat.js`, `src/game/engine/state.js`, `src/game/engine/combo.js`):
-
-1. **Rittmeister Jaromír Vraný (Dragoun) – Kavalírský nápřah & Důstojnická šavle**:
-   - *Nález*: Pasivka vyžadovala pohyb v tahu (`hero.movedThisTurn`), ale krok ukončoval tah a resetoval příznak dříve, než hráč mohl zahrát útočnou kartu; šavle navíc neměla implementován deklarovaný výpad.
-   - *Oprava v enginu*: Krok vpřed (`stepHero`) nově ukládá stav `kavalirsky_naprah` trvající do příštího úderu. Šavle (`dragoon_sabre`) dostala parametr `lungeForward: 1`, který provede reálný posun o 1 pole vpřed a aktivuje pasivku. Popisy sjednoceny.
-2. **Lady Gwendolyn Sterling – Čaj o páté**:
-   - *Nález*: 3-kombo v enginu udělovalo 3 DMG a navíc aplikovalo Krvácení (2) (`addStatus(e, 'bleed', 2)`), v popisu `loadouts.js` však krvácení chybělo.
-   - *Oprava*: Popis doplněn na: *„3-kombo: +4 HP, +4 Štít a vařící čaj opaří všechny v linii pohledu za 3 DMG + Krvácení (2)“*.
-3. **Sir Arthur Featherstone – Kruhový rotační rozptyl**:
-   - *Nález*: V enginu rotační salva zasahuje všechny nepřátele na celém bojišti (360°), zatímco text uváděl „v linii dohledu“.
-   - *Oprava*: Popis upřesněn na: *„3-kombo: Kruhová salva (360°) udělí 4 DMG + Krvácení (2) VŠEM nepřátelům na bojišti“*.
-4. **Revident Ignác Šiml – C. k. daňová kontrola & Úřední předvolání**:
-   - *Nález*: V popisu v `loadouts.js` chyběla zmínka o stěžejní mechanice přitažení nepřítele na 2 pole při otočení (W).
-   - *Oprava*: Popis rozšířen o obě fáze: *„Při otočení (W) čelem k nepříteli na 2 pole jej přitáhne a okolkuje (CD 2). Útok do cíle se stavem [OKOLKOVÁNO] udělí +1 DMG a přidá +1 Štít“*.
-5. **Ostatní lovci (Venca, Honza, Káča, Bartoloměj, Gustav)**:
-   - Zkontrolováni a ověřeni: Sokolský oblak, Selský beran a škálování Rozlícením, Zákeřný úder +100 % a záměna Káči, Zákaz nočního vycházení ponocného, Cirkusová dominance a kolizní bonusy siláka přesně odpovídají herním vzorcům.
+### Key Implementation Steps
+1. **Encounter Library Expansion (`src/game/config/encounters.js`)**:
+   - Expand the pre-designed encounter roster from ~10 to 24+ tactical scenarios across Acts 1, 2, and 3.
+   - Tag each encounter with `threatRating`, `archetype`, and thematic descriptions.
+   - Implement helper `queryEncounters({ act, isElite, minThreat, maxThreat, excludeIds })`.
+2. **Procedural Graph Generator (`src/game/engine/run.js`)**:
+   - Implement `generateProceduralActGraph(run, act)` using seeded RNG.
+   - Build a 6-tier DAG where Tier 0 has 1–2 entry points, Tiers 1–4 have 2–3 branching nodes with distinct risk/reward routes, and Tier 5 culminates in the Act Boss.
+   - Add threat budget scaling (Tier 0: Threat 1, Tier 1: Threat 1–2, Tier 2: Threat 2–3, Tier 3: Threat 3–4 or Elite Threat 4–5, Tier 4: Utility nodes + Threat 4, Tier 5: Boss).
+   - Ensure guaranteed forward pathing with backward/forward edge validation.
+3. **Map Screen Visualization (`src/game/ui/mapScreen.js` & `src/game/styles/ui.css`)**:
+   - Render SVG curved connection rails connecting node coordinates directly on the cadastral parchment.
+   - Update node cards to display tactical intelligence: encounter archetype preview, threat meter (subtle skulls/stamps), and unboxed metadata.
+   - Maintain strict adherence to zero-pill guidelines and the 60-30-10 color budget.
+4. **Integration Verification & Invariant Testing**:
+   - Run verification test scripts checking graph connectivity across 100+ random seeds to verify that no node is orphaned and all paths reach the boss.
