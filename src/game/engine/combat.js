@@ -419,6 +419,8 @@ export function executeEnemyQueuedTile(state, enemy, tileDef, events = []) {
     let hitStep = null;
     let endCell = enemy.cell;
     for (const p of tileDef.pattern || []) {
+      // Panský rozkaz: sero (enemy)
+      if ((state.roomOrder?.id === 'sero' || state.roomOrder === 'sero') && p.offset > 3) break;
       const c = enemy.cell + enemy.facing * p.offset;
       if (!isValidCell(c, state)) break;
       endCell = c;
@@ -917,6 +919,14 @@ export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events 
 
   if (tile.type === 'move' || tile.leapDistance) {
     hero.movedThisTurn = true;
+    // Panský rozkaz: zakaz_ustupu
+    if ((state.roomOrder?.id === 'zakaz_ustupu' || state.roomOrder === 'zakaz_ustupu') && dir !== hero.facing) {
+      hero.bumpCooldown = (hero.bumpCooldown || 0) + 1;
+      events.push({
+        type: 'log',
+        text: '📜 Panský zákaz ústupu! Krok vzad vyčerpává a prodlužuje Chladnutí manévru o 1!'
+      });
+    }
   }
 
   if (typeof tile.furyChange === 'number') {
@@ -1131,6 +1141,8 @@ export function executeHeroTileEffect(state, tile, slotIdx, comboLength, events 
     let hitStep = null;
     let endCell = null;
     for (const p of tile.pattern || []) {
+      // Panský rozkaz: sero (hero)
+      if ((state.roomOrder?.id === 'sero' || state.roomOrder === 'sero') && p.offset > 3) break;
       const c = hero.cell + hero.facing * p.offset;
       if (!isValidCell(c, state)) break;
       endCell = c;
@@ -1754,6 +1766,25 @@ export function advanceTurnAfterPlayerAction(state, events = [], extraCdReductio
 
   processReinforcements(state, events);
   state.turn += 1;
+  // Panský rozkaz: cesnek (Česnekový průvan z kuchyní)
+  if (state.roomOrder?.id === 'cesnek' || state.roomOrder === 'cesnek') {
+    if (state.turn > 1 && (state.turn - 1) % 3 === 0) {
+      const gates = [0, state.boardSize - 1];
+      for (const g of gates) {
+        state.terrain[g] = { type: 'garlic_cloud', duration: 2 };
+        events.push({
+          type: 'terrain_spawned',
+          cell: g,
+          terrainType: 'garlic_cloud',
+          duration: 2
+        });
+      }
+      events.push({
+        type: 'log',
+        text: '🧄 Česnekový průvan z panských kuchyní zamořil brány štiplavým oblakem!'
+      });
+    }
+  }
   state.heroStartedTurnInReaper = Boolean(state.hero?.isReaperActive && state.hero.hp <= 0);
   checkBattleEnd(state, events);
   assertBoardInvariants(state);

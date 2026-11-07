@@ -1263,6 +1263,27 @@
   line-height: 1.15;
 }
 
+
+.map-node-order-pill {
+  font-size: 0.65rem;
+  font-family: var(--font-flavor);
+  background: rgba(180, 83, 9, 0.15);
+  color: #92400e;
+  border: 1px solid rgba(180, 83, 9, 0.35);
+  padding: 1px 4px;
+  border-radius: 4px;
+  margin-top: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 700;
+  line-height: 1.1;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .map-node-archetype {
   font-size: 0.7rem;
   color: #78350f;

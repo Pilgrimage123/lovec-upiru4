@@ -1149,7 +1149,11 @@ export function spawnPropEntity(propType, cell) {
 export function createBattleState(opts = {}) {
   const seed = opts.seed || 'VENCA-1899';
   const rng = opts.rng || createRng(seed);
-  const enc = ENCOUNTERS[opts.encounterId || 'tutorial_1'] || ENCOUNTERS.tutorial_1;
+  const enc =
+    opts.node?.encounter ||
+    opts.encounter ||
+    (opts.encounterId ? (ENCOUNTERS[opts.encounterId] || ENCOUNTERS.tutorial_1) : ENCOUNTERS.tutorial_1);
+  const roomOrder = opts.node?.roomOrder || enc.roomOrder || null;
   const curseLevel = Math.max(0, Math.min(5, Number(opts.curseLevel) || 0));
   const talismans = [...(opts.talismans || [])];
   const maxQueueSlots = talismans.includes('wet_kerchief') ? 4 : 3;
@@ -1339,6 +1343,15 @@ export function createBattleState(opts = {}) {
       ent.statuses = ent.statuses || {};
       ent.statuses.empower = (ent.statuses.empower || 0) + 1;
     }
+    
+    // Panský rozkaz: Posvěcená kaple (Zchlazení pro nemrtvé)
+    if (
+      (roomOrder?.id === 'kaple' || roomOrder === 'kaple') &&
+      (ent.isUndead || ['zombie_hynek', 'kostlivec_fabian', 'srpak', 'morak', 'upiri_trpaslik', 'upirka_cilka', 'hrabenka_amalie', 'rytir_prizrak'].includes(ent.kind || ent.enemyId))
+    ) {
+      ent.fury = -25;
+      ent.currentFury = -25;
+    }
     return ent;
   });
 
@@ -1380,6 +1393,16 @@ export function createBattleState(opts = {}) {
     }
   }
 
+  
+  // Invariant 1 safety enforcement (Safe Spawn Zone)
+  for (const c of [hero.cell, hero.cell - 1, hero.cell + 1]) {
+    if (c >= 0 && c < boardSize) {
+      if (terrain[c]?.type === 'pit' || terrain[c]?.type === 'spikes') {
+        terrain[c] = { type: 'none' };
+      }
+    }
+  }
+
   if (talismans.includes('garlic_braid')) {
     terrain[hero.cell] = { type: 'garlic_cloud', duration: 2 };
   }
@@ -1414,6 +1437,7 @@ export function createBattleState(opts = {}) {
     rng,
     encounterId: enc.id,
     encounterName: enc.name,
+    roomOrder,
     boardSize,
     act: enc.act || 1,
     isTutorial: Boolean(enc.isTutorial),

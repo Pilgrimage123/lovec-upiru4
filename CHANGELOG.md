@@ -4,6 +4,30 @@ Veškeré významné změny v projektu Lovec upírů jsou zaznamenávány v tomt
 
 Formát vychází z [Keep a Changelog](https://keepachangelog.com/cs/1.0.0/).
 
+## [2.2.0] - 2026-11-07
+
+### Přidáno & Změněno (Added & Changed)
+- **Chytrý systém komnat a procedurální generování bojiště (ADR 0015)**:
+  - **Procedurální syntéza Bojiště (Smart Tactical Synthesizer)**:
+    - Odklon od statických šablon k dynamické procedurální syntéze 1D arén z rozpočtu Hrozby (1–5) a Taktických archetypů (`swarm`, `shieldwall`, `snipers`, `brute_force`, `disruption`, `ambush`, `elite`).
+    - Zaveden registr rolí nepřátel `ENEMY_ROLE_REGISTRY` a bodového ohodnocení (Roj = 1b, Úderník = 2b, Předvoj/Štít = 3b, Střelec = 3b, Elita = 5b).
+    - Zastropování počtu nepřátel na startu (max 2 v Aktu 1, max 3 v Aktech 2–3); zbývající body rozpočtu přicházejí v telegrafovaných vlnách z bran (vlna 1 v tahu 4, vlna 2 v tahu 7) s dynamickým zrychlením při board-clearu.
+  - **3 bezpečnostní invarianty terénu a férovosti**:
+    - *Zóna bezpečného nápřahu*: Startovní pole lovce a jeho sousedé (`heroCell ± 1`) nikdy neobsahují propast ani kůly (garance bezpečného 1. tahu).
+    - *Hustota pastí*: Pasti a překážky nepřekročí 25 % délky bojiště.
+    - *Dostupnost*: Zákaz neprostupných zdí z nerozbitných překážek.
+  - **Panské rozkazy komnaty (C. k. taktické anomálie)**:
+    - 6 autentických tematických rozkazů (🪵 *Ztrouchnivělá podlaha*, 🧄 *Česnekový průvan z kuchyní*, 📜 *C. k. zákaz ústupu*, 🧱 *Úzká hradební římsa*, ⛪ *Posvěcená kaple*, 🕯️ *Zámecké šero a průvan*) se specifickými pravidly pro pohyb, dostřel a terén.
+    - Selektivní výskyt na Severní výspě, u Elitních drábů a v bězích s aktivní Kletbou.
+    - Plné telegrafování odznaku Panského rozkazu (`.map-node-order-pill`) přímo na Katastrální revírní mapě.
+  - **Katastrální revírní mapa rozšířena na 8 etap (Etapa I–VIII)**:
+    - Procedurální DAG graf s 8 etapami postupu panstvím a garancí minimálně 3–4 šarvátek před bossem.
+    - Před-bossovská příprava (Etapa VII): Všechny cesty se před finálním bossem sbíhají do přípravného rozcestí s volbou mezi Hospodou U Svěcené pípy (léčení, proviant) a Kolářskou dílnou mistra Hanuše (vylepšení destiček).
+    - Trůnní sál pána hradu (Etapa VIII): Vládce patra s unikátními fázemi.
+  - **Doménová dokumentace a slovník**:
+    - V `GLOSSARY.md` ukotveny pojmy *Katastrální revír*, *Komnata*, *Bojiště* a *Panský rozkaz komnaty*.
+    - Sepsán architektonický záznam `docs/adr/0015-chytry-system-komnat-a-proceduralni-bojiste.md`.
+
 ## [2.1.0] - 2026-11-06
 
 ### Přidáno & Změněno (Added & Changed)

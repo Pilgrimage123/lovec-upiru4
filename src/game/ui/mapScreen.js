@@ -11,7 +11,9 @@ export function renderMapScreen(container, runState, callbacks = {}) {
   const availableIds = new Set(availableNodes.map((n) => n.id));
   const completedIds = new Set(runState.completedNodeIds || []);
 
-  const tiersHtml = [0, 1, 2, 3, 4, 5]
+  const maxTier = runState.map?.nodes?.length > 0 ? Math.max(...runState.map.nodes.map((n) => n.tier)) : 7;
+  const tierIndices = Array.from({ length: maxTier + 1 }, (_, i) => i);
+  const tiersHtml = tierIndices
     .map((tierIdx) => {
       const nodesHtml = runState.map.nodes
         .filter((n) => n.tier === tierIdx)
@@ -64,6 +66,7 @@ export function renderMapScreen(container, runState, callbacks = {}) {
                   <div class="map-node-archetype">
                     ${callbacks.canReturnToBattle && isCurrent ? "⚔️ Právě bojuješ!" : (node.archetypeName || getNodeSubtitle(node.type))}
                   </div>
+                  ${node.roomOrder ? `<div class="map-node-order-pill" title="Panský rozkaz: ${escapeHtml(node.roomOrder.name)} — ${escapeHtml(node.roomOrder.tacticalHint || node.roomOrder.description)}">${escapeHtml(node.roomOrder.badge || "📜")} ${escapeHtml(node.roomOrder.shortName || node.roomOrder.name)}</div>` : ""}
                   ${node.tacticalHint ? `<div class="map-node-hint-preview">${node.tacticalHint}</div>` : ""}
                 </div>
               </div>
@@ -72,8 +75,9 @@ export function renderMapScreen(container, runState, callbacks = {}) {
         })
         .join("");
 
-      const tierRoman = ["Etapa I", "Etapa II", "Etapa III", "Etapa IV", "Etapa V", "Etapa VI"][tierIdx] || `Etapa ${tierIdx + 1}`;
-      const tierSub = getTierStrategicPurpose(tierIdx);
+      const romanNumerals = ["Etapa I", "Etapa II", "Etapa III", "Etapa IV", "Etapa V", "Etapa VI", "Etapa VII", "Etapa VIII", "Etapa IX", "Etapa X"];
+      const tierRoman = romanNumerals[tierIdx] || `Etapa ${tierIdx + 1}`;
+      const tierSub = getTierStrategicPurpose(tierIdx, maxTier);
 
       return `
         <div class="map-tier-column" data-tier-idx="${tierIdx}">

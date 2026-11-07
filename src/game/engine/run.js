@@ -3,7 +3,7 @@ import { NODE_TYPES } from '../config/constants.js';
 import { HERO_TILES, getHeroTileDefinition } from '../config/tiles.js';
 import { TALISMANS } from '../config/talismans.js';
 import { STARTING_LOADOUTS } from '../config/loadouts.js';
-import { queryEncounters, ENCOUNTERS } from '../config/encounters.js';
+import { queryEncounters, ENCOUNTERS, synthesizeEncounter, ROOM_ORDERS, ARCHETYPES } from '../config/encounters.js';
 import { createRng } from './rng.js';
 
 export const ROUTE_ARCHETYPES = {
@@ -136,7 +136,7 @@ function wouldCrossExistingEdge(u, v, curNodes, nxtNodes) {
  * - No two consecutive identical non-combat utility nodes (e.g. PUB -> PUB, WORKSHOP -> WORKSHOP).
  * - Guarantees every root-to-boss path encounters at least 2 combat rooms.
  */
-function enforcePathPacingInvariants(allNodes, rng) {
+function enforcePathPacingInvariants(allNodes, rng, maxTier = 7) {
   const nodeById = new Map(allNodes.map((n) => [n.id, n]));
   const nonCombatTypes = new Set([
     NODE_TYPES.PUB,
@@ -146,7 +146,7 @@ function enforcePathPacingInvariants(allNodes, rng) {
   ]);
 
   for (const node of allNodes) {
-    if (node.tier === 0 || node.tier === 5) continue;
+    if (node.tier === 0 || node.tier === maxTier) continue;
     if (!nonCombatTypes.has(node.type)) continue;
 
     const parentTypes = node.prev
@@ -155,10 +155,10 @@ function enforcePathPacingInvariants(allNodes, rng) {
 
     // Prevent consecutive identical utility node types along any edge (e.g. PUB -> PUB)
     if (parentTypes.includes(node.type)) {
-      if (node.tier <= 3) {
+      if (node.tier < maxTier - 1) {
         node.type = NODE_TYPES.BATTLE;
       } else {
-        // In Tier 4, alternate between WORKSHOP and PUB
+        // In Pre-Boss Tier (maxTier - 1), alternate between WORKSHOP and PUB
         node.type = node.type === NODE_TYPES.PUB ? NODE_TYPES.WORKSHOP : NODE_TYPES.PUB;
       }
     }
@@ -166,7 +166,7 @@ function enforcePathPacingInvariants(allNodes, rng) {
     // Prevent 3 consecutive non-combat nodes by checking grandparents
     const allParentsNonCombat =
       parentTypes.length > 0 && parentTypes.every((t) => nonCombatTypes.has(t));
-    if (allParentsNonCombat && node.tier <= 3 && rng.nextFloat() < 0.85) {
+    if (allParentsNonCombat && node.tier < maxTier - 1 && rng.nextFloat() < 0.85) {
       node.type = NODE_TYPES.BATTLE;
     }
   }
@@ -174,19 +174,20 @@ function enforcePathPacingInvariants(allNodes, rng) {
 
 /**
  * Procedural DAG Map Generator with Planar Topology, Markov Path-Pacing Solver,
- * Threat Budget Scaling, and Parent-Aware Tactical Synergy Archetypes.
+ * Threat Budget Scaling, and Smart Stage Procedural Synthesis.
  */
 export function generateActMap(run, act) {
   const rng = run.rng || createRng(`${run.seed}_act${act}`);
   const curseLevel = Math.max(0, Math.min(5, Number(run?.curseLevel) || 0));
-  const tiers = [[], [], [], [], [], []];
-  const usedEncounterIds = [];
+  // 8 Tiers: 0 to 7 (Etapa I až VIII)
+  const tiers = [[], [], [], [], [], [], [], []];
+  const maxTier = tiers.length - 1; // 7
 
   // =========================================================================
-  // 1. TIER TOPOLOGY GENERATION (6 Tiers: 0 to 5)
+  // 1. TIER TOPOLOGY GENERATION (8 Tiers: 0 to 7)
   // =========================================================================
 
-  // TIER 0: Entry Point
+  // TIER 0 (Etapa I): Průlom hradeb (Vstupní komnata)
   if (act === 1) {
     tiers[0].push({
       lane: 1,
@@ -198,42 +199,56 @@ export function generateActMap(run, act) {
     tiers[0].push({ lane: 2, type: NODE_TYPES.BATTLE });
   }
 
-  // TIER 1: First Branching Exploration (2 to 3 lanes)
+  // TIER 1 (Etapa II): První průzkum (2-3 cesty)
   tiers[1].push({ lane: 0, type: NODE_TYPES.BATTLE });
-  if (rng.nextFloat() < 0.35) {
+  if (rng.nextFloat() < 0.45) {
     tiers[1].push({ lane: 1, type: NODE_TYPES.BATTLE });
   }
-  const t1RightType = rng.nextFloat() < 0.6 ? NODE_TYPES.EVENT : NODE_TYPES.BATTLE;
+  const t1RightType = rng.nextFloat() < 0.65 ? NODE_TYPES.BATTLE : NODE_TYPES.EVENT;
   tiers[1].push({ lane: 2, type: t1RightType });
 
-  // TIER 2: Strategic Crossroads (3 lanes: high risk battle, center workshop/battle, pub/event)
+  // TIER 2 (Etapa III): Revírní křižovatka (3 cesty)
   tiers[2].push({ lane: 0, type: NODE_TYPES.BATTLE });
-  const t2CenterType = rng.nextFloat() < 0.5 ? NODE_TYPES.WORKSHOP : NODE_TYPES.BATTLE;
+  const t2CenterType = rng.nextFloat() < 0.5 ? NODE_TYPES.BATTLE : NODE_TYPES.WORKSHOP;
   tiers[2].push({ lane: 1, type: t2CenterType });
   const t2RightType = rng.nextFloat() < 0.55 ? NODE_TYPES.PUB : NODE_TYPES.EVENT;
   tiers[2].push({ lane: 2, type: t2RightType });
 
-  // TIER 3: High-Stakes Trial (Lane 0 guaranteed Elite; Lane 2 Treasure or Battle)
-  tiers[3].push({ lane: 0, type: NODE_TYPES.ELITE });
-  if (rng.nextFloat() < 0.65) {
+  // TIER 3 (Etapa IV): Hluboké nádvoří (2-3 cesty)
+  tiers[3].push({ lane: 0, type: NODE_TYPES.BATTLE });
+  if (rng.nextFloat() < 0.55) {
     const t3CenterType = rng.nextFloat() < 0.5 ? NODE_TYPES.BATTLE : NODE_TYPES.EVENT;
     tiers[3].push({ lane: 1, type: t3CenterType });
   }
   const t3RightType = rng.nextFloat() < 0.5 ? NODE_TYPES.TREASURE : NODE_TYPES.BATTLE;
   tiers[3].push({ lane: 2, type: t3RightType });
 
-  // TIER 4: Pre-Boss Preparation (Workshop + Pub for gearing and healing)
-  tiers[4].push({
+  // TIER 4 (Etapa V): Panská výzva (Garantovaný Elitní dráb v Severní výspě, 3 cesty)
+  tiers[4].push({ lane: 0, type: NODE_TYPES.ELITE });
+  tiers[4].push({ lane: 1, type: NODE_TYPES.BATTLE });
+  const t4RightType = rng.nextFloat() < 0.5 ? NODE_TYPES.PUB : NODE_TYPES.TREASURE;
+  tiers[4].push({ lane: 2, type: t4RightType });
+
+  // TIER 5 (Etapa VI): Předpolí pevnosti (2-3 cesty)
+  tiers[5].push({ lane: 0, type: NODE_TYPES.BATTLE });
+  if (rng.nextFloat() < 0.6) {
+    tiers[5].push({ lane: 1, type: NODE_TYPES.BATTLE });
+  }
+  const t5RightType = rng.nextFloat() < 0.5 ? NODE_TYPES.EVENT : NODE_TYPES.BATTLE;
+  tiers[5].push({ lane: 2, type: t5RightType });
+
+  // TIER 6 (Etapa VII): Před-bossovská příprava (Hospoda U Svěcené pípy + Kolářská dílna)
+  tiers[6].push({
     lane: 0,
-    type: rng.nextFloat() < 0.35 ? NODE_TYPES.BATTLE : NODE_TYPES.WORKSHOP
+    type: NODE_TYPES.WORKSHOP
   });
-  tiers[4].push({
+  tiers[6].push({
     lane: 2,
     type: NODE_TYPES.PUB
   });
 
-  // TIER 5: The Act Boss Chamber (All paths converge here)
-  tiers[5].push({
+  // TIER 7 (Etapa VIII): Sál Hradního bosse (Všechny cesty se sbíhají zde)
+  tiers[7].push({
     lane: 1,
     type: NODE_TYPES.BOSS
   });
@@ -258,7 +273,7 @@ export function generateActMap(run, act) {
   // 3. PLANAR DIRECTED ACYCLIC GRAPH (DAG) EDGE ROUTING
   // =========================================================================
 
-  for (let t = 0; t < 5; t++) {
+  for (let t = 0; t < tiers.length - 1; t++) {
     const curNodes = tiers[t];
     const nxtNodes = tiers[t + 1];
 
@@ -310,13 +325,13 @@ export function generateActMap(run, act) {
   // 4. MARKOV PATH-PACING CONSTRAINT SOLVER
   // =========================================================================
 
-  enforcePathPacingInvariants(allNodes, rng);
+  enforcePathPacingInvariants(allNodes, rng, maxTier);
 
   // =========================================================================
-  // 5. THREAT BUDGET & PARENT-AWARE TACTICAL ENCOUNTER ALLOCATION
+  // 5. THREAT BUDGET & PROCEDURAL ENCOUNTER SYNTHESIS
   // =========================================================================
 
-  const nodeMap = new Map(allNodes.map((n) => [n.id, n]));
+  const roomOrdersList = Object.values(ROOM_ORDERS);
 
   allNodes.forEach((node) => {
     const route = ROUTE_ARCHETYPES[node.lane] || ROUTE_ARCHETYPES[1];
@@ -325,47 +340,57 @@ export function generateActMap(run, act) {
     // Base threat target curve by Act and Tier depth + Curse scaling
     let baseThreat = 1;
     if (act === 1) {
-      baseThreat = node.tier <= 1 ? 1 : node.tier <= 2 ? 2 : 3;
+      baseThreat = node.tier <= 1 ? 1 : node.tier <= 3 ? 2 : 3;
     } else if (act === 2) {
-      baseThreat = node.tier <= 1 ? 2 : node.tier <= 2 ? 3 : 4;
+      baseThreat = node.tier <= 1 ? 2 : node.tier <= 3 ? 3 : 4;
     } else {
-      baseThreat = node.tier <= 1 ? 3 : node.tier <= 2 ? 4 : 5;
+      baseThreat = node.tier <= 1 ? 3 : node.tier <= 3 ? 4 : 5;
     }
     const curseThreatBump = Math.floor(curseLevel / 3);
 
-    // Gather parent archetypes to avoid monotonous back-to-back combat repetitions
-    const parentArchetypes = node.prev
-      .map((pid) => nodeMap.get(pid)?.archetype)
-      .filter(Boolean);
+    // Panský rozkaz komnaty (Severní výspa, Elitní drábi, nebo vyšší Kletby)
+    let assignedOrder = null;
+    if (node.type === NODE_TYPES.ELITE) {
+      assignedOrder = rng.pick(roomOrdersList) || roomOrdersList[0];
+    } else if (node.lane === 0 && (node.type === NODE_TYPES.BATTLE)) {
+      if (curseLevel >= 1 || rng.nextFloat() < 0.6) {
+        assignedOrder = rng.pick(roomOrdersList) || roomOrdersList[0];
+      }
+    } else if (curseLevel >= 3 && node.type === NODE_TYPES.BATTLE && rng.nextFloat() < 0.4) {
+      assignedOrder = rng.pick(roomOrdersList) || roomOrdersList[0];
+    }
+    node.roomOrder = assignedOrder;
 
     if (node.type === NODE_TYPES.ELITE) {
       node.threatRating = act === 1 ? 4 : 5;
-      const enc = queryEncounters({
+      const enc = synthesizeEncounter({
         act,
+        threatRating: node.threatRating,
+        archetype: 'elite',
         isElite: true,
-        threatTarget: node.threatRating,
-        preferredArchetype: 'elite',
-        avoidArchetypes: parentArchetypes,
+        isBoss: false,
+        roomOrder: node.roomOrder,
         rng,
-        excludeIds: usedEncounterIds
+        curseLevel,
+        nodeId: node.id
       });
+      node.encounter = enc;
       node.encounterId = enc.id;
       node.title = enc.name;
       node.archetype = enc.archetype;
       node.archetypeName = enc.archetypeName;
       node.tacticalHint = enc.tacticalHint;
-      node.expectedGoldReward = (enc.goldReward || 30) + (node.lane === 0 ? 4 : 0);
-      usedEncounterIds.push(enc.id);
+      node.expectedGoldReward = (enc.goldReward || 32) + (node.lane === 0 ? 6 : 0);
     } else if (node.type === NODE_TYPES.BOSS) {
       node.threatRating = act === 1 ? 5 : 6;
       const enc = queryEncounters({ act, isBoss: true, rng });
+      node.encounter = enc;
       node.encounterId = enc.id;
       node.title = getActBossTitle(act);
       node.archetype = enc.archetype;
       node.archetypeName = enc.archetypeName;
       node.tacticalHint = enc.tacticalHint;
       node.expectedGoldReward = enc.goldReward || 50;
-      usedEncounterIds.push(enc.id);
     } else if (node.type === NODE_TYPES.BATTLE) {
       const adjustedThreat = Math.max(
         1,
@@ -373,30 +398,31 @@ export function generateActMap(run, act) {
       );
       node.threatRating = adjustedThreat;
 
-      let enc;
-      if (act === 1 && node.tier === 0 && node.isTutorial) {
-        enc = ENCOUNTERS.tutorial_1;
-      } else {
-        enc = queryEncounters({
-          act,
-          isElite: false,
-          isBoss: false,
-          threatTarget: adjustedThreat,
-          preferredArchetype: route.preferredArchetype,
-          avoidArchetypes: parentArchetypes,
-          rng,
-          excludeIds: usedEncounterIds
-        });
-      }
+      const isTut = act === 1 && node.tier === 0 && Boolean(node.isTutorial);
+      const chosenArchetype = isTut ? 'swarm' : (route.preferredArchetype || 'swarm');
 
+      const enc = synthesizeEncounter({
+        act,
+        threatRating: adjustedThreat,
+        archetype: chosenArchetype,
+        isElite: false,
+        isBoss: false,
+        isTutorial: isTut,
+        roomOrder: node.roomOrder,
+        rng,
+        curseLevel,
+        nodeId: node.id
+      });
+
+      node.encounter = enc;
       node.encounterId = enc.id;
       node.title = enc.name;
       node.archetype = enc.archetype;
       node.archetypeName = enc.archetypeName;
       node.tacticalHint = enc.tacticalHint;
-      node.expectedGoldReward = (enc.goldReward || 18) + (node.lane === 0 ? 3 : 0);
-      usedEncounterIds.push(enc.id);
+      node.expectedGoldReward = (enc.goldReward || 18) + (node.lane === 0 ? 4 : 0);
     } else {
+      node.encounter = null;
       node.encounterId = null;
       node.threatRating = 0;
       node.archetype = null;

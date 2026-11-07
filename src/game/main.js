@@ -240,6 +240,7 @@ function enterMapNode(node) {
     appState.battleState = createBattleState({
       seed: `${run.seed}_${node.id}`,
       rng: run.rng,
+      node: node,
       encounterId: node.encounterId,
       heroMaxHp: run.heroMaxHp,
       heroHp: run.heroHp,

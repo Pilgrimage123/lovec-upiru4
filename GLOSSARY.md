@@ -152,6 +152,23 @@ _Avoid_: Friendly Fire, Zásah vlastního, Sebezranění
 Dočasný posun připraveného odpálení fronty o jeden tah vyvolaný stavem Zmatení (❓); postava zobrazuje pouze standardní otazník a rozpracovaná fronta zůstává na pozadí beze změny zachována.
 _Avoid_: Stun delay, Odklad, Přerušení
 
+**Katastrální revír**:
+Jedna ze tří souběžných větví postupu panstvím (Severní výspa, Císařská silnice, Jižní hradební úvoz) definující celkový charakter hrozeb, sklon k taktickým archetypům a výši kořisti.
+_Avoid_: Lane, Trasa, Linie, Koridor
+
+**Komnata**:
+Jednotlivý uzel na Katastrální revírní mapě představující konkrétní zastavení výpravy (Šarvátka, Elitní dráb, Hospoda U Svěcené pípy, Kolářská dílna, Podivné setkání, Zapomenutá truhlice, Sál pána hradu).
+_Avoid_: Uzel, Node, Stage, Místnost, Level
+
+**Bojiště**:
+Fyzická lineární 1D aréna o délce 6–11 polí, na níž probíhá taktická šarvátka v komnatě za přítomnosti lovce, nepřátel, terénních pastí a překážek.
+_Avoid_: Aréna, Šachovnice, Bojové pole, Grid, Stage
+
+**Panský rozkaz komnaty**:
+Procedurální environmentální či taktická anomálie vyhlášená správou panství (např. ztrouchnivělá prkna, česnekový průvan, zákaz ústupu, noční šero), která modifikuje pravidla nebo terén v dané komnatě.
+_Avoid_: Room modifier, Affix, Mutátor, Kletba sálu, Dungeon trait
+
+
 
 
 

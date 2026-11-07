@@ -614,7 +614,7 @@ export const ENCOUNTERS = {
     ],
     terrain: [
       { type: 'plank_intact', cell: 4 },
-      { type: 'spikes', cell: 1 }
+      { type: 'spikes', cell: 0 }
     ],
     reinforcements: [
       {
@@ -999,3 +999,441 @@ export function queryEncounters(opts = {}) {
   return scored[0]?.enc || pool[0];
 }
 
+
+
+export const ENEMY_ROLES = {
+  SWARM: 'swarm',     // 1 bod (Roj / Hlodavci)
+  STRIKER: 'striker', // 2 body (Úderník / Šarvátkář)
+  TANK: 'tank',       // 3 body (Předvoj / Štít)
+  SNIPER: 'sniper',   // 3 body (Střelec / Podpora)
+  ELITE: 'elite'      // 5 bodů (Elitní dráb / Inkvizitor)
+};
+
+export const ROLE_COSTS = {
+  swarm: 1,
+  striker: 2,
+  tank: 3,
+  sniper: 3,
+  elite: 5
+};
+
+export const ENEMY_ROLE_REGISTRY = {
+  // Roj (1 bod)
+  netopyr: { role: 'swarm', cost: 1, acts: [1, 2], name: 'Hladový netopýr' },
+  krysa_piskota: { role: 'swarm', cost: 1, acts: [1, 2], name: 'Krysa Piškota' },
+  sliz: { role: 'swarm', cost: 1, acts: [1], name: 'Hradní sliz' },
+  bazinny_sliz: { role: 'swarm', cost: 1, acts: [2, 3], name: 'Bažinný sliz' },
+  divocak: { role: 'swarm', cost: 1, acts: [1], name: 'Zdivočelý kanec' },
+  praktikant: { role: 'swarm', cost: 1, acts: [2, 3], name: 'Advokátní praktikant' },
+  vlkodav: { role: 'swarm', cost: 1, acts: [2], name: 'Panský vlkodav' },
+  buldok: { role: 'swarm', cost: 1, acts: [2, 3], name: 'C. k. buldok' },
+
+  // Úderník (2 body)
+  srpak: { role: 'striker', cost: 2, acts: [1, 2], name: 'Podroušený srpák' },
+  kyjovec: { role: 'striker', cost: 2, acts: [1, 2], name: 'Hromotlucký kyjovec' },
+  morak: { role: 'striker', cost: 2, acts: [1, 2], name: 'Morový nosič' },
+  upiri_trpaslik: { role: 'striker', cost: 2, acts: [2, 3], name: 'Upíří trpaslík' },
+  kostlivec_fabian: { role: 'striker', cost: 2, acts: [1, 2], name: 'Kostlivec Fabián' },
+  zombie_hynek: { role: 'striker', cost: 2, acts: [1], name: 'Umrlec Hynek' },
+  drevo: { role: 'striker', cost: 2, acts: [2], name: 'Oživlé poleno' },
+  upirske_prase: { role: 'striker', cost: 2, acts: [3], name: 'Upíří prase' },
+
+  // Předvoj / Štít (3 body)
+  sedlak_stit: { role: 'tank', cost: 3, acts: [1, 2], name: 'Sedlák s víkem od sudu' },
+  vratny_stit: { role: 'tank', cost: 3, acts: [2, 3], name: 'Hradní vrátný se závorou' },
+  prase_mutant: { role: 'tank', cost: 3, acts: [1, 2], name: 'Zmutovaný vepř' },
+  drab: { role: 'tank', cost: 3, acts: [2, 3], name: 'C. k. panský dráb' },
+  halapartnik: { role: 'tank', cost: 3, acts: [2, 3], name: 'Strážný halapartník' },
+  rytir_prizrak: { role: 'tank', cost: 3, acts: [3], name: 'Rytířský přízrak' },
+
+  // Střelec / Dálkař (3 body)
+  kluk_kamen: { role: 'sniper', cost: 3, acts: [1, 2], name: 'Uličník s prakem' },
+  carodejnice: { role: 'sniper', cost: 3, acts: [2, 3], name: 'Bába kořenářka' },
+  morovy_felcar: { role: 'sniper', cost: 3, acts: [2, 3], name: 'Morový felčar' },
+  vrhac_nozu: { role: 'sniper', cost: 3, acts: [2, 3], name: 'Cirkusový vrhač nožů' },
+  urednik: { role: 'sniper', cost: 3, acts: [2, 3], name: 'Hradní výběrčí daní' },
+  ucetni_buffer: { role: 'sniper', cost: 3, acts: [3], name: 'Hlavní účetní von Zástava' },
+  hrabenka_amalie: { role: 'sniper', cost: 3, acts: [2, 3], name: 'Hraběnka Amálie' },
+  upirka_cilka: { role: 'sniper', cost: 3, acts: [2, 3], name: 'Upírka Cilka' },
+
+  // Elitní drábi (5 bodů)
+  elite_drab: { role: 'elite', cost: 5, acts: [1, 2, 3], name: 'Vrchní zámecký hejtman' },
+  elite_urednik: { role: 'elite', cost: 5, acts: [2, 3], name: 'C. k. vrchní inkvizitor' }
+};
+
+export const ROOM_ORDERS = {
+  podlaha: {
+    id: 'podlaha',
+    name: 'Ztrouchnivělá podlaha',
+    shortName: 'Ztrouchnivělá podlaha',
+    badge: '🪵',
+    tacticalHint: '2–3 pole podlahy jsou načatá prkna. Pozor na propadnutí!',
+    description: '2–3 náhodná pole začínají jako načatá prkna, další stoupnutí způsobí prolomení (4 DMG).'
+  },
+  cesnek: {
+    id: 'cesnek',
+    name: 'Česnekový průvan z kuchyní',
+    shortName: 'Česnekový průvan',
+    badge: '🧄',
+    tacticalHint: 'Z panských kuchyní fouká česnek. Pravidelně zamořuje krajní pole.',
+    description: 'Každé 3 tahy se u obou bran na 2 kola utvoří česnekový oblak (zraňuje upíry).'
+  },
+  zakaz_ustupu: {
+    id: 'zakaz_ustupu',
+    name: 'C. k. zákaz ústupu',
+    shortName: 'Zákaz ústupu',
+    badge: '📜',
+    tacticalHint: 'Panský hejtman zakázal ústup. Krok vzad zvyšuje chladnutí o 1.',
+    description: 'Krok směrem vzad (odvrácení od protivníka) prodlužuje chladnutí manévrů o 1.'
+  },
+  rimsa: {
+    id: 'rimsa',
+    name: 'Úzká hradební římsa',
+    shortName: 'Hradební římsa',
+    badge: '🧱',
+    tacticalHint: 'Stísněný prostor (6 polí). Na obou krajích jsou bezedné propasti!',
+    description: 'Bojiště je zkráceno na 6 polí a na obou krajích číhají propasti pro shození.'
+  },
+  kaple: {
+    id: 'kaple',
+    name: 'Posvěcená kaple',
+    shortName: 'Posvěcená kaple',
+    badge: '⛪',
+    tacticalHint: 'Posvěcené místo s kropenkou. Nemrtví začínají se Zchlazením.',
+    description: 'Uprostřed stojí kropenka se svěcenou vodou a nemrtví začínají se Zchlazením (−25 % k rozlícení).'
+  },
+  sero: {
+    id: 'sero',
+    name: 'Zámecké šero a průvan',
+    shortName: 'Hradní šero',
+    badge: '🕯️',
+    tacticalHint: 'Snížená viditelnost omezuje střely na vzdálenost maximálně 3 pole.',
+    description: 'Všechny dálkové střelecké útoky mají maximální dostřel zkrácen na 3 pole.'
+  }
+};
+
+/**
+ * Procedurální syntéza Bojiště (Chytrý systém komnat).
+ * Sestavuje 1D arénu z rozpočtu Hrozby podle Taktického archetypu
+ * se 3 bezpečnostními invarianty terénu, stropem startovní družiny a vlnami posil.
+ */
+export function synthesizeEncounter(opts = {}) {
+  const {
+    act = 1,
+    threatRating = 2,
+    archetype = 'swarm',
+    isElite = false,
+    isBoss = false,
+    isTutorial = false,
+    roomOrder = null,
+    rng = null,
+    curseLevel = 0,
+    nodeId = 'proc_node'
+  } = opts;
+
+  if (isBoss) {
+    if (act === 1) return ENCOUNTERS.act1_boss;
+    if (act === 2) return ENCOUNTERS.act2_boss;
+    return ENCOUNTERS.act3_boss;
+  }
+
+  if (isTutorial) {
+    return ENCOUNTERS.tutorial_1;
+  }
+
+  const safeRng =
+    rng && typeof rng.nextFloat === 'function'
+      ? rng
+      : {
+          nextFloat: () => Math.random(),
+          pick: (arr) => arr[Math.floor(Math.random() * arr.length)],
+          nextInt: (min, max) => Math.floor(Math.random() * (max - min + 1)) + min
+        };
+
+  // 1. Délka Bojiště
+  let boardSize = 7;
+  if (roomOrder?.id === 'rimsa') {
+    boardSize = 6;
+  } else if (archetype === 'snipers') {
+    boardSize = safeRng.nextFloat() < 0.5 ? 8 : 9;
+  } else if (isElite) {
+    boardSize = 8;
+  } else if (act === 1) {
+    boardSize = safeRng.nextFloat() < 0.5 ? 7 : 8;
+  } else {
+    boardSize = safeRng.nextFloat() < 0.35 ? 7 : safeRng.nextFloat() < 0.7 ? 8 : 9;
+  }
+
+  // 2. Pozice a orientace Lovce
+  let heroCell = 1;
+  let heroFacing = 1;
+  if (roomOrder?.id === 'rimsa') {
+    heroCell = 2;
+    heroFacing = 1;
+  } else if (archetype === 'ambush') {
+    heroCell = Math.floor(boardSize / 2);
+    heroFacing = 1;
+  } else if (boardSize >= 8) {
+    heroCell = safeRng.nextFloat() < 0.5 ? 1 : 2;
+  }
+
+  // 3. Rozpočet hrozby (ADR-0015: Hrozba 1=3b, 2=5b, 3=7b, 4=9b, 5=12b)
+  let budget = 5;
+  if (threatRating <= 1) budget = 3;
+  else if (threatRating === 2) budget = 5;
+  else if (threatRating === 3) budget = 7;
+  else if (threatRating === 4 || isElite) budget = 9;
+  else budget = 12;
+
+  if (curseLevel >= 2) {
+    budget += Math.floor(curseLevel / 2);
+  }
+
+  // Filtrování dostupných nepřátel dle aktu
+  const enemiesForAct = (role) => {
+    return Object.entries(ENEMY_ROLE_REGISTRY)
+      .filter(([id, def]) => def.role === role && def.acts.includes(act))
+      .map(([id]) => id);
+  };
+
+  const swarms = enemiesForAct('swarm').length > 0 ? enemiesForAct('swarm') : ['netopyr', 'krysa_piskota'];
+  const strikers = enemiesForAct('striker').length > 0 ? enemiesForAct('striker') : ['srpak', 'kyjovec'];
+  const tanks = enemiesForAct('tank').length > 0 ? enemiesForAct('tank') : ['sedlak_stit', 'drab'];
+  const snipers = enemiesForAct('sniper').length > 0 ? enemiesForAct('sniper') : ['kluk_kamen', 'morovy_felcar'];
+  const elites = enemiesForAct('elite').length > 0 ? enemiesForAct('elite') : ['elite_drab'];
+
+  const pickEnemy = (pool) => pool[Math.floor(safeRng.nextFloat() * pool.length)] || pool[0];
+
+  // 4. Skladba startovní družiny (strop: 2 v Aktu 1, 3 v Aktu 2-3)
+  const initialSpecs = [];
+  const startCap = isElite ? 2 : (act === 1 ? 2 : 3);
+  let spentBudget = 0;
+
+  if (isElite) {
+    const eliteId = pickEnemy(elites);
+    const supportId = pickEnemy(tanks.length > 0 ? tanks : strikers);
+    initialSpecs.push({ enemyId: supportId, role: 'tank', cost: 3 });
+    initialSpecs.push({ enemyId: eliteId, role: 'elite', cost: 5 });
+    spentBudget += 8;
+  } else if (archetype === 'shieldwall') {
+    const tankId = pickEnemy(tanks);
+    const sniperId = pickEnemy(snipers.length > 0 ? snipers : strikers);
+    initialSpecs.push({ enemyId: tankId, role: 'tank', cost: 3 });
+    initialSpecs.push({ enemyId: sniperId, role: 'sniper', cost: 3 });
+    spentBudget += 6;
+  } else if (archetype === 'snipers') {
+    const frontId = pickEnemy(strikers.length > 0 ? strikers : swarms);
+    const sniperId = pickEnemy(snipers);
+    initialSpecs.push({ enemyId: frontId, role: 'striker', cost: 2 });
+    initialSpecs.push({ enemyId: sniperId, role: 'sniper', cost: 3 });
+    spentBudget += 5;
+  } else if (archetype === 'brute_force') {
+    const tankId = pickEnemy(tanks.length > 0 ? tanks : strikers);
+    initialSpecs.push({ enemyId: tankId, role: 'tank', cost: 3 });
+    spentBudget += 3;
+    if (budget >= 5 && startCap >= 2) {
+      const strikerId = pickEnemy(strikers);
+      initialSpecs.push({ enemyId: strikerId, role: 'striker', cost: 2 });
+      spentBudget += 2;
+    }
+  } else if (archetype === 'ambush') {
+    const rearId = pickEnemy(strikers.length > 0 ? strikers : swarms);
+    const frontId = pickEnemy(strikers.length > 0 ? strikers : tanks);
+    initialSpecs.push({ enemyId: rearId, role: 'striker', cost: 2, isRear: true });
+    initialSpecs.push({ enemyId: frontId, role: 'striker', cost: 2, isRear: false });
+    spentBudget += 4;
+  } else if (archetype === 'disruption') {
+    const strikerId = pickEnemy(strikers);
+    const swarmId = pickEnemy(swarms);
+    initialSpecs.push({ enemyId: strikerId, role: 'striker', cost: 2 });
+    initialSpecs.push({ enemyId: swarmId, role: 'swarm', cost: 1 });
+    spentBudget += 3;
+  } else {
+    // Standard / Swarm
+    const swarm1 = pickEnemy(swarms);
+    const swarm2 = pickEnemy(swarms);
+    initialSpecs.push({ enemyId: swarm1, role: 'swarm', cost: 1 });
+    initialSpecs.push({ enemyId: swarm2, role: 'swarm', cost: 1 });
+    spentBudget += 2;
+    if (budget >= 5 && startCap >= 3) {
+      const strikerId = pickEnemy(strikers);
+      initialSpecs.push({ enemyId: strikerId, role: 'striker', cost: 2 });
+      spentBudget += 2;
+    }
+  }
+
+  // 5. Rozmístění startovních nepřátel
+  const placedEnemies = [];
+  const occupiedCells = new Set([heroCell]);
+
+  if (archetype === 'ambush') {
+    const rearCell = Math.max(0, heroCell - 2);
+    const frontCell = Math.min(boardSize - 1, heroCell + 2);
+    placedEnemies.push({
+      enemyId: initialSpecs[0].enemyId,
+      cell: rearCell,
+      facing: 1
+    });
+    occupiedCells.add(rearCell);
+    placedEnemies.push({
+      enemyId: initialSpecs[1].enemyId,
+      cell: frontCell,
+      facing: -1
+    });
+    occupiedCells.add(frontCell);
+  } else {
+    let curCell = Math.min(boardSize - 1, heroCell + 2);
+    if (roomOrder?.id === 'rimsa') {
+      curCell = Math.max(curCell, 3);
+    }
+
+    initialSpecs.forEach((eSpec, idx) => {
+      let cell = curCell + idx;
+      if (cell >= boardSize) cell = boardSize - 1;
+      while (occupiedCells.has(cell) && cell > heroCell + 1) {
+        cell--;
+      }
+      if (occupiedCells.has(cell)) {
+        cell = curCell + idx;
+        while (occupiedCells.has(cell) && cell < boardSize - 1) {
+          cell++;
+        }
+      }
+      occupiedCells.add(cell);
+      placedEnemies.push({
+        enemyId: eSpec.enemyId,
+        cell,
+        facing: -1
+      });
+    });
+  }
+
+  // 6. Rozvržení vln posil ze zbytku rozpočtu
+  const reinforcements = [];
+  let remainingBudget = Math.max(0, budget - spentBudget);
+  let waveIdx = 0;
+
+  while (remainingBudget > 0 && waveIdx < 2) {
+    waveIdx++;
+    const waveDelay = waveIdx === 1 ? 4 : 7;
+    const gateCell = waveIdx === 1 ? boardSize - 1 : (archetype === 'ambush' ? 0 : boardSize - 1);
+
+    let reinfPool = swarms;
+    let cost = 1;
+    if (remainingBudget >= 3 && safeRng.nextFloat() < 0.5) {
+      reinfPool = snipers.length > 0 ? snipers : tanks;
+      cost = 3;
+    } else if (remainingBudget >= 2) {
+      reinfPool = strikers;
+      cost = 2;
+    }
+
+    const reinfEnemyId = pickEnemy(reinfPool);
+    reinforcements.push({
+      turnDelay: waveDelay,
+      gateCell,
+      enemyId: reinfEnemyId,
+      candidatePool: reinfPool
+    });
+    remainingBudget -= cost;
+  }
+
+  // 7. Terén a rekvizity se 3 bezpečnostními invarianty
+  const props = [];
+  const terrain = [];
+
+  // Invariant 1: heroCell a heroCell +- 1 NIKDY nemají propast ani kůly
+  const safeCells = new Set([heroCell, heroCell - 1, heroCell + 1]);
+
+  // Aplikace Panského rozkazu na terén
+  if (roomOrder?.id === 'rimsa') {
+    terrain.push({ type: 'pit', cell: 0 });
+    terrain.push({ type: 'pit', cell: 5 });
+    occupiedCells.add(0);
+    occupiedCells.add(5);
+  } else if (roomOrder?.id === 'kaple') {
+    const midCell = Math.floor(boardSize / 2);
+    if (!occupiedCells.has(midCell) && !safeCells.has(midCell)) {
+      props.push({ type: 'holy_font', cell: midCell });
+      occupiedCells.add(midCell);
+    }
+  } else if (roomOrder?.id === 'podlaha') {
+    const validCells = [];
+    for (let c = 0; c < boardSize; c++) {
+      if (!occupiedCells.has(c) && !safeCells.has(c)) {
+        validCells.push(c);
+      }
+    }
+    for (let i = 0; i < Math.min(2, validCells.length); i++) {
+      terrain.push({ type: 'plank_cracked', cell: validCells[i] });
+    }
+  }
+
+  // Invariant 2: Limit hustoty překážek a pastí max 25 % délky bojiště
+  const maxHazardsAndProps = Math.floor(boardSize * 0.25);
+  let currentHazardsProps = props.length + terrain.length;
+
+  if (currentHazardsProps < maxHazardsAndProps && !roomOrder) {
+    if (archetype === 'shieldwall' || archetype === 'brute_force') {
+      const candidateCell = heroCell + 1;
+      if (!occupiedCells.has(candidateCell)) {
+        props.push({ type: 'barrel', cell: candidateCell });
+        occupiedCells.add(candidateCell);
+        currentHazardsProps++;
+      }
+    } else if (archetype === 'disruption') {
+      const spikeCell = boardSize - 2;
+      if (!occupiedCells.has(spikeCell) && !safeCells.has(spikeCell)) {
+        terrain.push({ type: 'spikes', cell: spikeCell });
+        occupiedCells.add(spikeCell);
+        currentHazardsProps++;
+      }
+    } else if (archetype === 'snipers') {
+      const mirrorCell = boardSize - 1;
+      if (!occupiedCells.has(mirrorCell) && !safeCells.has(mirrorCell)) {
+        props.push({ type: 'mirror', cell: mirrorCell });
+        occupiedCells.add(mirrorCell);
+        currentHazardsProps++;
+      }
+    }
+  }
+
+  // 8. Tématické názvy a hlášky
+  const titlesByArch = {
+    shieldwall: ['Štítová hradba v průchodu', 'Zatarasená hradní brána', 'Hlídka s víky od sudů'],
+    snipers: ['Střelecká křížová palba', 'Bába kořenářka a střelci', 'Zámecká střelnice'],
+    swarm: ['Krysí a netopýří rej', 'Noční hejno ze stok', 'Smečka panských vlkodavů'],
+    brute_force: ['Surový nápřah chasníků', 'Zdivočelý vepř a kyjovec', 'Drtivá síla drábů'],
+    disruption: ['Zákeřná léčka u propasti', 'Pasti a naostřené kůly', 'Podzemní přepad'],
+    ambush: ['Obklíčení ze zálohy', 'Noční léčka z obou stran', 'Křížový úder hlídek'],
+    elite: ['C. k. panská inkvizice', 'Vrchní hejtman se stráží', 'Inkviziční panský soud']
+  };
+
+  const poolTitles = titlesByArch[archetype] || titlesByArch.swarm;
+  const chosenTitle = poolTitles[Math.floor(safeRng.nextFloat() * poolTitles.length)];
+
+  const archDef = ARCHETYPES[archetype?.toUpperCase()] || ARCHETYPES.SWARM;
+  const baseHint = archDef?.hint || 'Taktický střet s hlídkou.';
+
+  const goldReward = (isElite ? 32 : 16) + threatRating * 2;
+
+  return {
+    id: nodeId,
+    act,
+    name: chosenTitle,
+    backgroundTheme: act === 1 ? 'village_night' : act === 2 ? 'castle_corridor' : 'cellar',
+    threatRating,
+    archetype,
+    archetypeName: archDef?.name || 'Šarvátka',
+    tacticalHint: `${baseHint}${roomOrder ? ' [' + roomOrder.name + ': ' + roomOrder.tacticalHint + ']' : ''}`,
+    boardSize,
+    heroCell,
+    heroFacing,
+    initialEnemies: placedEnemies,
+    props,
+    terrain,
+    reinforcements,
+    roomOrder,
+    goldReward
+  };
+}
